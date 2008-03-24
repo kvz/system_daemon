@@ -46,10 +46,11 @@
     /********************************************************************
      * Run 
      ********************************************************************/
-    $internal_run_cnt = 0;
+    $fatal_error = false;
     while(!$fatal_error && !$daemon->is_dying){
         // do deamon stuff
-                
+        
+        
         // relax the system by sleeping for a little bit
         sleep(5);
     }
