@@ -6,6 +6,7 @@
     $runmode = array();
     $runmode["no-daemon"] = false;
     $runmode["help"] = false;
+    $runmode["write-initd"] = false;
     foreach($argv as $k=>$arg){
         if(substr($arg, 0, 2) == "--" && isset($runmode[substr($arg, 2)])){
             $runmode[substr($arg, 2)] = true;
@@ -37,8 +38,12 @@
         $daemon->author_email = "kevin@vanzonneveld.net";
         $daemon->start();
         
-        if($daemon->initd_write()){
-            echo "I wrote an init.d script\n";
+        if($runmode["write-initd"]){
+            if(!$daemon->initd_write()){
+                echo "Unable to write init.d script\n";
+            } else{
+                echo "I wrote an init.d script\n";
+            }
         }
     }
 
@@ -49,7 +54,7 @@
     $fatal_error = false;
     while(!$fatal_error && !$daemon->is_dying){
         // do deamon stuff
-        
+        echo $daemon->app_dir." daemon is running...\n";
         
         // relax the system by sleeping for a little bit
         sleep(5);
