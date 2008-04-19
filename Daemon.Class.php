@@ -40,13 +40,6 @@
  * System_Daemon. Create daemons with practicle functions like
  * $daemon->start()
  *
- * The shared variable space can be accessed with the tho methods:
- *
- * o void setVariable($name, $value)
- * o mixed getVariable($name)
- * $name must be a valid PHP variable name;
- * $value must be a variable or a serializable object.
- *
  * Requires PHP build with --enable-cli --with-pcntl --enable-shmop.
  * Only runs on *NIX systems, because Windows lacks of the pcntl ext.
  */
