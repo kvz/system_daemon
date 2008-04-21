@@ -205,7 +205,8 @@ class Daemon
         
         // check the PHP configuration
         if (!defined('SIGHUP')) {
-            trigger_error('PHP is compiled without --enable-pcntl directive', E_USER_ERROR);
+            trigger_error('PHP is compiled without --enable-pcntl directive', 
+                E_USER_ERROR);
         }        
         
         ini_set("max_execution_time", "0");
@@ -220,6 +221,7 @@ class Daemon
      * Sytem_Daemon::start()
      * Public method: spawn daemon process.
      *
+     * @return void
      */
     public function start()
     {
@@ -235,6 +237,7 @@ class Daemon
      * Sytem_Daemon::stop()
      * Public method: stop daemon process.
      *
+     * @return void
      */
     public function stop()
     {
@@ -247,6 +250,9 @@ class Daemon
      * Sytem_Daemon::daemon_sig_handler()
      * Public method: signal handler function
      *
+     * @param integer $signo The posix signal received.
+     * 
+     * @return void
      */
     public function daemon_sig_handler( $signo )
     {
@@ -255,7 +261,7 @@ class Daemon
         switch ($signo) {
             case SIGTERM:
                 // handle shutdown tasks
-                if ($this->is_child) {
+                if ($this->_is_child) {
                     $this->_daemon_die();
                 } else {
                     exit;
@@ -282,10 +288,11 @@ class Daemon
      * Sytem_Daemon::determineOS()
      * Public method: returns an array(main, distro, version) of the OS it's executed on
      *
+     * @return array
      */
     public function determineOS()
     {
-        if(!isset($this->fnc_cache[__FUNCTION__])) {
+        if (!isset($this->_fnc_cache[__FUNCTION__])) {
             $osv_files = array(
                 "RedHat"=>"/etc/redhat-release",
                 "SuSE"=>"/etc/SuSE-release",
@@ -307,16 +314,17 @@ class Daemon
                 }
             }
 
-            $this->fnc_cache[__FUNCTION__] = compact("main", "distro", "version");
+            $this->_fnc_cache[__FUNCTION__] = compact("main", "distro", "version");
         }
 
-        return $this->fnc_cache[__FUNCTION__];
+        return $this->_fnc_cache[__FUNCTION__];
     }    
     
     /**
      * Sytem_Daemon::initd_write()
      * Public method: writes an: 'init.d' script on the filesystem
      *
+     * @return boolean
      */
     public function initd_write(){
         $initd_filepath = $this->initd_filepath();
@@ -346,6 +354,7 @@ class Daemon
      * Sytem_Daemon::initd_filepath()
      * Public method: returns an: 'init.d' script path as a string. for now only debian & ubuntu
      *
+     * @return string
      */
     public function initd_filepath(){
         
@@ -374,6 +383,7 @@ class Daemon
      * Sytem_Daemon::initd()
      * Public method: returns an: 'init.d' script as a string. for now only debian & ubuntu
      *
+     * @return string
      */
     public function initd(){
         // initialize & check variables
@@ -454,13 +464,14 @@ class Daemon
      * Sytem_Daemon::_daemon_init()
      * Private method: put the running script in background
      *
+     * @return boolean
      */
     function _daemon_init() {
-        if ($this->is_initialized) {
+        if ($this->_is_initialized) {
             return true;
         }
 
-        $this->is_initialized = true;
+        $this->_is_initialized = true;
 
         if( !$this->_strisunix($this->app_name) ) {
             $safe_name = $this->_strtounix($this->app_name);
@@ -476,8 +487,8 @@ class Daemon
             $this->log_filepath = "/var/log/".$this->app_name."_daemon.log";
         }
         
-        $this->pid = 0;
-        $this->is_child = false;
+        $this->_pid = 0;
+        $this->_is_child = false;
         if (!is_numeric($this->uid)) {
             $this->_logger(4, "".$this->app_name." daemon has invalid uid: ".$this->uid."", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
@@ -497,12 +508,15 @@ class Daemon
             $this->_logger(4, "".$this->app_name." daemon has invalid app_dir: ".$this->app_dir."", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
+        
+        return true;
     }
 
     /**
      * Sytem_Daemon::_daemon_become()
      * Private method: put the running script in background
      *
+     * @return void
      */
     function _daemon_become() {
 
@@ -540,10 +554,10 @@ class Daemon
         }
 
         // additional PID succeeded check
-        if (!is_numeric($this->pid) || $this->pid < 1) {
-            $this->_logger(4, "".$this->app_name." daemon didn't have a valid pid: '".$this->pid."'", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+        if (!is_numeric($this->_pid) || $this->_pid < 1) {
+            $this->_logger(4, "".$this->app_name." daemon didn't have a valid pid: '".$this->_pid."'", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         } else {
-            if (!file_put_contents($this->pid_filepath, $this->pid)) {
+            if (!file_put_contents($this->pid_filepath, $this->_pid)) {
                 $this->_logger(4, "".$this->app_name." daemon was unable to write to pidfile: ".$this->pid_filepath."", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             }
         }
@@ -557,6 +571,7 @@ class Daemon
      * Sytem_Daemon::_daemon_isrunning()
      * Private method: check if a previous process with same pidfile was already running
      *
+     * @return boolean
      */
     function _daemon_isrunning() {
         if(!file_exists($this->pid_filepath)) return false;
@@ -580,6 +595,7 @@ class Daemon
      * Sytem_Daemon::_daemon_fork()
      * Private method: fork process and kill parent process, the heart of the 'daemonization'
      *
+     * @return boolean
      */
     function _daemon_fork()
     {
@@ -596,9 +612,9 @@ class Daemon
             exit();
         } else {
             // children
-            $this->is_child = true;
+            $this->_is_child = true;
             $this->is_dying = false;
-            $this->pid = posix_getpid();
+            $this->_pid = posix_getpid();
             return true;
         }
     }
@@ -607,23 +623,24 @@ class Daemon
      * Sytem_Daemon::_daemon_whatiam()
      * Private method: return what the current process is: child or parent
      *
-     * @access private
+     * @return string
      */
     private function _daemon_whatiam()
     {
-        return ($this->is_child?"child":"parent");
+        return ($this->_is_child?"child":"parent");
     }
 
     /**
      * Sytem_Daemon::_daemon_die()
      * Private method: kill the daemon
      *
+     * @return void
      */
     private function _daemon_die()
     {
         if($this->is_dying != true){
             $this->is_dying = true;
-            if($this->is_child && file_exists($this->pid_filepath)){
+            if($this->_is_child && file_exists($this->pid_filepath)){
                 @unlink($this->pid_filepath);
             }
             exit();
@@ -637,6 +654,8 @@ class Daemon
      * Sytem_Daemon::_strisunix()
      * Private method: check if a string has a unix proof format (stripped spaces, special chars, etc)
      *
+     * @param $str What string to test for unix compliance
+     * @return boolean
      */
     private function _strisunix( $str )
     {
@@ -646,7 +665,10 @@ class Daemon
     /**
      * Sytem_Daemon::_strtounix()
      * Private method: convert a string to a unix proof format (strip spaces, special chars, etc)
-     *
+     * 
+     * @param $str What string to make unix compliant
+     * 
+     * @return string
      */
     private function _strtounix( $str )
     {
@@ -657,6 +679,14 @@ class Daemon
      * Sytem_Daemon::_logger()
      * Private method: log a string according to error levels specified in array: log_levels (4 is fatal)
      *
+     * @param $level    
+     * @param $str      
+     * @param $file     
+     * @param $class    
+     * @param $function 
+     * @param $line     
+     *  
+     * @return void
      */
     private function _logger($level, $str, $file = false, $class = false, $function = false, $line = false)
     {
@@ -672,7 +702,7 @@ class Daemon
         }
 
         $str_pid = "from[".$this->_daemon_whatiam()."".posix_getpid()."] ";
-        $str_level = $this->log_levels[$level];
+        $str_level = $this->_log_levels[$level];
         $log_line = str_pad($str_level."", 8, " ", STR_PAD_LEFT)." " .$str_pid." : ".$str; 
         //echo $log_line."\n";
         file_put_contents($this->log_filepath, $log_line."\n", FILE_APPEND);
