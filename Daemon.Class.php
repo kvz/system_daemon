@@ -1,21 +1,16 @@
 <?php
 /**
  * System_Daemon turns PHP-CLI scripts into daemons
+ * 
+ * PHP version 5
  *
- * PHP version 5.1.0+
- *
- * LICENSE: This source file is subject to the New BSD license that is
- * available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/bsd-license.php. If you did not receive
- * a copy of the New BSD Lic/home/kevin/workspace/plutonia-system_daemon/Daemon.Class.phpense and are unable to obtain it through the web,
- * please send a note to license@php.net so we can mail you a copy immediately.
- *
- * @category    System
- * @package     System_Daemon
- * @author      Kevin van Zonneveld <kevin@vanzonneveld.net>
- * @license     http://www.opensource.org/licenses/bsd-license.php
- * @version     0.1
- * @link        http://kevin.vanzonneveld.net/pear/System_Daemon
+ * @category  PHP
+ * @package   System_Daemon
+ * @author    Kevin <kevin@vanzonneveld.net>
+ * @copyright 2008 Kevin van Zonneveld
+ * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
+ * @version   SVN: $Id$
+ * @link      http://trac.plutonia.nl/projects/system_daemon
  */
 
 /**
