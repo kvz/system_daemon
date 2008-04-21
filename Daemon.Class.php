@@ -1,23 +1,5 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 foldmethod=marker: */
-// +----------------------------------------------------------------------+
-// | PHP Version 4 - 5                                                    |
-// +----------------------------------------------------------------------+
-// | Copyright (c) 1997-2003 The PHP Group                                |
-// +----------------------------------------------------------------------+
-// | This source file is subject to version 2.02 of the PHP license,      |
-// | that is bundled with this package in the file LICENSE, and is        |
-// | available at through the world-wide-web at                           |
-// | http://www.php.net/license/2_02.txt.                                 |
-// | If you did not receive a copy of the PHP license and are unable to   |
-// | obtain it through the world-wide-web, please send a note to          |
-// | license@php.net so we can mail you a copy immediately.               |
-// +----------------------------------------------------------------------+
-// | Author: Kevin van Zonneveld <kevin@vanzonneveld.net>                 |
-// +----------------------------------------------------------------------+
-// $Id: Daemon.php
-
-/***
+/**
  * System_Daemon turns PHP-CLI scripts into daemons
  *
  * PHP version 5.1.0+
@@ -25,7 +7,7 @@
  * LICENSE: This source file is subject to the New BSD license that is
  * available through the world-wide-web at the following URI:
  * http://www.opensource.org/licenses/bsd-license.php. If you did not receive
- * a copy of the New BSD License and are unable to obtain it through the web,
+ * a copy of the New BSD Lic/home/kevin/workspace/plutonia-system_daemon/Daemon.Class.phpense and are unable to obtain it through the web,
  * please send a note to license@php.net so we can mail you a copy immediately.
  *
  * @category    System
@@ -36,119 +18,105 @@
  * @link        http://kevin.vanzonneveld.net/pear/System_Daemon
  */
 
-/***
+/**
  * System_Daemon. Create daemons with practicle functions like
  * $daemon->start()
  *
  * Requires PHP build with --enable-cli --with-pcntl --enable-shmop.
  * Only runs on *NIX systems, because Windows lacks of the pcntl ext.
  */
-
 class Daemon {
-    /****************************************************************************
+    /***************************************************************************
     *** VARS
     ****************************************************************************/
-    /***
+    /**
      * The application name e.g.: logparser
      *
      * @var string
-     * @access public
      */
     public $app_name;
 
-    /***
+    /**
      * The home dirpath e.g.: /usr/local/logparser. Defaults to __FILE__ dir
      *
      * @var string
-     * @access public
      */
     public $app_dir;
 
-    /***
+    /**
      * The executeble daemon file, e.g.: logparser.php. Defaults to: SCRIPT_NAME basename
      *
      * @var string
-     * @access public
      */
     public $app_executable;
 
-    /***
+    /**
      * Daemon description. Required for forging init.d script
      *
      * @var string
-     * @access public
      */
     public $app_description;
 
-    /***
+    /**
      * Author name. Required for forging init.d script
      *
      * @var string
-     * @access public
      */
     public $author_name;
 
-    /***
+    /**
      * Author email. Required for forging init.d script
      *
      * @var string
-     * @access public
      */
     public $author_email;
   
-    /***
+    /**
      * The pid filepath , e.g.: /var/run/logparser.pid. Defaults to: /var/run/${app_name}.pid
      *
      * @var string
-     * @access public
      */
     public $pid_filepath;
 
-    /***
+    /**
      * The log filepath , e.g.: /var/log/logparser_daemon.log. Defaults to: /var/log/${app_name}_daemon.log
      *
      * @var string
-     * @access public
      */
     public $log_filepath;
 
-    /***
+    /**
      * The user id under which to run the process (default = root)
      *
      * @var string
-     * @access public
      */
     public $uid = 0;
 
-    /***
+    /**
      * Wether the our daemon is being killed, you might want to include this in your loop
      *
      * @var boolean
-     * @access public
      */
     public $is_dying = false;
     
-    /***
+    /**
      * The group id under which to run the process (default = root)
      *
      * @var string
-     * @access public
      */
     public $gid = 0;
 
-    /***
+    /**
      * Kill daemon if it cannot assume the identity (uid + gid)
      *
      * @var string
-     * @access public
      */
     public $die_on_identitycrisis = true;
 
-    /***
+    /**
      * Available log levels
      *
      * @var array
-     * @access private
      */
     private $log_levels = array(
         0=> "debug",
@@ -158,48 +126,43 @@ class Daemon {
         4=> "fatal"
     );
 
-    /***
+    /**
      * Keep track of passed signals
      *
      * @var array
-     * @access private
      */
     private $signals = array();
 
-    /***
+    /**
      * The current process identifier
      *
      * @var integer
-     * @access private
      */
     private $pid = 0;
 
-    /***
+    /**
      * Wether the current process is a forked child
      *
      * @var boolean
-     * @access private
      */
     private $is_child = false;
 
-    /***
+    /**
      * Wether all the variables have been initialized
      *
      * @var boolean
-     * @access private
      */
     private $is_initialized = false;
 
-    /***
+    /**
      * Cache return values of some functions for performance
      *
      * @var array
-     * @access private
      */
     private $fnc_cache = array();
 
 
-    /****************************************************************************
+    /***************************************************************************
     *** SPECIAL METHODS
     ****************************************************************************/
     public function __construct($app_name)
@@ -220,14 +183,13 @@ class Daemon {
 
 
 
-    /****************************************************************************
+    /***************************************************************************
     *** PUBLIC METHODS: DAEMON
     ****************************************************************************/
-    /***
+    /**
      * Sytem_Daemon::start()
      * Public method: spawn daemon process.
      *
-     * @access public
      */
     public function start()
     {
@@ -239,11 +201,10 @@ class Daemon {
 
     }
 
-    /***
+    /**
      * Sytem_Daemon::stop()
      * Public method: stop daemon process.
      *
-     * @access public
      */
     public function stop()
     {
@@ -252,11 +213,10 @@ class Daemon {
     }
 
 
-    /***
+    /**
      * Sytem_Daemon::daemon_sig_handler()
      * Public method: signal handler function
      *
-     * @access public
      */
     public function daemon_sig_handler( $signo )
     {
@@ -286,15 +246,14 @@ class Daemon {
         }
     }
 
-    /****************************************************************************
+    /***************************************************************************
     *** PUBLIC METHODS: GENERAL
     ****************************************************************************/
 
-    /***
+    /**
      * Sytem_Daemon::determineOS()
      * Public method: returns an array(main, distro, version) of the OS it's executed on
      *
-     * @access public
      */
     public function determineOS()
     {
@@ -326,11 +285,10 @@ class Daemon {
         return $this->fnc_cache[__FUNCTION__];
     }    
     
-    /***
+    /**
      * Sytem_Daemon::initd_write()
      * Public method: writes an: 'init.d' script on the filesystem
      *
-     * @access public
      */
     public function initd_write(){
         $initd_filepath = $this->initd_filepath();
@@ -356,11 +314,10 @@ class Daemon {
         return false;
     }
     
-    /***
+    /**
      * Sytem_Daemon::initd_filepath()
      * Public method: returns an: 'init.d' script path as a string. for now only debian & ubuntu
      *
-     * @access public
      */
     public function initd_filepath(){
         
@@ -385,11 +342,10 @@ class Daemon {
         return $initd_filepath;
     }
     
-    /***
+    /**
      * Sytem_Daemon::initd()
      * Public method: returns an: 'init.d' script as a string. for now only debian & ubuntu
      *
-     * @access public
      */
     public function initd(){
         // initialize & check variables
@@ -465,15 +421,14 @@ class Daemon {
 
 
 
-    /****************************************************************************
+    /***************************************************************************
     *** PRIVATE METHODS: DAEMON
     ****************************************************************************/
 
-    /***
+    /**
      * Sytem_Daemon::_daemon_init()
      * Private method: put the running script in background
      *
-     * @access private
      */
     function _daemon_init() {
         if($this->is_initialized){
@@ -519,11 +474,10 @@ class Daemon {
         }
     }
 
-    /***
+    /**
      * Sytem_Daemon::_daemon_become()
      * Private method: put the running script in background
      *
-     * @access private
      */
     function _daemon_become() {
 
@@ -574,11 +528,10 @@ class Daemon {
         @umask(0);
     }
 
-    /***
+    /**
      * Sytem_Daemon::_daemon_isrunning()
      * Private method: check if a previous process with same pidfile was already running
      *
-     * @access private
      */
     function _daemon_isrunning() {
         if(!file_exists($this->pid_filepath)) return false;
@@ -598,11 +551,10 @@ class Daemon {
         }
     }
 
-    /***
+    /**
      * Sytem_Daemon::_daemon_fork()
      * Private method: fork process and kill parent process, the heart of the 'daemonization'
      *
-     * @access private
      */
     function _daemon_fork()
     {
@@ -626,7 +578,7 @@ class Daemon {
         }
     }
 
-    /***
+    /**
      * Sytem_Daemon::_daemon_whatiam()
      * Private method: return what the current process is: child or parent
      *
@@ -637,11 +589,10 @@ class Daemon {
         return ($this->is_child?"child":"parent");
     }
 
-    /***
+    /**
      * Sytem_Daemon::_daemon_die()
      * Private method: kill the daemon
      *
-     * @access private
      */
     private function _daemon_die()
     {
@@ -656,37 +607,34 @@ class Daemon {
 
 
 
-    /****************************************************************************
+    /***************************************************************************
     *** PRIVATE METHODS: GENERAL
     ****************************************************************************/
 
-    /***
+    /**
      * Sytem_Daemon::_strisunix()
      * Private method: check if a string has a unix proof format (stripped spaces, special chars, etc)
      *
-     * @access private
      */
     private function _strisunix( $str )
     {
         return preg_match('/^[a-z0-9_]+$/', $str);
     }
 
-    /***
+    /**
      * Sytem_Daemon::_strtounix()
      * Private method: convert a string to a unix proof format (strip spaces, special chars, etc)
      *
-     * @access private
      */
     private function _strtounix( $str )
     {
         return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
     }
 
-    /***
+    /**
      * Sytem_Daemon::_logger()
      * Private method: log a string according to error levels specified in array: log_levels (4 is fatal)
      *
-     * @access private
      */
     private function _logger($level, $str, $file = false, $class = false, $function = false, $line = false)
     {
@@ -712,6 +660,4 @@ class Daemon {
         }
     }
 }
-
-
 ?>
