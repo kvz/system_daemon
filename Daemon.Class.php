@@ -1,15 +1,15 @@
 <?php
 /**
- * System_Daemon turns PHP-CLI scripts into daemons
+ * System_Daemon turns PHP-CLI scripts into daemons.
  * 
  * PHP version 5
  *
- * @category  PHP
+ * @category  System
  * @package   System_Daemon
  * @author    Kevin <kevin@vanzonneveld.net>
  * @copyright 2008 Kevin van Zonneveld
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
- * @version   SVN: $Id$
+ * @version   SVN: Release: $Id$
  * @link      http://trac.plutonia.nl/projects/system_daemon
  */
 
@@ -19,11 +19,30 @@
  *
  * Requires PHP build with --enable-cli --with-pcntl --enable-shmop.
  * Only runs on *NIX systems, because Windows lacks of the pcntl ext.
+ *
+ * PHP version 5
+ *
+ * @category  System
+ * @package   System_Daemon
+ * @author    Kevin <kevin@vanzonneveld.net>
+ * @copyright 2008 Kevin van Zonneveld
+ * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
+ * @version   SVN: Release: $Id$
+ * @link      http://trac.plutonia.nl/projects/system_daemon
+ * 
  */
-class Daemon {
+class Daemon
+{
     /***************************************************************************
     *** VARS
     ****************************************************************************/
+    /**
+     * Wether or not to run this class standalone, or as a part of PEAR
+     *
+     * @var boolean
+     */
+    public $pear = true;
+    
     /**
      * The application name e.g.: logparser
      *
@@ -39,7 +58,8 @@ class Daemon {
     public $app_dir;
 
     /**
-     * The executeble daemon file, e.g.: logparser.php. Defaults to: SCRIPT_NAME basename
+     * The executeble daemon file, e.g.: logparser.php. 
+     * Defaults to: SCRIPT_NAME basename
      *
      * @var string
      */
@@ -67,40 +87,46 @@ class Daemon {
     public $author_email;
   
     /**
-     * The pid filepath , e.g.: /var/run/logparser.pid. Defaults to: /var/run/${app_name}.pid
+     * The pid filepath , e.g.: /var/run/logparser.pid. 
+     * Defaults to: /var/run/${app_name}.pid
      *
      * @var string
      */
     public $pid_filepath;
 
     /**
-     * The log filepath , e.g.: /var/log/logparser_daemon.log. Defaults to: /var/log/${app_name}_daemon.log
+     * The log filepath , e.g.: /var/log/logparser_daemon.log. 
+     * Defaults to: /var/log/${app_name}_daemon.log
      *
      * @var string
      */
     public $log_filepath;
 
     /**
-     * The user id under which to run the process (default = root)
-     *
+     * The user id under which to run the process.
+     * Defaults to: root
+     * 
      * @var string
      */
     public $uid = 0;
 
     /**
-     * Wether the our daemon is being killed, you might want to include this in your loop
-     *
-     * @var boolean
-     */
-    public $is_dying = false;
-    
-    /**
-     * The group id under which to run the process (default = root)
+     * The group id under which to run the process.
+     * Defaults to: root
      *
      * @var string
      */
     public $gid = 0;
 
+
+    /**
+     * Wether the our daemon is being killed, you might 
+     * want to include this in your loop
+     *
+     * @var boolean
+     */
+    public $is_dying = false;
+    
     /**
      * Kill daemon if it cannot assume the identity (uid + gid)
      *
@@ -113,7 +139,7 @@ class Daemon {
      *
      * @var array
      */
-    private $log_levels = array(
+    private $_log_levels = array(
         0=> "debug",
         1=> "info",
         2=> "waring",
@@ -126,46 +152,59 @@ class Daemon {
      *
      * @var array
      */
-    private $signals = array();
+    private $_signals = array();
 
     /**
      * The current process identifier
      *
      * @var integer
      */
-    private $pid = 0;
+    private $_pid = 0;
 
     /**
      * Wether the current process is a forked child
      *
      * @var boolean
      */
-    private $is_child = false;
+    private $_is_child = false;
 
     /**
      * Wether all the variables have been initialized
      *
      * @var boolean
      */
-    private $is_initialized = false;
+    private $_is_initialized = false;
 
     /**
-     * Cache return values of some functions for performance
+     * Cache that holds values of some functions 
+     * for performance gain
      *
      * @var array
      */
-    private $fnc_cache = array();
+    private $_fnc_cache = array();
 
 
-    /***************************************************************************
-    *** SPECIAL METHODS
-    ****************************************************************************/
-    public function __construct($app_name)
+    /**
+     * Constructs a System_Daemon object.
+     *
+     * @param string  $app_name The unix name of your daemon application.
+     * @param boolean $pear     Wether or not to run as a part of pear.
+     *
+     * @see start()
+     */
+    public function __construct($app_name, $pear = true)
     {
         $this->app_name = $app_name;
-
-        //check the PHP configuration
-        if (!defined('SIGHUP')){
+        $this->pear     = $pear;
+        
+        // to run as a part of pear
+        if ( $this->pear ) {
+            // conditional so use include
+            include_once "PEAR/Exception.php";
+        }
+        
+        // check the PHP configuration
+        if (!defined('SIGHUP')) {
             trigger_error('PHP is compiled without --enable-pcntl directive', E_USER_ERROR);
         }        
         
@@ -173,14 +212,10 @@ class Daemon {
         ini_set("max_input_time", "0");
         set_time_limit(0);
         ob_implicit_flush();
-
     }
 
 
 
-    /***************************************************************************
-    *** PUBLIC METHODS: DAEMON
-    ****************************************************************************/
     /**
      * Sytem_Daemon::start()
      * Public method: spawn daemon process.
@@ -220,9 +255,9 @@ class Daemon {
         switch ($signo) {
             case SIGTERM:
                 // handle shutdown tasks
-                if($this->is_child){
+                if ($this->is_child) {
                     $this->_daemon_die();
-                } else{
+                } else {
                     exit;
                 }
                 break;
@@ -241,10 +276,8 @@ class Daemon {
         }
     }
 
-    /***************************************************************************
-    *** PUBLIC METHODS: GENERAL
-    ****************************************************************************/
 
+    
     /**
      * Sytem_Daemon::determineOS()
      * Public method: returns an array(main, distro, version) of the OS it's executed on
@@ -252,7 +285,7 @@ class Daemon {
      */
     public function determineOS()
     {
-        if(!isset($this->fnc_cache[__FUNCTION__])){
+        if(!isset($this->fnc_cache[__FUNCTION__])) {
             $osv_files = array(
                 "RedHat"=>"/etc/redhat-release",
                 "SuSE"=>"/etc/SuSE-release",
@@ -261,13 +294,13 @@ class Daemon {
                 "Ubuntu"=>"/etc/lsb-release"
             );
 
-            if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){
+            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
                 $main = "Windows";
                 $distro = PHP_OS;
-            } else{
+            } else {
                 $main = php_uname('s');
-                foreach($osv_files as $distro=>$osv_file){
-                    if(file_exists($osv_file)){
+                foreach($osv_files as $distro=>$osv_file) {
+                    if (file_exists($osv_file)) {
                         $version = trim(file_get_contents($osv_file));
                         break;
                     }
@@ -287,21 +320,21 @@ class Daemon {
      */
     public function initd_write(){
         $initd_filepath = $this->initd_filepath();
-        if(!$initd_filepath){
+        if (!$initd_filepath) {
             return false;
         }
         
         $initd = $this->initd();
-        if(!$initd){
+        if (!$initd) {
             return false;
         }
         
-        if(!file_exists( ( $initd_filepath ) )){
-            if(!file_put_contents($initd_filepath, $initd)){
+        if (!file_exists( ( $initd_filepath ) )) {
+            if (!file_put_contents($initd_filepath, $initd)) {
                 return false;
             }
             
-            if(!chmod($initd_filepath, 0777)){
+            if (!chmod($initd_filepath, 0777)) {
                 return false;
             }
             return true;
@@ -348,19 +381,19 @@ class Daemon {
 
         // sanity
         $daemon_filepath = $this->app_dir."/".$this->app_executable;
-        if(!file_exists($daemon_filepath)){
+        if (!file_exists($daemon_filepath)) {
             $this->_logger(3, "unable to forge skeleton for non existing daemon_filepath: ".$daemon_filepath.", try setting a valid app_dir or app_executable", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        if(!$this->author_name){
+        if (!$this->author_name) {
             $this->_logger(3, "unable to forge skeleton for non existing author_name: ".$this->author_name."", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        if(!$this->author_email){
+        if (!$this->author_email) {
             $this->_logger(3, "unable to forge skeleton for non existing author_email: ".$this->author_email."", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        if(!$this->app_description){
+        if (!$this->app_description) {
             $this->_logger(3, "unable to forge skeleton for non existing app_description: ".$this->app_description."", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
@@ -383,10 +416,10 @@ class Daemon {
         }
 
         // open skeleton
-        if(!file_exists($skeleton_filepath)){
+        if (!file_exists($skeleton_filepath)) {
             $this->_logger(2, "skeleton file for OS: ".$distro." not found at: ".$skeleton_filepath, __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
-        } elseif($skeleton = file_get_contents($skeleton_filepath)){
+        } elseif($skeleton = file_get_contents($skeleton_filepath)) {
             // skeleton opened, set replace vars
             switch (strtolower($distro)){
                 default:
@@ -416,9 +449,6 @@ class Daemon {
 
 
 
-    /***************************************************************************
-    *** PRIVATE METHODS: DAEMON
-    ****************************************************************************/
 
     /**
      * Sytem_Daemon::_daemon_init()
@@ -426,44 +456,44 @@ class Daemon {
      *
      */
     function _daemon_init() {
-        if($this->is_initialized){
+        if ($this->is_initialized) {
             return true;
         }
 
         $this->is_initialized = true;
 
-        if( !$this->_strisunix($this->app_name) ){
+        if( !$this->_strisunix($this->app_name) ) {
             $safe_name = $this->_strtounix($this->app_name);
             $this->_logger(4, "'".$this->app_name."' is not a valid daemon name, try using '".$safe_name."' instead", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
-        } else{
+        } else {
             $this->_logger(1, "starting ".$this->app_name." daemon", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
-        if(!$this->pid_filepath){
+        if (!$this->pid_filepath) {
             $this->pid_filepath = "/var/run/".$this->app_name.".pid";
         }
-        if(!$this->log_filepath){
+        if (!$this->log_filepath) {
             $this->log_filepath = "/var/log/".$this->app_name."_daemon.log";
         }
         
         $this->pid = 0;
         $this->is_child = false;
-        if(!is_numeric($this->uid)) {
+        if (!is_numeric($this->uid)) {
             $this->_logger(4, "".$this->app_name." daemon has invalid uid: ".$this->uid."", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        if(!is_numeric($this->gid)) {
+        if (!is_numeric($this->gid)) {
             $this->_logger(4, "".$this->app_name." daemon has invalid gid: ".$this->gid."", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        if(!$this->app_dir){
+        if (!$this->app_dir) {
             $this->app_dir = dirname(__FILE__);
         }
-        if(!$this->app_executable){
+        if (!$this->app_executable) {
             $this->app_executable = basename($_SERVER["SCRIPT_FILENAME"]);
         }
 
-        if(!is_dir($this->app_dir)){
+        if (!is_dir($this->app_dir)) {
             $this->_logger(4, "".$this->app_name." daemon has invalid app_dir: ".$this->app_dir."", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
@@ -494,26 +524,26 @@ class Daemon {
         pcntl_signal(SIGCHLD, array($this, "daemon_sig_handler"));
 
         // allowed?
-        if ( $this->_daemon_isrunning() ){
+        if ( $this->_daemon_isrunning() ) {
             $this->_logger(4, "".$this->app_name." daemon is still running. exiting", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // fork us!
-        if ( !$this->_daemon_fork() ){
+        if ( !$this->_daemon_fork() ) {
             $this->_logger(4, "".$this->app_name." daemon was unable to fork", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // assume identity
-        if(!posix_setuid($this->uid) || !posix_setgid($this->gid)){
+        if (!posix_setuid($this->uid) || !posix_setgid($this->gid)){
             $lvl = ($this->die_on_identitycrisis ? 4 : 3);
             $this->_logger($lvl, "".$this->app_name." daemon was unable assume identity (uid=".$this->uid.", gid=".$this->gid.")", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // additional PID succeeded check
-        if(!is_numeric($this->pid) || $this->pid < 1){
+        if (!is_numeric($this->pid) || $this->pid < 1) {
             $this->_logger(4, "".$this->app_name." daemon didn't have a valid pid: '".$this->pid."'", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-        } else{
-            if(!file_put_contents($this->pid_filepath, $this->pid)){
+        } else {
+            if (!file_put_contents($this->pid_filepath, $this->pid)) {
                 $this->_logger(4, "".$this->app_name." daemon was unable to write to pidfile: ".$this->pid_filepath."", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             }
         }
@@ -530,15 +560,15 @@ class Daemon {
      */
     function _daemon_isrunning() {
         if(!file_exists($this->pid_filepath)) return false;
-        $pid = @file_get_contents($this->pid_filepath);
+        $_pid = @file_get_contents($this->pid_filepath);
 
-        if ($pid !== false) {
-            if( !posix_kill(intval($pid), 0) ){
+        if ($_pid !== false) {
+            if( !posix_kill(intval($_pid), 0) ) {
                 // not responding so unlink pidfile
                 @unlink($this->pid_filepath);
                 $this->_logger(2, "".$this->app_name." daemon orphaned pidfile found and removed: ".$this->pid_filepath, __FILE__, __CLASS__, __FUNCTION__, __LINE__);
                 return false;
-            } else{
+            } else {
                 return true;
             }
         } else {
@@ -555,12 +585,12 @@ class Daemon {
     {
         $this->_logger(0, "forking ".$this->app_name." daemon", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
 
-        $pid = pcntl_fork();
-        if ( $pid == -1 ) {
+        $_pid = pcntl_fork();
+        if ( $_pid == -1 ) {
             // error
             $this->_logger(3, "".$this->app_name." daemon could not be forked", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
-        } else if ($pid) {
+        } else if ($_pid) {
              // parent
             $this->_logger(0, "ending ".$this->app_name." parent process", __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             exit();
@@ -602,9 +632,6 @@ class Daemon {
 
 
 
-    /***************************************************************************
-    *** PRIVATE METHODS: GENERAL
-    ****************************************************************************/
 
     /**
      * Sytem_Daemon::_strisunix()
@@ -651,6 +678,10 @@ class Daemon {
         file_put_contents($this->log_filepath, $log_line."\n", FILE_APPEND);
         
         if($level == 4){
+            // to run as a part of pear
+            if( $this->pear ){            
+                throw new PEAR_Exception($log_line);
+            }
             $this->_daemon_die();
         }
     }
