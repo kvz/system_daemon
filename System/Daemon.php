@@ -341,8 +341,7 @@ class System_Daemon
         $str_ident = "@[".$str_ident."]";
         $str_level = $this->_logLevels[$level];
         $str_level = str_pad($str_level."", 8, " ", STR_PAD_LEFT);
-        //$log_line  = $str_level." " .$str_ident.": ".$str;
-        $log_line  = $str_date." ".$str_level.": ".$str;
+        $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
         
         if ($level > 0) {
             if (!$this->daemonInBackground() || !is_writable($this->logLocation)) {
@@ -354,7 +353,7 @@ class System_Daemon
             }
             
             // write to logfile
-            file_put_contents($this->logLocation, $log_line."\n", FILE_APPEND);        
+            file_put_contents($this->logLocation, $log_line."\n", FILE_APPEND);
         }
         
         if ($level > 1) {
@@ -747,7 +746,8 @@ class System_Daemon
             return false;
         }
         $passwd = posix_getpwuid($this->appRunAsUID);
-        if(!is_array($passwd) || !count($passwd) || !isset($passwd["name"]) || !$passwd["name"]){
+        if (!is_array($passwd) || !count($passwd) || 
+            !isset($passwd["name"]) || !$passwd["name"]) {
             $this->log(4, "".$this->appName." daemon has invalid ".
                 "appRunAsUID: ".$this->appRunAsUID.". ".
                 "No matching user on the system. ", 
@@ -762,8 +762,9 @@ class System_Daemon
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        $group  = posix_getgrgid($this->appRunAsGID);
-        if(!is_array($group) || !count($group) || !isset($group["name"]) || !$group["name"]){
+        $group = posix_getgrgid($this->appRunAsGID);
+        if (!is_array($group) || !count($group) || 
+            !isset($group["name"]) || !$group["name"]) {
             $this->log(4, "".$this->appName." daemon has invalid ".
                 "appRunAsGID: ".$this->appRunAsGID.". ".
                 "No matching group on the system. ", 
@@ -834,7 +835,8 @@ class System_Daemon
         }
 
         // assume specified identity (uid & gid)
-        if (!posix_setuid($this->appRunAsUID) || !posix_setgid($this->appRunAsGID)) {
+        if (!posix_setuid($this->appRunAsUID) || 
+            !posix_setgid($this->appRunAsGID)) {
             if ($this->appDieOnIdentityCrisis) {
                 $lvl = 4;
                 $swt = "on";
@@ -943,7 +945,7 @@ class System_Daemon
     private function _daemonDie()
     {
         if (!$this->daemonIsDying()) {
-            $this->_daemonIsDying = true;
+            $this->_daemonIsDying       = true;
             $this->_daemonIsInitialized = false;
             if (!$this->daemonInBackground() || 
                 !file_exists($this->appPidLocation)) {
