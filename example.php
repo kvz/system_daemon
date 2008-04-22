@@ -73,5 +73,7 @@ while (!$fatal_error && !$daemon->isDying) {
     sleep(5);
 }
 
-$daemon->stop();
+if ($runmode["no-daemon"] == false) {
+    $daemon->stop();
+}
 ?>
