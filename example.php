@@ -44,9 +44,10 @@ set_time_limit(0);
 ini_set("memory_limit", "1024M");
 if ($runmode["no-daemon"] == false) {
     // conditional so use include
-    $path_to_daemon = dirname(__FILE__)."/ext/System_Daemon/";
-    $path_to_daemon = "";
-    if(!@include_once $path_to_daemon."Daemon.Class.php"){
+    $path_to_daemon  = dirname(__FILE__)."/ext/System_Daemon/";
+    $path_to_daemon  = "";
+    $path_to_daemon .= "Daemon.Class.php";
+    if (!@include($path_to_daemon)) {
         echo "Unable to locate System_Daemon class";
     } else {
         $daemon                 = new System_Daemon("mydaemon");
