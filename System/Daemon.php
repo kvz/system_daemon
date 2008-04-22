@@ -124,7 +124,7 @@ class System_Daemon
     public $appRunAsGID = 0;
     
     /**
-     * Kill daemon if it cannot assume the identity (appRunAsUID + appRunAsGID)
+     * Kill daemon if it cannot assume the identity (uid + gid)
      * that you specified.
      * Defaults to: true
      *
@@ -660,8 +660,8 @@ class System_Daemon
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
-        // assume specified identity (appRunAsUID & appRunAsGID)
-        if (!posix_setappRunAsUID($this->appRunAsUID) || !posix_setappRunAsGID($this->appRunAsGID)) {
+        // assume specified identity (uid & gid)
+        if (!posix_setuid($this->appRunAsUID) || !posix_setgid($this->appRunAsGID)) {
             if ($this->appDieOnIdentityCrisis) {
                 $lvl = 4;
                 $swt = "on";
@@ -670,7 +670,7 @@ class System_Daemon
                 $swt = "off";
             }
             $this->_appLogger($lvl, "".$this->appName." daemon was unable assume ".
-                "identity (appRunAsUID=".$this->appRunAsUID.", appRunAsGID=".$this->appRunAsGID.") ".
+                "identity (uid=".$this->appRunAsUID.", gid=".$this->appRunAsGID.") ".
                 "and appDieOnIdentityCrisis was ". $swt, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }

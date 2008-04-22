@@ -59,9 +59,9 @@ if (!include "System/Daemon.php") {
     die("Unable to locate System_Daemon class\n");
 }
 
-$daemon                 = new System_Daemon("mydaemon", true);
+$daemon                 = new System_Daemon("logparser", true);
 $daemon->appDir         = dirname(__FILE__);
-$daemon->appDescription = "My 1st Daemon";
+$daemon->appDescription = "Parses logfiles of vsftpd and stores them in MySQL";
 $daemon->authorName     = "Kevin van Zonneveld";
 $daemon->authorEmail    = "kevin@vanzonneveld.net";
 if (!$runmode["no-daemon"]) {
@@ -84,13 +84,13 @@ $runningOkay = true;
 $runCount = 1;
 while (!$daemon->daemonIsDying() && $runningOkay && $runCount <=3) {
     // do deamon stuff
-    echo $daemon->appName." process is running... ";
+    echo $daemon->appName." process is running in ";
     if ($daemon->daemonInBackground()) {
-        echo "as a daemon ";
+        echo "'daemon' ";
     } else{
-        echo "as a normal foreground process ";
+        echo "'non-daemon' ";
     }
-    echo "(run ".$runCount." of 3)\n";
+    echo "mode (run ".$runCount." of 3)\n";
     $runningOkay = true;
     
     // relax the system by sleeping for a little bit
