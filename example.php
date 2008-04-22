@@ -18,6 +18,8 @@
  * System_Daemon Example Code
  */
 
+error_reporting(E_ALL);
+
 // Arguments 
 $runmode                = array();
 $runmode["no-daemon"]   = false;
@@ -44,39 +46,44 @@ set_time_limit(0);
 ini_set("memory_limit", "1024M");
 if ($runmode["no-daemon"] == false) {
     // conditional so use include
-    $path_to_daemon  = "System/Daemon.Class.php";
+    $path_to_daemon = "System/Daemon.php";
     
-    if (!@include($path_to_daemon)) {
-        echo "Unable to locate System_Daemon class";
-    } else {
-        $daemon                 = new System_Daemon("mydaemon");
-        $daemon->appDir         = dirname(__FILE__);
-        $daemon->appDescription = "My 1st Daemon";
-        $daemon->authorName     = "Kevin van Zonneveld";
-        $daemon->authorEmail    = "kevin@vanzonneveld.net";
-        $daemon->start();
-        
-        if ($runmode["write-initd"]) {
-            if (!$daemon->initdWrite()) {
-                echo "Unable to write init.d script\n";
-            } else {
-                echo "I wrote an init.d script\n";
-            }
+    if (!@include $path_to_daemon) {
+        die("Unable to locate System_Daemon class\n");
+    } 
+
+    $daemon                 = new System_Daemon("mydaemon");
+    $daemon->appDir         = dirname(__FILE__);
+    $daemon->appDescription = "My 1st Daemon";
+    $daemon->authorName     = "Kevin van Zonneveld";
+    $daemon->authorEmail    = "kevin@vanzonneveld.net";
+    $daemon->start();
+    
+    if (!$runmode["write-initd"]) {
+        echo "Not writing an init.d script this time\n";
+    } else{
+        echo "Writing an init.d script: ";
+        if (!$daemon->initdWrite()) {
+            echo "failed!\n";
+        } else {
+            echo "OK\n";
         }
     }
 }
 
 // Run your code
-$fatal_error = false;
-while (!$fatal_error && !$daemon->isDying) {
+$runningOkay = true;
+while (!$daemon->isDying && $runningOkay) {
     // do deamon stuff
     echo $daemon->appDir." daemon is running...\n";
+    $runningOkay = true;
     
     // relax the system by sleeping for a little bit
     sleep(5);
 }
 
 if ($runmode["no-daemon"] == false) {
+    echo "Stopping daemon\n";
     $daemon->stop();
 }
 ?>

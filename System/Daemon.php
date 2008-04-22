@@ -204,10 +204,15 @@ class System_Daemon
         }
         
         // check the PHP configuration
-        if (!defined('SIGHUP')) {
-            trigger_error('PHP is compiled without --enable-pcntl directive', 
+        if (!defined("SIGHUP")) {
+            trigger_error("PHP is compiled without --enable-pcntl directive\n", 
                 E_USER_ERROR);
         }        
+        
+        if ((php_sapi_name() != 'cli')) {
+            trigger_error("You can only run this script from the command line\n", 
+                E_USER_ERROR);
+        }
         
         ini_set("max_execution_time", "0");
         ini_set("max_input_time", "0");
