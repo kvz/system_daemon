@@ -30,13 +30,13 @@
  * 
  */
 
-error_reporting(E_ALL);
-
 // Arguments 
-$runmode                = array();
-$runmode["no-daemon"]   = false;
-$runmode["help"]        = false;
-$runmode["write-initd"] = false;
+$runmode = array(
+    "no-daemon" => false, 
+    "help" => false,
+    "write-initd" => false
+);
+
 foreach ($argv as $k=>$arg) {
     if (substr($arg, 0, 2) == "--" && isset($runmode[substr($arg, 2)])) {
         $runmode[substr($arg, 2)] = true;

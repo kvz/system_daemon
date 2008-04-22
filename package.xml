@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<package version="1.0">
+ <name>Money_Fast</name>
+ <summary>Make money fast.</summary>
+ <description>
+  This package helps you to make money pretty fast.
+ </description>
+ <license>PHP License</license>
+ <maintainers>
+  <maintainer>
+   <user>foo</user>
+   <name>Joe Foo</name>
+   <email>foo@example.com</email>
+   <role>lead</role>
+  </maintainer>
+ </maintainers>
+
+ <release>
+  <version>1.0</version>
+  <date>2002-05-27</date>
+  <state>stable</state>
+  <notes>
+   This is the first release.
+  </notes>
+  <filelist>
+   <dir name="/" baseinstalldir="Money">
+    <file role="php" name="Fast.php" />
+   </dir>
+  </filelist>
+ </release>
+</package>

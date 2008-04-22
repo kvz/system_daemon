@@ -76,7 +76,7 @@ class System_Daemon
     public $appDescription;
 
     /**
-     * The home directory of the applications, e.g.: /usr/local/logparser. 
+     * The home directory of the applications, e.g.: /usr/local/logparser
      * Defaults to: SCRIPT_NAME dir
      * Highly recommended to set this yourself though
      *
@@ -85,7 +85,7 @@ class System_Daemon
     public $appDir;
 
     /**
-     * The executeble daemon file, e.g.: logparser.php. 
+     * The executeble daemon file, e.g.: logparser.php
      * Defaults to: SCRIPT_NAME basename
      * Recommended to set this yourself though
      *
@@ -94,7 +94,7 @@ class System_Daemon
     public $appExecutable;
 
     /**
-     * The pid filepath , e.g.: /var/run/logparser.pid. 
+     * The pid filepath , e.g.: /var/run/logparser.pid
      * Defaults to: /var/run/${appName}.pid
      *
      * @var string
@@ -102,7 +102,7 @@ class System_Daemon
     public $appPidLocation;
 
     /**
-     * The log filepath , e.g.: /var/log/logparser_daemon.log. 
+     * The log filepath , e.g.: /var/log/logparser_daemon.log
      * Defaults to: /var/log/${appName}_daemon.log
      *
      * @var string
@@ -216,13 +216,9 @@ class System_Daemon
         
         // to run as a part of PEAR
         if ( $this->pear ) {
-            // conditional so use include
             include_once "PEAR.php";
             include_once "PEAR/Exception.php";
             
-            // if pear package is not installed yet
-            // testing is still possible by including
-            // from local dir.
             if (class_exists('System_Daemon_Exception', true) === false) {
                 throw new Exception('Class System_Daemon_Exception not found');
             }            
@@ -234,6 +230,7 @@ class System_Daemon
                 E_USER_ERROR);
         }        
         
+        // check for CLI
         if ((php_sapi_name() != 'cli')) {
             trigger_error("You can only create daemon from the command line\n", 
                 E_USER_ERROR);
