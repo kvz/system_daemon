@@ -71,10 +71,10 @@ if (!$runmode["no-daemon"]) {
 if (!$runmode["write-initd"]) {
     $daemon->log(1, "not writing an init.d script this time");
 } else {
-    if (!$daemon->osInitDWrite()) {
+    if (($initd_location = $daemon->osInitDWrite()) === false) {
         $daemon->log(2, "unable to write init.d script");
     } else {
-        $daemon->log(1, "sucessfully written an init.d script");
+        $daemon->log(1, "sucessfully written startup script: ".$initd_location );
     }
 }
 
