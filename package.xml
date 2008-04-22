@@ -1,31 +1,90 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<package version="1.0">
- <name>Money_Fast</name>
- <summary>Make money fast.</summary>
- <description>
-  This package helps you to make money pretty fast.
- </description>
- <license>PHP License</license>
- <maintainers>
-  <maintainer>
-   <user>foo</user>
-   <name>Joe Foo</name>
-   <email>foo@example.com</email>
-   <role>lead</role>
-  </maintainer>
- </maintainers>
-
- <release>
-  <version>1.0</version>
-  <date>2002-05-27</date>
-  <state>stable</state>
-  <notes>
-   This is the first release.
-  </notes>
-  <filelist>
-   <dir name="/" baseinstalldir="Money">
-    <file role="php" name="Fast.php" />
-   </dir>
-  </filelist>
- </release>
+<package packagerversion="1.5.0" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0     http://pear.php.net/dtd/tasks-1.0.xsd     http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd">
+ <name>Structures_Graph</name>
+ <channel>pear.php.net</channel>
+ <summary>Graph datastructure manipulation library</summary>
+ <description>Structures_Graph is a package for creating and manipulating graph datastructures. It allows building of directed
+and undirected graphs, with data and metadata stored in nodes. The library provides functions for graph traversing
+as well as for characteristic extraction from the graph topology.</description>
+ <lead>
+  <name>SÃ©rgio Carvalho</name>
+  <user>sergiosgc</user>
+  <email>sergio.carvalho@portugalmail.com</email>
+  <active>yes</active>
+ </lead>
+ <date>2007-02-01</date>
+ <time>17:45:32</time>
+ <version>
+  <release>1.0.2</release>
+  <api>1.0.0</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license uri="http://opensource.org/licenses/lgpl-license.php">LGPL</license>
+ <notes>- Bug #9682 only variables can be returned by reference
+- fix Bug #9661 notice in Structures_Graph_Manipulator_Topological::sort()</notes>
+ <contents>
+  <dir baseinstalldir="" name="/">
+   <file baseinstalldir="" md5sum="039cb8781dae7b5f5661dc2892fb53b5" name="docs/html/media/banner.css" role="doc" />
+   <file baseinstalldir="" md5sum="8ff124484e8a009f94a8d0b4d9b8b1cd" name="docs/html/media/stylesheet.css" role="doc" />
+   <file baseinstalldir="" md5sum="a17210dd27171316f5cb446a5bef59ab" name="docs/html/Structures_Graph/Structures_Graph.html" role="doc" />
+   <file baseinstalldir="" md5sum="1ed0ac55530b7504c00df35f335e7ef3" name="docs/html/Structures_Graph/Structures_Graph_Manipulator_AcyclicTest.html" role="doc" />
+   <file baseinstalldir="" md5sum="fefb65755d57a87d2736e058a1095b03" name="docs/html/Structures_Graph/Structures_Graph_Manipulator_TopologicalSorter.html" role="doc" />
+   <file baseinstalldir="" md5sum="afb0e3afb91beafd1bc16a07ac31c826" name="docs/html/Structures_Graph/Structures_Graph_Node.html" role="doc" />
+   <file baseinstalldir="" md5sum="3fa477998b281061361c4d98fb78c3a8" name="docs/html/Structures_Graph/tutorial_Structures_Graph.pkg.html" role="doc" />
+   <file baseinstalldir="" md5sum="c46e6566be5249811667ddc7decf405f" name="docs/html/Structures_Graph/_Structures_Graph_Manipulator_AcyclicTest_php.html" role="doc" />
+   <file baseinstalldir="" md5sum="c45890d45dd42dc56adb71988c3a45c1" name="docs/html/Structures_Graph/_Structures_Graph_Manipulator_TopologicalSorter_php.html" role="doc" />
+   <file baseinstalldir="" md5sum="09cb6d17f96553bfb66b99c502676844" name="docs/html/Structures_Graph/_Structures_Graph_Node_php.html" role="doc" />
+   <file baseinstalldir="" md5sum="78e1e7ec43a6e754cf4d5dace48fe18c" name="docs/html/Structures_Graph/_Structures_Graph_php.html" role="doc" />
+   <file baseinstalldir="" md5sum="d0ada99c3b7e95b23461cc3e713f0c3d" name="docs/html/classtrees_Structures_Graph.html" role="doc" />
+   <file baseinstalldir="" md5sum="898dd26ccc1c1572d36e9879afcb5d39" name="docs/html/elementindex.html" role="doc" />
+   <file baseinstalldir="" md5sum="19dd287d44163d2abde1a1d8d52521f8" name="docs/html/elementindex_Structures_Graph.html" role="doc" />
+   <file baseinstalldir="" md5sum="ae809f6ebbf632351648c340d2d6acd4" name="docs/html/errors.html" role="doc" />
+   <file baseinstalldir="" md5sum="db3206e7d176ae78fd04f22acead5ffa" name="docs/html/index.html" role="doc" />
+   <file baseinstalldir="" md5sum="4ec087627323546610b64d69a6aafca6" name="docs/html/li_Structures_Graph.html" role="doc" />
+   <file baseinstalldir="" md5sum="005081a4c5d60afcbabc1f4909ebfcad" name="docs/html/packages.html" role="doc" />
+   <file baseinstalldir="" md5sum="a7a1b748bbda6dfa1632bf6078fc8bb6" name="docs/html/todolist.html" role="doc" />
+   <file baseinstalldir="" md5sum="628eb6532a8047bf5962fe24c1c245df" name="docs/tutorials/Structures_Graph/Structures_Graph.pkg" role="doc" />
+   <file baseinstalldir="" md5sum="ce2da39dbb75e21074eb5e96231a3379" name="docs/generate.sh" role="doc" />
+   <file baseinstalldir="" md5sum="f0aff5a1efd188d63b4b8b9e9e840b97" name="Structures/Graph/Manipulator/AcyclicTest.php" role="php" />
+   <file baseinstalldir="" md5sum="0492e677436d29228df93dca23629e06" name="Structures/Graph/Manipulator/TopologicalSorter.php" role="php" />
+   <file baseinstalldir="" md5sum="7e28e01ebfa273e5df2eb1ef7a356635" name="Structures/Graph/Node.php" role="php" />
+   <file baseinstalldir="" md5sum="4f25a6275af156f6f8e7b4309cb9f40d" name="Structures/Graph.php" role="php" />
+   <file baseinstalldir="" md5sum="63dfc6f0f14e18c13d8a8415c3fe049d" name="tests/testCase/BasicGraph.php" role="test" />
+   <file baseinstalldir="" md5sum="1b9e35896d229b84601e6754cd44e339" name="tests/all-tests.php" role="test" />
+   <file baseinstalldir="" md5sum="d41d8cd98f00b204e9800998ecf8427e" name="tests/README" role="test" />
+   <file baseinstalldir="" md5sum="ab23406ec7bfbb2029ca536378ff57db" name="genpackage.xml.pl" role="data" />
+   <file baseinstalldir="" md5sum="7fbc338309ac38fefcd64b04bb903e34" name="LICENSE" role="data" />
+   <file baseinstalldir="" md5sum="6e782f281c7d0ce27e54b574247073cb" name="package.sh" role="data" />
+   <file baseinstalldir="" md5sum="b81f67f7b5600231735243be73625e54" name="publish.sh" role="data" />
+  </dir>
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>4.2.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.3</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <phprelease />
+ <changelog>
+  <release>
+   <version>
+    <release>1.0.2</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-01-07</date>
+   <license uri="http://opensource.org/licenses/lgpl-license.php">LGPL</license>
+   <notes>- Bug #9682 only variables can be returned by reference
+- fix Bug #9661 notice in Structures_Graph_Manipulator_Topological::sort()</notes>
+  </release>
+ </changelog>
 </package>
