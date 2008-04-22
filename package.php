@@ -8,7 +8,7 @@
  *
  * @version   SVN: Release: $Id$
  */
-require_once 'PEAR/PackageFileManager2.php';
+require_once 'PEAR/PackageFileManager.php';
 require_once 'Console/Getopt.php';
 
 $packagefile = 'package.xml';
@@ -42,18 +42,16 @@ $options = array('filelistgenerator' => 'svn',
 );
 
 
-$p2 = &PEAR_PackageFileManager2::importOptions($packagefile, $options);
-$p2->setPackageType('php');
-$p2->addRelease();
-$p2->generateContents();
-$p2->setReleaseVersion($version);
-$p2->setAPIVersion($apiVersion);
-$p2->setReleaseStability('beta');
-$p2->setAPIStability('beta');
-$p2->setNotes($notes);
-
-$result = $package->setOptions(array(
-));
+$package = new PEAR_PackageFileManager;
+//$package = $package::importOptions($packagefile, $options);
+$package->setPackageType('php');
+$package->addRelease();
+$package->generateContents();
+$package->setReleaseVersion($version);
+$package->setAPIVersion($apiVersion);
+$package->setReleaseStability('beta');
+$package->setAPIStability('beta');
+$package->setNotes($notes);
 
 if (PEAR::isError($result)) {
     echo $result->getMessage();
