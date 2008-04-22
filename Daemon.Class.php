@@ -215,13 +215,13 @@ class System_Daemon
         ini_set("max_input_time", "0");
         set_time_limit(0);
         ob_implicit_flush();
-    }
+    }//end __construct()
 
 
 
     /**
      * Sytem_Daemon::start()
-     * Public method: spawn daemon process.
+     * Spawn daemon process.
      *
      * @return void
      */
@@ -233,11 +233,11 @@ class System_Daemon
         // become daemon
         $this->_daemonBecome();
 
-    }
+    }//end start()
 
     /**
      * Sytem_Daemon::stop()
-     * Public method: stop daemon process.
+     * Stop daemon process.
      *
      * @return void
      */
@@ -246,12 +246,12 @@ class System_Daemon
         $this->_logger(1, "stopping ".$this->appName." daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         $this->_daemonDie();
-    }
+    }//end stop()
 
 
     /**
      * Sytem_Daemon::daemonSigHandler()
-     * Public method: signal handler function
+     * Signal handler function
      *
      * @param integer $signo The posix signal received.
      * 
@@ -289,7 +289,7 @@ class System_Daemon
             // handle all other signals
             break;
         }
-    }
+    }//end daemonSigHandler()
 
 
     
@@ -327,11 +327,11 @@ class System_Daemon
         }
 
         return $this->_fncCache[__FUNCTION__];
-    }    
+    }//end determineOS()  
     
     /**
      * Sytem_Daemon::initdWrite()
-     * Public method: writes an: 'init.d' script on the filesystem
+     * Writes an: 'init.d' script on the filesystem
      *
      * @return boolean
      */
@@ -358,7 +358,7 @@ class System_Daemon
             return true;
         }
         return false;
-    }
+    }//end initdWrite() 
     
     /**
      * Sytem_Daemon::initdFilepath()
@@ -390,7 +390,7 @@ class System_Daemon
         }
         
         return $initdFilepath;
-    }
+    }//end initdFilepath()
     
     /**
      * Sytem_Daemon::initd()
@@ -485,7 +485,7 @@ class System_Daemon
             // return the forged init.d script as a string
             return $skeleton;
         }
-    }
+    }//end initd()
 
 
 
@@ -550,7 +550,7 @@ class System_Daemon
         }
         
         return true;
-    }
+    }//end _daemonInit()
 
     /**
      * Sytem_Daemon::_daemonBecome()
@@ -613,7 +613,7 @@ class System_Daemon
         // change dir & umask
         @chdir($this->appDir);
         @umask(0);
-    }
+    }//end _daemonBecome()
 
     /**
      * Sytem_Daemon::_daemonIsRunning()
@@ -640,7 +640,7 @@ class System_Daemon
         } else {
             return false;
         }
-    }
+    }//end _daemonIsRunning()
 
     /**
      * Sytem_Daemon::_daemonFork()
@@ -671,22 +671,22 @@ class System_Daemon
             $this->_pid     = posix_getpid();
             return true;
         }
-    }
+    }//end _daemonFork()
 
     /**
      * Sytem_Daemon::_daemonWhatIAm()
-     * Private method: return what the current process is: child or parent
+     * Return what the current process is: child or parent
      *
      * @return string
      */
     private function _daemonWhatIAm()
     {
         return ($this->_isChild?"child":"parent");
-    }
+    }//end _()
 
     /**
      * Sytem_Daemon::_daemonDie()
-     * Private method: kill the daemon
+     * Kill the daemon
      *
      * @return void
      */
@@ -699,7 +699,7 @@ class System_Daemon
             }
             exit();
         }
-    }
+    }//end _daemonDie()
 
 
 
@@ -717,7 +717,7 @@ class System_Daemon
     private function _strisunix( $str )
     {
         return preg_match('/^[a-z0-9_]+$/', $str);
-    }
+    }//end _strisunix()
 
     /**
      * Sytem_Daemon::_strtounix()
@@ -731,12 +731,14 @@ class System_Daemon
     private function _strtounix( $str )
     {
         return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
-    }
+    }//end _strtounix()
 
     /**
      * Sytem_Daemon::_logger()
-     * Log a string according to error levels specified in array: 
-     * log_levels (4 is fatal)
+     * Almost every deamon requires a log file, this function can
+     * facilitate that. 
+     * It logs a string according to error levels specified in array: 
+     * log_levels (4 is fatal and handles daemon's death)
      *
      * @param integer $level    What function the log record is from
      * @param string  $str      The log record
@@ -778,8 +780,8 @@ class System_Daemon
             }
             $this->_daemonDie();
         }
-    }
-}
+    }//end _logger()
+}//end class
 
 
 /**
