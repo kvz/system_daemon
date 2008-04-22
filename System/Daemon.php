@@ -33,9 +33,6 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * 
  */
-
-spl_autoload_register(array('System_Daemon', 'autoload'));
-
 class System_Daemon
 {
     /**
@@ -204,6 +201,7 @@ class System_Daemon
         if ( $this->pear ) {
             // conditional so use include
             include_once "PEAR/Exception.php";
+            include_once "System/Daemon/Exception.php";
         }
         
         // check the PHP configuration
@@ -223,37 +221,6 @@ class System_Daemon
         set_time_limit(0);        
         ob_implicit_flush();
     }//end __construct()
-
-    /**
-     * Autoload static method for loading classes and interfaces.
-     * Reused code from the PHP_CodeSniffer package by Greg Sherwood and Marc McIntyre
-     *
-     * @param string $className The name of the class or interface.
-     *
-     * @return void
-     */
-    public static function autoload($className)
-    {
-        if (substr($className, 0, 4) === 'PHP_') {
-            $newClassName = substr($className, 4);
-        } else {
-            $newClassName = $className;
-        }
-
-        $path = str_replace('_', '/', $newClassName).'.php';
-
-        if (is_file(dirname(__FILE__).'/'.$path) === true) {
-            // Check standard file locations based on class name.
-            include dirname(__FILE__).'/'.$path;
-        } else if (is_file(dirname(__FILE__).'/CodeSniffer/Standards/'.$path) === true) {
-            // Check for included sniffs.
-            include dirname(__FILE__).'/CodeSniffer/Standards/'.$path;
-        } else {
-            // Everything else.
-            @include $path;
-        }
-
-    }//end autoload()
 
     /**
      * Spawn daemon process.
@@ -393,7 +360,7 @@ class System_Daemon
     /**
      * Returns an: 'init.d' script path as a string. for now only debian & ubuntu
      *
-     * @return string
+     * @return mixed boolean on failure, string on success
      */
     public function initdFilepath()
     {
@@ -414,7 +381,7 @@ class System_Daemon
             $this->_logger(2, "skeleton retrieval for OS: ".$distro.
                 " currently not supported ", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            break;
+            return false;
         }
         
         return $initdFilepath;
@@ -423,7 +390,7 @@ class System_Daemon
     /**
      * Returns an: 'init.d' script as a string. for now only debian & ubuntu
      *
-     * @return string
+     * @return mixed boolean on failure, string on success
      */
     public function initdForge()
     {
@@ -633,10 +600,16 @@ class System_Daemon
 
         // assume identity
         if (!posix_setuid($this->uid) || !posix_setgid($this->gid)) {
-            $lvl = ($this->dieOnIdentitycrisis ? 4 : 3);
+            if ($this->dieOnIdentitycrisis) {
+                $lvl = 4;
+                $swt = "on";
+            } else {
+                $lvl = 3;
+                $swt = "off";
+            }
             $this->_logger($lvl, "".$this->appName." daemon was unable assume ".
                 "identity (uid=".$this->uid.", gid=".$this->gid.") ".
-                "and dieOnIdentitycrisis was ".($this->dieOnIdentitycrisis ? "on" : "off"), 
+                "and dieOnIdentitycrisis was ". $swt, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
@@ -812,7 +785,7 @@ class System_Daemon
         if ($level == 4) {
             // to run as a part of pear
             if ($this->pear) {            
-                throw new PEAR_Exception($log_line);
+                throw new System_Daemon_Exception($log_line);
             }
             $this->_daemonDie();
         }

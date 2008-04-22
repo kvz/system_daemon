@@ -56,9 +56,11 @@ if ($runmode["no-daemon"] == false) {
     
     if (!include $path_to_daemon) {
         die("Unable to locate System_Daemon class\n");
-    } else{
+    } else {
         echo "System_Daemon class included\n";
     }
+    
+    print_r(get_declared_classes()); 
     
     $daemon                 = new System_Daemon("mydaemon");
     $daemon->appDir         = dirname(__FILE__);
@@ -69,7 +71,7 @@ if ($runmode["no-daemon"] == false) {
     
     if (!$runmode["write-initd"]) {
         echo "Not writing an init.d script this time\n";
-    } else{
+    } else {
         echo "Writing an init.d script: ";
         if (!$daemon->initdWrite()) {
             echo "failed!\n";
