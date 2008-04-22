@@ -54,40 +54,43 @@ if ($runmode["help"] == true) {
 }
     
 // Spawn Daemon 
-if ($runmode["no-daemon"] == false) {
-    // conditional so use include
-    $path_to_daemon = "System/Daemon.php";
-    
-    if (!include $path_to_daemon) {
-        die("Unable to locate System_Daemon class\n");
-    }
-    
-    $daemon                 = new System_Daemon("mydaemon", true);
-    $daemon->appDir         = dirname(__FILE__);
-    $daemon->appDescription = "My 1st Daemon";
-    $daemon->authorName     = "Kevin van Zonneveld";
-    $daemon->authorEmail    = "kevin@vanzonneveld.net";
+// conditional so use include
+if (!include "System/Daemon.php") {
+    die("Unable to locate System_Daemon class\n");
+}
+
+$daemon                 = new System_Daemon("mydaemon", true);
+$daemon->appDir         = dirname(__FILE__);
+$daemon->appDescription = "My 1st Daemon";
+$daemon->authorName     = "Kevin van Zonneveld";
+$daemon->authorEmail    = "kevin@vanzonneveld.net";
+if (!$runmode["no-daemon"]) {
     $daemon->start();
+}
     
-    if (!$runmode["write-initd"]) {
-        echo "Not writing an init.d script this time\n";
+if (!$runmode["write-initd"]) {
+    echo "Not writing an init.d script this time\n";
+} else {
+    echo "Writing an init.d script: ";
+    if (!$daemon->osInitDWrite()) {
+        echo "failed!\n";
     } else {
-        echo "Writing an init.d script: ";
-        if (!$daemon->initdWrite()) {
-            echo "failed!\n";
-        } else {
-            echo "OK\n";
-        }
+        echo "OK\n";
     }
 }
 
 // Run your code
 $runningOkay = true;
 $runCount = 1;
-while (!$daemon->isDying && $runningOkay && $runCount <=3) {
+while (!$daemon->daemonIsDying() && $runningOkay && $runCount <=3) {
     // do deamon stuff
-    echo $daemon->appName." daemon is running in the background... (run ".$runCount." of 3)\n";
-    print_r(get_declared_classes());
+    echo $daemon->appName." process is running... ";
+    if ($daemon->daemonInBackground()) {
+        echo "as a daemon ";
+    } else{
+        echo "as a normal foreground process ";
+    }
+    echo "(run ".$runCount." of 3)\n";
     $runningOkay = true;
     
     // relax the system by sleeping for a little bit
@@ -95,8 +98,6 @@ while (!$daemon->isDying && $runningOkay && $runCount <=3) {
     $runCount++;
 }
 
-if ($runmode["no-daemon"] == false) {
-    echo "Stopping ".$daemon->appName."\n";
-    $daemon->stop();
-}
+echo "Stopping ".$daemon->appName."\n";
+$daemon->stop();
 ?>

@@ -43,14 +43,40 @@ class System_Daemon
     public $pear = true;
     
     /**
-     * The application name e.g.: logparser
+     * Author name, e.g.: Kevin van zonneveld 
+     * Required for forging init.d script
+     *
+     * @var string
+     */
+    public $authorName;
+
+    /**
+     * Author name, e.g.: kevin@vanzonneveld.net 
+     * Required for forging init.d script
+     *
+     * @var string
+     */
+    public $authorEmail;
+  
+    /**
+     * The application name, e.g.: logparser
      *
      * @var string
      */
     public $appName;
 
     /**
-     * The home dirpath e.g.: /usr/local/logparser. Defaults to __FILE__ dir
+     * Daemon description, e.g.: Parses logfiles of vsftpd and stores them in MySQL
+     * Required for forging init.d script
+     *
+     * @var string
+     */
+    public $appDescription;
+
+    /**
+     * The home directory of the applications, e.g.: /usr/local/logparser. 
+     * Defaults to: SCRIPT_NAME dir
+     * Highly recommended to set this yourself though
      *
      * @var string
      */
@@ -59,39 +85,19 @@ class System_Daemon
     /**
      * The executeble daemon file, e.g.: logparser.php. 
      * Defaults to: SCRIPT_NAME basename
+     * Recommended to set this yourself though
      *
      * @var string
      */
     public $appExecutable;
 
     /**
-     * Daemon description. Required for forging init.d script
-     *
-     * @var string
-     */
-    public $appDescription;
-
-    /**
-     * Author name. Required for forging init.d script
-     *
-     * @var string
-     */
-    public $authorName;
-
-    /**
-     * Author email. Required for forging init.d script
-     *
-     * @var string
-     */
-    public $authorEmail;
-  
-    /**
      * The pid filepath , e.g.: /var/run/logparser.pid. 
      * Defaults to: /var/run/${appName}.pid
      *
      * @var string
      */
-    public $pidFilepath;
+    public $appPidLocation;
 
     /**
      * The log filepath , e.g.: /var/log/logparser_daemon.log. 
@@ -99,46 +105,41 @@ class System_Daemon
      *
      * @var string
      */
-    public $logFilepath;
+    public $appLogLocation;
 
     /**
-     * The user id under which to run the process.
-     * Defaults to: root
+     * The user id under which to run the process, e.g.: 1000
+     * Defaults to: 0, root (warning, very insecure!)
      * 
      * @var string
      */
-    public $uid = 0;
+    public $appRunAsUID = 0;
 
     /**
-     * The group id under which to run the process.
-     * Defaults to: root
+     * The group id under which to run the process, e.g.: 1000
+     * Defaults to: 0, root (warning, very insecure!)
      *
      * @var string
      */
-    public $gid = 0;
-
-
-    /**
-     * Wether the our daemon is being killed, you might 
-     * want to include this in your loop
-     *
-     * @var boolean
-     */
-    public $isDying = false;
+    public $appRunAsGID = 0;
     
     /**
-     * Kill daemon if it cannot assume the identity (uid + gid)
+     * Kill daemon if it cannot assume the identity (appRunAsUID + appRunAsGID)
+     * that you specified.
+     * Defaults to: true
      *
      * @var string
      */
-    public $dieOnIdentitycrisis = true;
+    public $appDieOnIdentityCrisis = true;
 
+
+    
     /**
      * Available log levels
      *
      * @var array
      */
-    private $_logLevels = array(
+    private $_appLogLevels = array(
         0=> "debug",
         1=> "info",
         2=> "waring",
@@ -147,42 +148,42 @@ class System_Daemon
     );
 
     /**
-     * Keep track of passed signals
-     *
-     * @var array
-     */
-    private $_signals = array();
-
-    /**
      * The current process identifier
      *
      * @var integer
      */
-    private $_pid = 0;
+    private $_processId = 0;
+
+    /**
+     * Wether the our daemon is being killed
+     *
+     * @var boolean
+     */
+    private $_daemonIsDying = false;    
+    
+    /**
+     * Wether all the variables have been initialized
+     *
+     * @var boolean
+     */
+    private $_daemonIsInitialized = false;
 
     /**
      * Wether the current process is a forked child
      *
      * @var boolean
      */
-    private $_isChild = false;
-
-    /**
-     * Wether all the variables have been initialized
-     *
-     * @var boolean
-     */
-    private $_isInitialized = false;
-
+    private $_processIsChild = false;
+    
     /**
      * Cache that holds values of some functions 
      * for performance gain. Easier then doing 
      * if (!isset($this->XXX)) { $this->XXX = $this->XXX(); }
-     * every time in my opinion. 
+     * every time, in my opinion. 
      *
      * @var array
      */
-    private $_fncCache = array();
+    private $_intFunctionCache = array();
 
 
     
@@ -214,7 +215,7 @@ class System_Daemon
         }        
         
         if ((php_sapi_name() != 'cli')) {
-            trigger_error("You can only run this script from the command line\n", 
+            trigger_error("You can only create daemon from the command line\n", 
                 E_USER_ERROR);
         }
         
@@ -247,7 +248,7 @@ class System_Daemon
      */
     public function stop()
     {
-        $this->_logger(1, "stopping ".$this->appName." daemon", 
+        $this->_appLogger(1, "stopping ".$this->appName." daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         $this->_daemonDie();
     }//end stop()
@@ -259,17 +260,17 @@ class System_Daemon
      * 
      * @return void
      */
-    public function daemonSigHandler( $signo )
+    public function daemonHandleSig( $signo )
     {
         // Must be public or else will throw error: 
         // Fatal error: Call to private method 
-        // Daemon::daemonSigHandler() from context '' 
-        $this->_logger(0, $this->appName." daemon received signal: ".$signo, 
+        // Daemon::daemonHandleSig() from context '' 
+        $this->_appLogger(0, $this->appName." daemon received signal: ".$signo, 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         switch ($signo) {
         case SIGTERM:
             // handle shutdown tasks
-            if ($this->_isChild) {
+            if ($this->daemonInBackGround()) {
                 $this->_daemonDie();
             } else {
                 exit;
@@ -277,11 +278,11 @@ class System_Daemon
             break;
         case SIGHUP:
             // handle restart tasks
-            $this->_logger(1, $this->appName." daemon received signal: restart", 
+            $this->_appLogger(1, $this->appName." daemon received signal: restart", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             break;
         case SIGCHLD:
-            $this->_logger(1, $this->appName." daemon received signal: hold", 
+            $this->_appLogger(1, $this->appName." daemon received signal: hold", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             while (pcntl_wait($status, WNOHANG OR WUNTRACED) > 0) {
                 usleep(1000);
@@ -291,18 +292,38 @@ class System_Daemon
             // handle all other signals
             break;
         }
-    }//end daemonSigHandler()
+    }//end daemonHandleSig()
 
-
+    /**
+     * Wether the class is already running in the background
+     * 
+     * @return boolean
+     */
+    public function daemonInBackground()
+    {
+        return $this->_processIsChild;
+    }//end daemonInBackground()
+    
+    /**
+     * Wether the our daemon is being killed, you might 
+     * want to include this in your loop
+     * 
+     * @return boolean
+     */
+    public function daemonIsDying()
+    {
+        return $this->_daemonIsDying;
+    }//end daemonIsDying()
     
     /**
      * Returns an array(main, distro, version) of the OS it's executed on
      *
      * @return array
      */
-    public function determineOS()
+    public function osDetermine()
     {
-        if (!isset($this->_fncCache[__FUNCTION__])) {
+        // this will not change during 1 run, so just cache the result
+        if (!isset($this->_intFunctionCache[__FUNCTION__])) {
             $osv_files = array(
                 "RedHat"=>"/etc/redhat-release",
                 "SuSE"=>"/etc/SuSE-release",
@@ -324,11 +345,11 @@ class System_Daemon
                 }
             }
 
-            $this->_fncCache[__FUNCTION__] = compact("main", "distro", "version");
+            $this->_intFunctionCache[__FUNCTION__] = compact("main", "distro", "version");
         }
 
-        return $this->_fncCache[__FUNCTION__];
-    }//end determineOS()  
+        return $this->_intFunctionCache[__FUNCTION__];
+    }//end osDetermine()  
     
     /**
      * Writes an: 'init.d' script on the filesystem
@@ -337,99 +358,104 @@ class System_Daemon
      * 
      * @return boolean
      */
-    public function initdWrite($overwrite = false)
+    public function osInitDWrite($overwrite = false)
     {
-        // we want up to date filesystem information
+        // up to date filesystem information
         clearstatcache();
         
         // collect init.d path
-        $initdFilepath = $this->initdFilepath();
-        if (!$initdFilepath) {
-            // explaining errors should have been generated by initdFilepath() 
+        $osInitDLocation = $this->osInitDLocation();
+        if (!$osInitDLocation) {
+            // explaining errors should have been generated by osInitDLocation() 
             // already
             return false;
         }
         
         // collect init.d body
-        $initd = $this->initdForge();
+        $initd = $this->osInitDForge();
         if (!$initd) {
-            // explaining errors should have been generated by initdForge() 
+            // explaining errors should have been generated by osInitDForge() 
             // already
             return false;
         }
         
         // as many safety checks as possible
-        if (!$overwrite && file_exists(($initdFilepath))) {
-            $this->_logger(1, "init.d script already exists", 
+        if (!$overwrite && file_exists(($osInitDLocation))) {
+            $this->_appLogger(1, "init.d script already exists", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         } 
-        if (!is_dir($dir = dirname($initdFilepath))) {
-            $this->_logger(3, "init.d directory: '".$dir."' does not ".
+        if (!is_dir($dir = dirname($osInitDLocation))) {
+            $this->_appLogger(3, "init.d directory: '".$dir."' does not ".
                 "exist. Can this be a correct path?", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        if (!is_writable($dir = dirname($initdFilepath))) {
-            $this->_logger(3, "init.d directory: '".$dir."' cannot be ".
+        if (!is_writable($dir = dirname($osInitDLocation))) {
+            $this->_appLogger(3, "init.d directory: '".$dir."' cannot be ".
                 "written to. Check the permissions", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         
-        if (!file_put_contents($initdFilepath, $initd)) {
-            $this->_logger(3, "init.d file: '".$initdFilepath."' cannot be ".
+        if (!file_put_contents($osInitDLocation, $initd)) {
+            $this->_appLogger(3, "init.d file: '".$osInitDLocation."' cannot be ".
                 "written to. Check the permissions", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         
-        if (!chmod($initdFilepath, 0777)) {
-            $this->_logger(3, "init.d file: '".$initdFilepath."' cannot be ".
+        if (!chmod($osInitDLocation, 0777)) {
+            $this->_appLogger(3, "init.d file: '".$osInitDLocation."' cannot be ".
                 "chmodded. Check the permissions", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         } 
         
         return true;
-    }//end initdWrite() 
+    }//end osInitDWrite() 
     
     /**
-     * Returns an: 'init.d' script path as a string. for now only debian & ubuntu
+     * Returns an: 'init.d' script path as a string. For now only Debian & Ubuntu
      *
      * @return mixed boolean on failure, string on success
      */
-    public function initdFilepath()
+    public function osInitDLocation()
     {
-        $initdFilepath = false;
-        
-        // collect OS information
-        list($main, $distro, $version) = array_values($this->determineOS());
-        
-        // where to collect the skeleton (template) for our init.d script
-        switch (strtolower($distro)){
-        case "debian":
-        case "ubuntu":
-            // here it is for debian systems
-            $initdFilepath = "/etc/init.d/".$this->appName;
-            break;
-        default:
-            // not supported yet
-            $this->_logger(2, "skeleton retrieval for OS: ".$distro.
-                " currently not supported ", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;
+        // this will not change during 1 run, so just cache the result
+        if (!isset($this->_intFunctionCache[__FUNCTION__])) {
+            $osInitDLocation = false;
+            
+            // collect OS information
+            list($main, $distro, $version) = array_values($this->osDetermine());
+            
+            // where to collect the skeleton (template) for our init.d script
+            switch (strtolower($distro)){
+            case "debian":
+            case "ubuntu":
+                // here it is for debian systems
+                $osInitDLocation = "/etc/init.d/".$this->appName;
+                break;
+            default:
+                // not supported yet
+                $this->_appLogger(2, "skeleton retrieval for OS: ".$distro.
+                    " currently not supported ", 
+                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                return false;
+            }
+            
+            $this->_intFunctionCache[__FUNCTION__] = $osInitDLocation;
         }
         
-        return $initdFilepath;
-    }//end initdFilepath()
+        return $this->_intFunctionCache[__FUNCTION__];
+    }//end osInitDLocation()
     
     /**
-     * Returns an: 'init.d' script as a string. for now only debian & ubuntu
+     * Returns an: 'init.d' script as a string. for now only Debian & Ubuntu
      *
      * @return mixed boolean on failure, string on success
      */
-    public function initdForge()
+    public function osInitDForge()
     {
         // initialize & check variables
         $this->_daemonInit();
@@ -438,7 +464,7 @@ class System_Daemon
         // sanity
         $daemon_filepath = $this->appDir."/".$this->appExecutable;
         if (!file_exists($daemon_filepath)) {
-            $this->_logger(3, "unable to forge skeleton for non existing ".
+            $this->_appLogger(3, "unable to forge skeleton for non existing ".
                 "daemon_filepath: ".$daemon_filepath.", try setting a valid ".
                 "appDir or appExecutable", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -446,7 +472,7 @@ class System_Daemon
         }
 
         if (!is_executable($daemon_filepath)) {
-            $this->_logger(3, "unable to forge skeleton for non executable ".
+            $this->_appLogger(3, "unable to forge skeleton for non executable ".
                 "daemon_filepath: ".$daemon_filepath.", try chmodding ".
                 "your daemon", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -454,26 +480,26 @@ class System_Daemon
         }
         
         if (!$this->authorName) {
-            $this->_logger(3, "unable to forge skeleton for non existing ".
+            $this->_appLogger(3, "unable to forge skeleton for non existing ".
                 "authorName: ".$this->authorName."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         if (!$this->authorEmail) {
-            $this->_logger(3, "unable to forge skeleton for non existing ".
+            $this->_appLogger(3, "unable to forge skeleton for non existing ".
                 "authorEmail: ".$this->authorEmail."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         if (!$this->appDescription) {
-            $this->_logger(3, "unable to forge skeleton for non existing ".
+            $this->_appLogger(3, "unable to forge skeleton for non existing ".
                 "appDescription: ".$this->appDescription."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
 
         // collect OS information
-        list($main, $distro, $version) = array_values($this->determineOS());
+        list($main, $distro, $version) = array_values($this->osDetermine());
 
         // where to collect the skeleton (template) for our init.d script
         switch (strtolower($distro)){
@@ -484,7 +510,7 @@ class System_Daemon
             break;
         default:
             // not supported yet
-            $this->_logger(2, "skeleton retrieval for OS: ".$distro.
+            $this->_appLogger(2, "skeleton retrieval for OS: ".$distro.
                 " currently not supported ", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
@@ -493,7 +519,7 @@ class System_Daemon
 
         // open skeleton
         if (!$skeleton_filepath || !file_exists($skeleton_filepath)) {
-            $this->_logger(2, "skeleton file for OS: ".$distro." not found at: ".
+            $this->_appLogger(2, "skeleton file for OS: ".$distro." not found at: ".
                 $skeleton_filepath, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
@@ -519,7 +545,7 @@ class System_Daemon
                 break;
             default:
                 // not supported yet
-                $this->_logger(2, "skeleton modification for OS: ".$distro.
+                $this->_appLogger(2, "skeleton modification for OS: ".$distro.
                     " currently not supported ", 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
                 return false;
@@ -534,9 +560,7 @@ class System_Daemon
             // return the forged init.d script as a string
             return $skeleton;
         }
-    }//end initdForge()
-
-    
+    }//end osInitDForge()
 
     /**
      * Initializes, sanitizes & defaults unset variables
@@ -545,49 +569,49 @@ class System_Daemon
      */
     private function _daemonInit() 
     {
-        if ($this->_isInitialized) {
+        if ($this->_daemonIsInitialized) {
             return true;
         }
 
-        $this->_isInitialized = true;
+        $this->_daemonIsInitialized = true;
 
         if (!$this->_strisunix($this->appName)) {
             $safe_name = $this->_strtounix($this->appName);
-            $this->_logger(4, "'".$this->appName."' is not a valid daemon name, ".
+            $this->_appLogger(4, "'".$this->appName."' is not a valid daemon name, ".
                 "try using something like '".$safe_name."' instead", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        if (!$this->pidFilepath) {
-            $this->pidFilepath = "/var/run/".$this->appName.".pid";
+        if (!$this->appPidLocation) {
+            $this->appPidLocation = "/var/run/".$this->appName.".pid";
         }
-        if (!$this->logFilepath) {
-            $this->logFilepath = "/var/log/".$this->appName."_daemon.log";
+        if (!$this->appLogLocation) {
+            $this->appLogLocation = "/var/log/".$this->appName."_daemon.log";
         }
         
-        $this->_pid     = 0;
-        $this->_isChild = false;
-        if (!is_numeric($this->uid)) {
-            $this->_logger(4, "".$this->appName." daemon has invalid uid: ".
-                $this->uid."", 
+        $this->_processId     = 0;
+        $this->_processIsChild = false;
+        if (!is_numeric($this->appRunAsUID)) {
+            $this->_appLogger(4, "".$this->appName." daemon has invalid appRunAsUID: ".
+                $this->appRunAsUID."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        if (!is_numeric($this->gid)) {
-            $this->_logger(4, "".$this->appName." daemon has invalid gid: ".
-                $this->gid."", 
+        if (!is_numeric($this->appRunAsGID)) {
+            $this->_appLogger(4, "".$this->appName." daemon has invalid appRunAsGID: ".
+                $this->appRunAsGID."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         if (!$this->appDir) {
-            $this->appDir = dirname(__FILE__);
+            $this->appDir = dirname($_SERVER["SCRIPT_FILENAME"]);
         }
         if (!$this->appExecutable) {
             $this->appExecutable = basename($_SERVER["SCRIPT_FILENAME"]);
         }
 
         if (!is_dir($this->appDir)) {
-            $this->_logger(4, "".$this->appName." daemon has invalid appDir: ".
+            $this->_appLogger(4, "".$this->appName." daemon has invalid appDir: ".
                 $this->appDir."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
@@ -604,7 +628,8 @@ class System_Daemon
     private function _daemonBecome() 
     {
 
-        $this->_logger(1, "starting ".$this->appName." daemon", 
+        $this->_appLogger(1, "starting ".$this->appName." daemon, using logfile: ". 
+            $this->appLogLocation, 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         
         // important for daemons
@@ -612,53 +637,53 @@ class System_Daemon
         declare(ticks = 1);
 
         // setup signal handlers
-        pcntl_signal(SIGCONT, array($this, "daemonSigHandler"));
-        pcntl_signal(SIGALRM, array($this, "daemonSigHandler"));
-        pcntl_signal(SIGINT, array($this, "daemonSigHandler"));
-        pcntl_signal(SIGABRT, array($this, "daemonSigHandler"));
+        pcntl_signal(SIGCONT, array($this, "daemonHandleSig"));
+        pcntl_signal(SIGALRM, array($this, "daemonHandleSig"));
+        pcntl_signal(SIGINT, array($this, "daemonHandleSig"));
+        pcntl_signal(SIGABRT, array($this, "daemonHandleSig"));
         
-        pcntl_signal(SIGTERM, array($this, "daemonSigHandler"));
-        pcntl_signal(SIGHUP, array($this, "daemonSigHandler"));
-        pcntl_signal(SIGUSR1, array($this, "daemonSigHandler"));
-        pcntl_signal(SIGCHLD, array($this, "daemonSigHandler"));
+        pcntl_signal(SIGTERM, array($this, "daemonHandleSig"));
+        pcntl_signal(SIGHUP, array($this, "daemonHandleSig"));
+        pcntl_signal(SIGUSR1, array($this, "daemonHandleSig"));
+        pcntl_signal(SIGCHLD, array($this, "daemonHandleSig"));
 
         // allowed?
         if ($this->_daemonIsRunning()) {
-            $this->_logger(4, "".$this->appName." daemon is still running. ".
+            $this->_appLogger(4, "".$this->appName." daemon is still running. ".
                 "exiting", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
-        // fork us!
+        // fork process!
         if (!$this->_daemonFork()) {
-            $this->_logger(4, "".$this->appName." daemon was unable to fork", 
+            $this->_appLogger(4, "".$this->appName." daemon was unable to fork", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
-        // assume identity
-        if (!posix_setuid($this->uid) || !posix_setgid($this->gid)) {
-            if ($this->dieOnIdentitycrisis) {
+        // assume specified identity (appRunAsUID & appRunAsGID)
+        if (!posix_setappRunAsUID($this->appRunAsUID) || !posix_setappRunAsGID($this->appRunAsGID)) {
+            if ($this->appDieOnIdentityCrisis) {
                 $lvl = 4;
                 $swt = "on";
             } else {
                 $lvl = 3;
                 $swt = "off";
             }
-            $this->_logger($lvl, "".$this->appName." daemon was unable assume ".
-                "identity (uid=".$this->uid.", gid=".$this->gid.") ".
-                "and dieOnIdentitycrisis was ". $swt, 
+            $this->_appLogger($lvl, "".$this->appName." daemon was unable assume ".
+                "identity (appRunAsUID=".$this->appRunAsUID.", appRunAsGID=".$this->appRunAsGID.") ".
+                "and appDieOnIdentityCrisis was ". $swt, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // additional PID succeeded check
-        if (!is_numeric($this->_pid) || $this->_pid < 1) {
-            $this->_logger(4, "".$this->appName." daemon didn't have a valid ".
-                "pid: '".$this->_pid."'", 
+        if (!is_numeric($this->_processId) || $this->_processId < 1) {
+            $this->_appLogger(4, "".$this->appName." daemon didn't have a valid ".
+                "pid: '".$this->_processId."'", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         } else {
-            if (!file_put_contents($this->pidFilepath, $this->_pid)) {
-                $this->_logger(4, "".$this->appName." daemon was unable to write ".
-                    "to pidfile: ".$this->pidFilepath."", 
+            if (!file_put_contents($this->appPidLocation, $this->_processId)) {
+                $this->_appLogger(4, "".$this->appName." daemon was unable to write ".
+                    "to pidfile: ".$this->appPidLocation."", 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             }
         }
@@ -675,15 +700,15 @@ class System_Daemon
      */
     private function _daemonIsRunning() 
     {
-        if(!file_exists($this->pidFilepath)) return false;
-        $_pid = @file_get_contents($this->pidFilepath);
+        if(!file_exists($this->appPidLocation)) return false;
+        $_processId = @file_get_contents($this->appPidLocation);
 
-        if ($_pid !== false) {
-            if (!posix_kill(intval($_pid), 0)) {
+        if ($_processId !== false) {
+            if (!posix_kill(intval($_processId), 0)) {
                 // not responding so unlink pidfile
-                @unlink($this->pidFilepath);
-                $this->_logger(2, "".$this->appName." daemon orphaned pidfile ".
-                    "found and removed: ".$this->pidFilepath, 
+                @unlink($this->appPidLocation);
+                $this->_appLogger(2, "".$this->appName." daemon orphaned pidfile ".
+                    "found and removed: ".$this->appPidLocation, 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
                 return false;
             } else {
@@ -701,26 +726,26 @@ class System_Daemon
      */
     private function _daemonFork()
     {
-        $this->_logger(0, "forking ".$this->appName." daemon", 
+        $this->_appLogger(0, "forking ".$this->appName." daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
 
-        $_pid = pcntl_fork();
-        if ( $_pid == -1 ) {
+        $pid = pcntl_fork();
+        if ( $pid == -1 ) {
             // error
-            $this->_logger(3, "".$this->appName." daemon could not be forked", 
+            $this->_appLogger(3, "".$this->appName." daemon could not be forked", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
-        } else if ($_pid) {
+        } else if ($pid) {
             // parent
-            $this->_logger(0, "ending ".$this->appName." parent process", 
+            $this->_appLogger(0, "ending ".$this->appName." parent process", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             // die without attracting attention
             exit();
         } else {
             // child
-            $this->_isChild = true;
-            $this->isDying  = false;
-            $this->_pid     = posix_getpid();
+            $this->_processIsChild = true;
+            $this->_daemonIsDying  = false;
+            $this->_processId      = posix_getpid();
             return true;
         }
     }//end _daemonFork()
@@ -732,7 +757,7 @@ class System_Daemon
      */
     private function _daemonWhatIAm()
     {
-        return ($this->_isChild?"child":"parent");
+        return ($this->daemonInBackground()?"child":"parent");
     }//end _daemonWhatIAm()
 
     /**
@@ -743,10 +768,13 @@ class System_Daemon
      */
     private function _daemonDie()
     {
-        if ($this->isDying != true) {
-            $this->isDying = true;
-            if ($this->_isChild && file_exists($this->pidFilepath)) {
-                @unlink($this->pidFilepath);
+        if (!$this->daemonIsDying()) {
+            $this->_daemonIsDying = true;
+            if (!$this->daemonInBackground() || !file_exists($this->appPidLocation)) {
+                $this->_appLogger(1, "Not stopping ".$this->appName.", daemon was not running",
+                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            } else {
+                @unlink($this->appPidLocation);
             }
             exit();
         }
@@ -782,7 +810,8 @@ class System_Daemon
 
     /**
      * Almost every deamon requires a log file, this function can
-     * facilitate that. 
+     * facilitate that. Also handles class errors, chooses either
+     * PEAR handling or PEAR-independant handling. 
      * It logs a string according to error levels specified in array: 
      * log_levels (4 is fatal and handles daemon's death)
      *
@@ -794,10 +823,10 @@ class System_Daemon
      * @param integer $line     What code line the log record is from
      *  
      * @return void
-     * @see _logLevels
-     * @see logFilepath
+     * @see _appLogLevels
+     * @see appLogLocation
      */
-    private function _logger($level, $str, $file = false, $class = false, 
+    private function _appLogger($level, $str, $file = false, $class = false, 
         $function = false, $line = false)
     {
         if ( function_exists("debug_backtrace") && ($file == false || 
@@ -813,12 +842,13 @@ class System_Daemon
         }
 
         // determine what process the log is originating from and forge a logline
-        $str_pid   = "from[".$this->_daemonWhatIAm()."".posix_getpid()."] ";
-        $str_level = $this->_logLevels[$level];
+        $str_level = $this->_appLogLevels[$level];
+        $str_pid   = str_pad("from[".$this->_daemonWhatIAm()."".posix_getpid()."] ", 
+            19, " ", STR_PAD_RIGHT) ;
         $log_line  = str_pad($str_level."", 8, " ", STR_PAD_LEFT)." " .
             $str_pid." : ".$str; 
         //echo $log_line."\n";
-        file_put_contents($this->logFilepath, $log_line."\n", FILE_APPEND);
+        file_put_contents($this->appLogLocation, $log_line."\n", FILE_APPEND);
         
         if ($level > 1) {
             if ($this->pear) {
@@ -833,7 +863,7 @@ class System_Daemon
             }
             $this->_daemonDie();
         }
-    }//end _logger()
+    }//end _appLogger()
 }//end class
 
 
