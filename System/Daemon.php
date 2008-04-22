@@ -243,6 +243,8 @@ class System_Daemon
 
     /**
      * Autoload static method for loading classes and interfaces.
+     * Code from the PHP_CodeSniffer package by Greg Sherwood and 
+     * Marc McIntyre
      *
      * @param string $className The name of the class or interface.
      *
