@@ -46,15 +46,15 @@ if ($runmode["no-daemon"] == false) {
     // conditional so use include
     include_once dirname(__FILE__)."/ext/System_Daemon/Daemon.Class.php";
     
-    $daemon                  = new Daemon("mydaemon");
-    $daemon->app_dir         = dirname(__FILE__);
-    $daemon->app_description = "My 1st Daemon";
-    $daemon->author_name     = "Kevin van Zonneveld";
-    $daemon->author_email    = "kevin@vanzonneveld.net";
+    $daemon                 = new System_Daemon("mydaemon");
+    $daemon->appDir         = dirname(__FILE__);
+    $daemon->appDescription = "My 1st Daemon";
+    $daemon->authorName     = "Kevin van Zonneveld";
+    $daemon->authorEmail    = "kevin@vanzonneveld.net";
     $daemon->start();
     
     if ($runmode["write-initd"]) {
-        if (!$daemon->initd_write()) {
+        if (!$daemon->initdWrite()) {
             echo "Unable to write init.d script\n";
         } else {
             echo "I wrote an init.d script\n";
@@ -65,9 +65,9 @@ if ($runmode["no-daemon"] == false) {
         
 // Run your code
 $fatal_error = false;
-while (!$fatal_error && !$daemon->is_dying) {
+while (!$fatal_error && !$daemon->isDying) {
     // do deamon stuff
-    echo $daemon->app_dir." daemon is running...\n";
+    echo $daemon->appDir." daemon is running...\n";
     
     // relax the system by sleeping for a little bit
     sleep(5);
