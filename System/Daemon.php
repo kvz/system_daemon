@@ -589,6 +589,13 @@ class System_Daemon
             $this->appLogLocation = "/var/log/".$this->appName."_daemon.log";
         }
         
+        if(!is_writable($this->appLogLocation)){
+            $this->_appLogger(4, "".$this->appName." daemon cannot write to log: ".
+                $this->appLogLocation."", 
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false;
+        }
+        
         $this->_processId     = 0;
         $this->_processIsChild = false;
         if (!is_numeric($this->appRunAsUID)) {
@@ -846,8 +853,18 @@ class System_Daemon
         $str_pid   = str_pad("from[".$this->_daemonWhatIAm()."".posix_getpid()."] ", 
             19, " ", STR_PAD_RIGHT) ;
         $log_line  = str_pad($str_level."", 8, " ", STR_PAD_LEFT)." " .
-            $str_pid." : ".$str; 
-        //echo $log_line."\n";
+            $str_pid." : ".$str;
+        
+        
+        if (!$this->daemonInBackground() || !is_writable($this->appLogLocation)) {
+            // it's okay to echo if you're running as a fore-ground process
+            // maybe the command to write an init.d file was issued.
+            // in such a case it's important to echo failures to the 
+            // commandline
+            echo $log_line."\n";
+        }
+
+        // write to logfile
         file_put_contents($this->appLogLocation, $log_line."\n", FILE_APPEND);
         
         if ($level > 1) {
