@@ -35,9 +35,6 @@
  */
 class System_Daemon
 {
-    /***************************************************************************
-    *** VARS
-    ****************************************************************************/
     /**
      * Wether or not to run this class standalone, or as a part of PEAR
      *
@@ -94,7 +91,7 @@ class System_Daemon
      *
      * @var string
      */
-    public $pid_filepath;
+    public $pidFilepath;
 
     /**
      * The log filepath , e.g.: /var/log/logparser_daemon.log. 
@@ -368,7 +365,6 @@ class System_Daemon
      */
     public function initdFilepath()
     {
-        
         $initdFilepath = false;
         
         // collect OS information
@@ -514,8 +510,8 @@ class System_Daemon
             $this->_logger(1, "starting ".$this->appName." daemon", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
-        if (!$this->pid_filepath) {
-            $this->pid_filepath = "/var/run/".$this->appName.".pid";
+        if (!$this->pidFilepath) {
+            $this->pidFilepath = "/var/run/".$this->appName.".pid";
         }
         if (!$this->logFilepath) {
             $this->logFilepath = "/var/log/".$this->appName."_daemon.log";
@@ -560,7 +556,6 @@ class System_Daemon
      */
     private function _daemonBecome() 
     {
-
         // important for daemons
         // see http://nl2.php.net/manual/en/function.pcntl-signal.php
         declare(ticks = 1);
@@ -603,9 +598,9 @@ class System_Daemon
                 "pid: '".$this->_pid."'", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         } else {
-            if (!file_put_contents($this->pid_filepath, $this->_pid)) {
+            if (!file_put_contents($this->pidFilepath, $this->_pid)) {
                 $this->_logger(4, "".$this->appName." daemon was unable to write ".
-                    "to pidfile: ".$this->pid_filepath."", 
+                    "to pidfile: ".$this->pidFilepath."", 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             }
         }
@@ -623,15 +618,15 @@ class System_Daemon
      */
     private function _daemonIsRunning() 
     {
-        if(!file_exists($this->pid_filepath)) return false;
-        $_pid = @file_get_contents($this->pid_filepath);
+        if(!file_exists($this->pidFilepath)) return false;
+        $_pid = @file_get_contents($this->pidFilepath);
 
         if ($_pid !== false) {
             if (!posix_kill(intval($_pid), 0)) {
                 // not responding so unlink pidfile
-                @unlink($this->pid_filepath);
+                @unlink($this->pidFilepath);
                 $this->_logger(2, "".$this->appName." daemon orphaned pidfile ".
-                    "found and removed: ".$this->pid_filepath, 
+                    "found and removed: ".$this->pidFilepath, 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
                 return false;
             } else {
@@ -682,7 +677,7 @@ class System_Daemon
     private function _daemonWhatIAm()
     {
         return ($this->_isChild?"child":"parent");
-    }//end _()
+    }//end _daemonWhatIAm()
 
     /**
      * Sytem_Daemon::_daemonDie()
@@ -694,8 +689,8 @@ class System_Daemon
     {
         if ($this->isDying != true) {
             $this->isDying = true;
-            if ($this->_isChild && file_exists($this->pid_filepath)) {
-                @unlink($this->pid_filepath);
+            if ($this->_isChild && file_exists($this->pidFilepath)) {
+                @unlink($this->pidFilepath);
             }
             exit();
         }
