@@ -342,7 +342,7 @@ class System_Daemon
             return false;
         }
         
-        $initd = $this->initd();
+        $initd = $this->initdForge();
         if (!$initd) {
             return false;
         }
@@ -393,12 +393,12 @@ class System_Daemon
     }//end initdFilepath()
     
     /**
-     * Sytem_Daemon::initd()
+     * Sytem_Daemon::initdForge()
      * Returns an: 'init.d' script as a string. for now only debian & ubuntu
      *
      * @return string
      */
-    public function initd()
+    public function initdForge()
     {
         // initialize & check variables
         $this->_daemonInit();
@@ -485,14 +485,14 @@ class System_Daemon
             // return the forged init.d script as a string
             return $skeleton;
         }
-    }//end initd()
+    }//end initdForge()
 
 
 
 
     /**
      * Sytem_Daemon::_daemonInit()
-     * Put the running script in background
+     * Initialize all variables
      *
      * @return boolean
      */
