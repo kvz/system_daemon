@@ -69,35 +69,30 @@ if (!$runmode["no-daemon"]) {
 }
     
 if (!$runmode["write-initd"]) {
-    echo "Not writing an init.d script this time\n";
+    $daemon->log(1, "not writing an init.d script this time");
 } else {
-    echo "Writing an init.d script: ";
     if (!$daemon->osInitDWrite()) {
-        echo "failed!\n";
+        $daemon->log(2, "unable to write init.d script");
     } else {
-        echo "OK\n";
+        $daemon->log(1, "sucessfully written an init.d script");
     }
 }
 
 // Run your code
 $runningOkay = true;
-$runCount = 1;
-while (!$daemon->daemonIsDying() && $runningOkay && $runCount <=3) {
+$cnt         = 1;
+while (!$daemon->daemonIsDying() && $runningOkay && $cnt <=3) {
     // do deamon stuff
-    echo $daemon->appName." process is running in ";
-    if ($daemon->daemonInBackground()) {
-        echo "'daemon' ";
-    } else{
-        echo "'non-daemon' ";
-    }
-    echo "mode (run ".$runCount." of 3)\n";
+    $mode = "'".($daemon->daemonInBackground() ? "" : "non-" )."daemon' mode";
+    
+    $daemon->log(1, $daemon->appName." running in ".$mode." ".$cnt."/3");
     $runningOkay = true;
     
     // relax the system by sleeping for a little bit
     sleep(2);
-    $runCount++;
+    $cnt++;
 }
 
-echo "Stopping ".$daemon->appName."\n";
+
 $daemon->stop();
 ?>
