@@ -21,9 +21,13 @@
  * but unless have already generated the init.d script, you have
  * no real way of killing it yet.
  * 
- * In this case type:
+ * In this case wait 3 runs, which is the maximum in this example. 
+ * 
+ * If you're inpatient you can also type:
  * killall -9 example.php
+ * OR:
  * killall -9 php
+ * 
  */
 
 error_reporting(E_ALL);
@@ -56,13 +60,9 @@ if ($runmode["no-daemon"] == false) {
     
     if (!include $path_to_daemon) {
         die("Unable to locate System_Daemon class\n");
-    } else {
-        echo "System_Daemon class included\n";
     }
     
-    print_r(get_declared_classes()); 
-    
-    $daemon                 = new System_Daemon("mydaemon");
+    $daemon                 = new System_Daemon("mydaemon", true);
     $daemon->appDir         = dirname(__FILE__);
     $daemon->appDescription = "My 1st Daemon";
     $daemon->authorName     = "Kevin van Zonneveld";
@@ -83,17 +83,20 @@ if ($runmode["no-daemon"] == false) {
 
 // Run your code
 $runningOkay = true;
-while (!$daemon->isDying && $runningOkay) {
+$runCount = 1;
+while (!$daemon->isDying && $runningOkay && $runCount <=3) {
     // do deamon stuff
-    echo $daemon->appDir." daemon is running...\n";
+    echo $daemon->appName." daemon is running in the background... (run ".$runCount." of 3)\n";
+    print_r(get_declared_classes());
     $runningOkay = true;
     
     // relax the system by sleeping for a little bit
-    sleep(5);
+    sleep(2);
+    $runCount++;
 }
 
 if ($runmode["no-daemon"] == false) {
-    echo "Stopping daemon\n";
+    echo "Stopping ".$daemon->appName."\n";
     $daemon->stop();
 }
 ?>
