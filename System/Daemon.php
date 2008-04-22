@@ -267,7 +267,7 @@ class System_Daemon
             include dirname(__FILE__).'/'.$path;
         } else {
             // Everything else.
-            @include $path;
+            include $path;
         }
 
     }//end autoload()
@@ -281,7 +281,9 @@ class System_Daemon
     {
         // initialize & check variables
         $this->_daemonInit();
-
+        
+        //$this->log(4, "test");
+        
         // become daemon
         $this->_daemonBecome();
 
@@ -335,12 +337,9 @@ class System_Daemon
         }
 
         // determine what process the log is originating from and forge a logline
-        $str_date  = date("M d H:i:s");
-        $str_date  = "[".$str_date."]"; 
-        $str_ident = substr($this->_daemonWhatIAm(), 0, 1)."-".posix_getpid();
-        $str_ident = "@[".$str_ident."]";
-        $str_level = $this->_logLevels[$level];
-        $str_level = str_pad($str_level."", 8, " ", STR_PAD_LEFT);
+        $str_date  = "[".date("M d H:i:s")."]"; 
+        $str_ident = "@".substr($this->_daemonWhatIAm(), 0, 1)."-".posix_getpid();
+        $str_level = str_pad($this->_logLevels[$level]."", 8, " ", STR_PAD_LEFT);
         $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
         
         if ($level > 0) {
@@ -357,7 +356,6 @@ class System_Daemon
         }
         
         if ($level > 1) {
-            
             if ($this->pear) {
                 PEAR::raiseError($log_line);
             }
@@ -691,10 +689,12 @@ class System_Daemon
      */
     private function _daemonInit() 
     {
+        // if already initialized, skip
         if ($this->_daemonIsInitialized) {
             return true;
         }
-
+        
+        // system settings
         $this->_processId      = 0;
         $this->_processIsChild = false;
         ini_set("max_execution_time", "0");
@@ -703,34 +703,41 @@ class System_Daemon
         set_time_limit(0);        
         ob_implicit_flush();
         
-        if (!$this->_strisunix($this->appName)) {
-            $safe_name = $this->_strtounix($this->appName);
+        // verify appName
+        if (!$this->_strIsUnix($this->appName)) {
+            // suggest a better appName
+            $safe_name = $this->_strToUnix($this->appName);
             $this->log(4, "'".$this->appName."' is not a valid daemon name, ".
                 "try using something like '".$safe_name."' instead", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         
+        // default appPidLocation
         if (!$this->appPidLocation) {
             $this->appPidLocation = "/var/run/".$this->appName.".pid";
         }
+        // verify appPidLocation
         if (!is_writable($dir = dirname($this->appPidLocation))) {
             $this->log(4, "".$this->appName." daemon cannot write to ".
                 "pidfile directory: ".$dir, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        
+
+        // default logLocation
         if (!$this->logLocation) {
-            $this->logLocation = "/var/log/".$this->appName."_daemon.log";
+            $this->logLocation = "/var/log/".$this->appName.".log";
         }
+        // verify logLocation
         if (!is_writable($dir = dirname($this->logLocation))) {
             $this->log(4, "".$this->appName." daemon cannot write ".
                 "to log directory: ".$dir,
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-                
+        
+        // verify logVerbosity
         if ($this->logVerbosity < 0 || $this->logVerbosity > 4) {
             $this->log(4, "logVerbosity needs to be between 0 and 4 ".
                 "logVerbosity: ".$this->logVerbosity."", 
@@ -738,6 +745,7 @@ class System_Daemon
             return false;
         }
         
+        // verify appRunAsUID
         if (!is_numeric($this->appRunAsUID)) {
             $this->log(4, "".$this->appName." daemon has invalid ".
                 "appRunAsUID: ".$this->appRunAsUID.". ",
@@ -754,7 +762,8 @@ class System_Daemon
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;            
         }
-                
+
+        // verify appRunAsGID
         if (!is_numeric($this->appRunAsGID)) {
             $this->log(4, "".$this->appName." daemon has invalid ".
                 "appRunAsGID: ".$this->appRunAsGID.". ",
@@ -772,21 +781,23 @@ class System_Daemon
             return false;            
         }
         
-        
+        // default appDir
         if (!$this->appDir) {
             $this->appDir = dirname($_SERVER["SCRIPT_FILENAME"]);
         }
-        
-        if (!$this->appExecutable) {
-            $this->appExecutable = basename($_SERVER["SCRIPT_FILENAME"]);
-        }
-
+        // verify appDir
         if (!is_dir($this->appDir)) {
             $this->log(4, "".$this->appName." daemon has invalid appDir: ".
                 $this->appDir."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
+        
+        // verify appExecutable
+        if (!$this->appExecutable) {
+            $this->appExecutable = basename($_SERVER["SCRIPT_FILENAME"]);
+        }
+
         
         // combine appdir + exe here to make SURE we got our data right 
         
@@ -969,10 +980,10 @@ class System_Daemon
      * 
      * @return boolean
      */   
-    private function _strisunix( $str )
+    private function _strIsUnix( $str )
     {
         return preg_match('/^[a-z0-9_]+$/', $str);
-    }//end _strisunix()
+    }//end _strIsUnix()
 
     /**
      * Convert a string to a unix proof format (strip spaces, 
@@ -982,10 +993,10 @@ class System_Daemon
      * 
      * @return string
      */
-    private function _strtounix( $str )
+    private function _strToUnix( $str )
     {
         return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
-    }//end _strtounix()
+    }//end _strToUnix()
 
 
 }//end class
