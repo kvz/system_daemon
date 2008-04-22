@@ -247,7 +247,6 @@ class System_Daemon
 
 
     /**
-     * Sytem_Daemon::daemonSigHandler()
      * Signal handler function
      *
      * @param integer $signo The posix signal received.
@@ -327,7 +326,6 @@ class System_Daemon
     }//end determineOS()  
     
     /**
-     * Sytem_Daemon::initdWrite()
      * Writes an: 'init.d' script on the filesystem
      *
      * @return boolean
@@ -389,7 +387,6 @@ class System_Daemon
     }//end initdFilepath()
     
     /**
-     * Sytem_Daemon::initdForge()
      * Returns an: 'init.d' script as a string. for now only debian & ubuntu
      *
      * @return string
@@ -487,7 +484,6 @@ class System_Daemon
 
 
     /**
-     * Sytem_Daemon::_daemonInit()
      * Initialize all variables
      *
      * @return boolean
@@ -549,7 +545,6 @@ class System_Daemon
     }//end _daemonInit()
 
     /**
-     * Sytem_Daemon::_daemonBecome()
      * Put the running script in background
      *
      * @return void
@@ -611,7 +606,6 @@ class System_Daemon
     }//end _daemonBecome()
 
     /**
-     * Sytem_Daemon::_daemonIsRunning()
      * Check if a previous process with same pidfile was already running
      *
      * @return boolean
@@ -638,7 +632,6 @@ class System_Daemon
     }//end _daemonIsRunning()
 
     /**
-     * Sytem_Daemon::_daemonFork()
      * Fork process and kill parent process, the heart of the 'daemonization'
      *
      * @return boolean
@@ -669,7 +662,6 @@ class System_Daemon
     }//end _daemonFork()
 
     /**
-     * Sytem_Daemon::_daemonWhatIAm()
      * Return what the current process is: child or parent
      *
      * @return string
@@ -700,7 +692,6 @@ class System_Daemon
 
 
     /**
-     * Sytem_Daemon::_strisunix()
      * Check if a string has a unix proof format (stripped spaces, 
      * special chars, etc)
      *
@@ -729,7 +720,6 @@ class System_Daemon
     }//end _strtounix()
 
     /**
-     * Sytem_Daemon::_logger()
      * Almost every deamon requires a log file, this function can
      * facilitate that. 
      * It logs a string according to error levels specified in array: 
