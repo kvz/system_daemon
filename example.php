@@ -16,6 +16,14 @@
 
 /**
  * System_Daemon Example Code
+ * 
+ * If you run this code successfully, a daemon will be spawned
+ * but unless have already generated the init.d script, you have
+ * no real way of killing it yet.
+ * 
+ * In this case type:
+ * killall -9 example.php
+ * killall -9 php
  */
 
 error_reporting(E_ALL);
@@ -42,16 +50,16 @@ if ($runmode["help"] == true) {
 }
     
 // Spawn Daemon 
-set_time_limit(0);
-ini_set("memory_limit", "1024M");
 if ($runmode["no-daemon"] == false) {
     // conditional so use include
     $path_to_daemon = "System/Daemon.php";
     
-    if (!@include $path_to_daemon) {
+    if (!include $path_to_daemon) {
         die("Unable to locate System_Daemon class\n");
-    } 
-
+    } else{
+        echo "System_Daemon class included\n";
+    }
+    
     $daemon                 = new System_Daemon("mydaemon");
     $daemon->appDir         = dirname(__FILE__);
     $daemon->appDescription = "My 1st Daemon";

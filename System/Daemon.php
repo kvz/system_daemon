@@ -33,6 +33,9 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * 
  */
+
+spl_autoload_register(array('System_Daemon', 'autoload'));
+
 class System_Daemon
 {
     /**
@@ -216,11 +219,41 @@ class System_Daemon
         
         ini_set("max_execution_time", "0");
         ini_set("max_input_time", "0");
-        set_time_limit(0);
+        ini_set("memory_limit", "1024M");
+        set_time_limit(0);        
         ob_implicit_flush();
     }//end __construct()
 
+    /**
+     * Autoload static method for loading classes and interfaces.
+     * Reused code from the PHP_CodeSniffer package by Greg Sherwood and Marc McIntyre
+     *
+     * @param string $className The name of the class or interface.
+     *
+     * @return void
+     */
+    public static function autoload($className)
+    {
+        if (substr($className, 0, 4) === 'PHP_') {
+            $newClassName = substr($className, 4);
+        } else {
+            $newClassName = $className;
+        }
 
+        $path = str_replace('_', '/', $newClassName).'.php';
+
+        if (is_file(dirname(__FILE__).'/'.$path) === true) {
+            // Check standard file locations based on class name.
+            include dirname(__FILE__).'/'.$path;
+        } else if (is_file(dirname(__FILE__).'/CodeSniffer/Standards/'.$path) === true) {
+            // Check for included sniffs.
+            include dirname(__FILE__).'/CodeSniffer/Standards/'.$path;
+        } else {
+            // Everything else.
+            @include $path;
+        }
+
+    }//end autoload()
 
     /**
      * Spawn daemon process.
@@ -396,6 +429,7 @@ class System_Daemon
     {
         // initialize & check variables
         $this->_daemonInit();
+        $skeleton_filepath = false;
 
         // sanity
         $daemon_filepath = $this->appDir."/".$this->appExecutable;
@@ -406,6 +440,15 @@ class System_Daemon
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
+
+        if (!is_executable($daemon_filepath)) {
+            $this->_logger(3, "unable to forge skeleton for non executable ".
+                "daemon_filepath: ".$daemon_filepath.", try chmodding ".
+                "your daemon", 
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false;
+        }
+        
         if (!$this->authorName) {
             $this->_logger(3, "unable to forge skeleton for non existing ".
                 "authorName: ".$this->authorName."", 
@@ -432,7 +475,7 @@ class System_Daemon
         switch (strtolower($distro)){
         case "debian":
         case "ubuntu":
-            // here it is for debian systems
+            // here it is for debian based systems
             $skeleton_filepath = "/etc/init.d/skeleton";
             break;
         default:
@@ -445,7 +488,7 @@ class System_Daemon
         }
 
         // open skeleton
-        if (!file_exists($skeleton_filepath)) {
+        if (!$skeleton_filepath || !file_exists($skeleton_filepath)) {
             $this->_logger(2, "skeleton file for OS: ".$distro." not found at: ".
                 $skeleton_filepath, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -453,7 +496,8 @@ class System_Daemon
         } elseif ($skeleton = file_get_contents($skeleton_filepath)) {
             // skeleton opened, set replace vars
             switch (strtolower($distro)){
-            default:
+            case "debian":
+            case "ubuntu":                
                 $replace = array(
                     "Foo Bar" => $this->authorName,
                     "foobar@baz.org" => $this->authorEmail,
@@ -468,6 +512,13 @@ class System_Daemon
                         "lines above and replace them" => "",
                     "# with your own name if you copy and modify this script." => ""
                 );
+                break;
+            default:
+                // not supported yet
+                $this->_logger(2, "skeleton modification for OS: ".$distro.
+                    " currently not supported ", 
+                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                return false;
                 break;
             }
 
@@ -484,7 +535,7 @@ class System_Daemon
     
 
     /**
-     * Initialize all variables
+     * Initializes, sanitizes & defaults unset variables
      *
      * @return boolean
      */
@@ -499,12 +550,9 @@ class System_Daemon
         if (!$this->_strisunix($this->appName)) {
             $safe_name = $this->_strtounix($this->appName);
             $this->_logger(4, "'".$this->appName."' is not a valid daemon name, ".
-                "try using '".$safe_name."' instead", 
+                "try using something like '".$safe_name."' instead", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
-        } else {
-            $this->_logger(1, "starting ".$this->appName." daemon", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
         if (!$this->pidFilepath) {
             $this->pidFilepath = "/var/run/".$this->appName.".pid";
@@ -551,6 +599,10 @@ class System_Daemon
      */
     private function _daemonBecome() 
     {
+
+        $this->_logger(1, "starting ".$this->appName." daemon", 
+            __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+        
         // important for daemons
         // see http://nl2.php.net/manual/en/function.pcntl-signal.php
         declare(ticks = 1);
@@ -583,7 +635,8 @@ class System_Daemon
         if (!posix_setuid($this->uid) || !posix_setgid($this->gid)) {
             $lvl = ($this->dieOnIdentitycrisis ? 4 : 3);
             $this->_logger($lvl, "".$this->appName." daemon was unable assume ".
-                "identity (uid=".$this->uid.", gid=".$this->gid.")", 
+                "identity (uid=".$this->uid.", gid=".$this->gid.") ".
+                "and dieOnIdentitycrisis was ".($this->dieOnIdentitycrisis ? "on" : "off"), 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
@@ -766,22 +819,5 @@ class System_Daemon
     }//end _logger()
 }//end class
 
-
-/**
- * An exception thrown by System_Daemon when it encounters an unrecoverable error.
- *
- * @category  System
- * @package   System_Daemon
- * @author    Kevin van Zonneveld <kevin@vanzonneveld.net>
- * @copyright 2008 Kevin van Zonneveld (http://kevin.vanzonneveld.net)
- * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
- * @version   SVN: Release: $Id$
- * @link      http://trac.plutonia.nl/projects/system_daemon
- * * 
- */
-class System_Daemon_Exception extends PEAR_Exception
-{
-
-}//end class
 
 ?>
