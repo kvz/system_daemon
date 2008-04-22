@@ -62,7 +62,6 @@ if ($runmode["no-daemon"] == false) {
     }
 }
 
-        
 // Run your code
 $fatal_error = false;
 while (!$fatal_error && !$daemon->isDying) {
