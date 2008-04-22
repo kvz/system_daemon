@@ -16,8 +16,8 @@
  */
 
 /**
- * System_Daemon. Create daemons with practicle functions like
- * $daemon->start()
+ * System_Daemon. Create daemons with practicle functions 
+ * like $daemon->start()
  *
  * Requires PHP build with --enable-cli --with-pcntl.
  * Only runs on *NIX systems, because Windows lacks of the pcntl ext.
@@ -183,6 +183,7 @@ class System_Daemon
     private $_fncCache = array();
 
 
+    
     /**
      * Constructs a System_Daemon object.
      *
@@ -217,7 +218,6 @@ class System_Daemon
 
 
     /**
-     * Sytem_Daemon::start()
      * Spawn daemon process.
      *
      * @return void
@@ -233,7 +233,6 @@ class System_Daemon
     }//end start()
 
     /**
-     * Sytem_Daemon::stop()
      * Stop daemon process.
      *
      * @return void
@@ -244,7 +243,6 @@ class System_Daemon
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         $this->_daemonDie();
     }//end stop()
-
 
     /**
      * Signal handler function
@@ -290,7 +288,6 @@ class System_Daemon
 
     
     /**
-     * Sytem_Daemon::determineOS()
      * Returns an array(main, distro, version) of the OS it's executed on
      *
      * @return array
@@ -356,7 +353,6 @@ class System_Daemon
     }//end initdWrite() 
     
     /**
-     * Sytem_Daemon::initdFilepath()
      * Returns an: 'init.d' script path as a string. for now only debian & ubuntu
      *
      * @return string
@@ -480,8 +476,7 @@ class System_Daemon
         }
     }//end initdForge()
 
-
-
+    
 
     /**
      * Initialize all variables
@@ -689,8 +684,7 @@ class System_Daemon
     }//end _daemonDie()
 
 
-
-
+    
     /**
      * Check if a string has a unix proof format (stripped spaces, 
      * special chars, etc)
@@ -698,15 +692,13 @@ class System_Daemon
      * @param string $str What string to test for unix compliance
      * 
      * @return boolean
-     */
-    
+     */   
     private function _strisunix( $str )
     {
         return preg_match('/^[a-z0-9_]+$/', $str);
     }//end _strisunix()
 
     /**
-     * Sytem_Daemon::_strtounix()
      * Convert a string to a unix proof format (strip spaces, 
      * special chars, etc)
      * 
