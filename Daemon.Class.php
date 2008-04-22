@@ -19,7 +19,7 @@
  * System_Daemon. Create daemons with practicle functions like
  * $daemon->start()
  *
- * Requires PHP build with --enable-cli --with-pcntl --enable-shmop.
+ * Requires PHP build with --enable-cli --with-pcntl.
  * Only runs on *NIX systems, because Windows lacks of the pcntl ext.
  *
  * PHP version 5
@@ -766,6 +766,7 @@ class System_Daemon
             $line     = $dbg_bt[0]["line"];
         }
 
+        // determine what process the log is originating from and forge a logline
         $str_pid   = "from[".$this->_daemonWhatIAm()."".posix_getpid()."] ";
         $str_level = $this->_logLevels[$level];
         $log_line  = str_pad($str_level."", 8, " ", STR_PAD_LEFT)." " .

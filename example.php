@@ -44,20 +44,24 @@ set_time_limit(0);
 ini_set("memory_limit", "1024M");
 if ($runmode["no-daemon"] == false) {
     // conditional so use include
-    include_once dirname(__FILE__)."/ext/System_Daemon/Daemon.Class.php";
-    
-    $daemon                 = new System_Daemon("mydaemon");
-    $daemon->appDir         = dirname(__FILE__);
-    $daemon->appDescription = "My 1st Daemon";
-    $daemon->authorName     = "Kevin van Zonneveld";
-    $daemon->authorEmail    = "kevin@vanzonneveld.net";
-    $daemon->start();
-    
-    if ($runmode["write-initd"]) {
-        if (!$daemon->initdWrite()) {
-            echo "Unable to write init.d script\n";
-        } else {
-            echo "I wrote an init.d script\n";
+    $path_to_daemon = dirname(__FILE__)."/ext/System_Daemon/";
+    $path_to_daemon = "";
+    if(!@include_once $path_to_daemon."Daemon.Class.php"){
+        echo "Unable to locate System_Daemon class";
+    } else {
+        $daemon                 = new System_Daemon("mydaemon");
+        $daemon->appDir         = dirname(__FILE__);
+        $daemon->appDescription = "My 1st Daemon";
+        $daemon->authorName     = "Kevin van Zonneveld";
+        $daemon->authorEmail    = "kevin@vanzonneveld.net";
+        $daemon->start();
+        
+        if ($runmode["write-initd"]) {
+            if (!$daemon->initdWrite()) {
+                echo "Unable to write init.d script\n";
+            } else {
+                echo "I wrote an init.d script\n";
+            }
         }
     }
 }
