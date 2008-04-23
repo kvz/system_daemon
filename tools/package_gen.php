@@ -2,7 +2,7 @@
 /**
  * Script to generate package.xml file
  *
- * Taken from Limb PHP Framework http://limb-project.com 
+ * Parts taken from Limb PHP Framework http://limb-project.com 
  * More info 
  *  http://www.developertutorials.com/pear-manual/developers.packagedef.html
  *  http://blog.astrumfutura.com/plugin/blogpdf
@@ -10,14 +10,16 @@
  * @version   SVN: Release: $Id$
  */
 
-list($name, $baseVersion, $state) = explode('-', trim(file_get_contents(dirname(__FILE__) . '/docs/VERSION')));
-$notes = htmlspecialchars(file_get_contents(dirname(__FILE__) . '/docs/NOTES'));
-$summary = htmlspecialchars(file_get_contents(dirname(__FILE__) . '/docs/SUMMARY'));
-$description = htmlspecialchars(file_get_contents(dirname(__FILE__) . '/docs/DESCRIPTION'));
-$maintainers = file(dirname(__FILE__) . '/docs/MAINTAINERS');
+$workspace_dir = realpath(dirname(__FILE__)."/..");
+
+list($name, $baseVersion, $state) = explode('-', trim(file_get_contents($workspace_dir . '/docs/VERSION')));
+$notes = htmlspecialchars(file_get_contents($workspace_dir . '/docs/NOTES'));
+$summary = htmlspecialchars(file_get_contents($workspace_dir . '/docs/SUMMARY'));
+$description = htmlspecialchars(file_get_contents($workspace_dir . '/docs/DESCRIPTION'));
+$maintainers = file($workspace_dir . '/docs/MAINTAINERS');
 
 $version = $baseVersion . (isset($argv[3]) ? $argv[3] : '');
-$dir = dirname(__FILE__);
+$dir = $workspace_dir;
 
 $apiVersion = $baseVersion;
 $apiStability = $state;
@@ -43,7 +45,7 @@ $options = array(
     'simpleoutput'      => true,
     'clearcontents'     => true,
     'baseinstalldir'    => 'System',
-    'packagedirectory'  => dirname(__FILE__),
+    'packagedirectory'  => $workspace_dir,
     'packagefile'       => 'package.xml',
     'dir_roles'         => array(
                                 'docs' => 'doc',
@@ -80,10 +82,6 @@ $packagexml->setPhpDep('5.1.2'); // spl_autoload_register
 $packagexml->setPearinstallerDep('1.4.0');
 $packagexml->addPackageDepWithChannel('optional', 'PEAR', 'pear.php.net', '1.4.0');
 $packagexml->setOSInstallCondition('(*ix|*ux|darwin*|*BSD|SunOS*)');
-//$packagexml->addPackageDepWithChannel('php',              '5.2.1', 'ge',  'php', false);
-//$packagexml->addPackageDepWithChannel('PEAR',             '1.3.3', 'ge',  'pkg', false);
-//$packagexml->addPackageDepWithChannel('Linux',            false,   'has', 'os',  false);
-
 
 // Other info, like the Lead Developers. license, version details and stability type
 $packagexml->setLicense('New BSD License', 'http://opensource.org/licenses/bsd-license.php');
@@ -101,14 +99,4 @@ if (isset($_GET['make']) || (isset($_SERVER['argv']) && @$_SERVER['argv'][1] == 
 } else {
     $packagexml->debugPackageFile();
 }
-
-
-/*
-$result = $package->writePackageFile();
-
-if (PEAR::isError($result)) {
-    echo $result->getMessage();
-    exit(1);
-}
-*/
 ?>

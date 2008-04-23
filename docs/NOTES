@@ -1,49 +1,51 @@
-2008-04-21 14:29  Kevin van Zonneveld <kevin@vanzonneveld.net>
+2008-04-23 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
-    * .project, Daemon.Class.php, example.php: svn keywords
+        [r51] Reorganize directory structure
+        [r50] Package.xml
 
-2008-04-21 14:24  Kevin van Zonneveld <kevin@vanzonneveld.net>
+2008-04-22 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
-    * Daemon.Class.php: process PHP_CodeSniffer pointers
+        [r49] More packaging tryouts
+        [r48] Package.xml generator
+        [r46] Executable
+        [r45] Comments & executable
+        [r44] PEAR CS compliance
+        [r43] Comments
+        [r42] Readded autoloader code from the PHP_CodeSniffer package by Greg Sherwood and Marc McIntyre
+        [r41] Revised log facility
+        [r40] Improved logging facility
+        [r39] Replaced to many uids. fixed
+        [r38] Added more consistency in methodnames
+        [r37] Improved example
+        [r37] Added better PEAR independance
+        [r36] Removed autoloader code from the PHP_CodeSniffer package
+        [r35] Autoloader code from the PHP_CodeSniffer package by Greg Sherwood and Marc McIntyre
+        [r34] Added PHP-CLI requirement
+        [r32] Reorganise directory structure
+        [r30] Reorganise directory structue
+        [r26] Camelized every variable & function
+        [r22] Renamed initd to more distinct initdForge
+        [r21] More comments
+        [r19] Rename Daemon to System_Daemon and add Exception class
 
-2008-04-19 15:01  Kevin van Zonneveld <kevin@vanzonneveld.net>
+2008-04-21 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
-    * Daemon.Class.php: svn://svn.plutonia.nl/system_daemon
+        [r18] Process PHP_CodeSniffer pointers
+        [r13] Svn keywords
 
-2008-04-15 15:45  Kevin van Zonneveld <kevin@vanzonneveld.net>
+2008-04-19 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
-    * ., .project: more ignores
+        [r11] Svn://svn.plutonia.nl/system_daemon
 
-2008-04-15 15:44  Kevin van Zonneveld <kevin@vanzonneveld.net>
+2008-04-15 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
-    * .: more ignores
+        [r10] More ignores
 
-2008-04-15 15:43  Kevin van Zonneveld <kevin@vanzonneveld.net>
+2008-03-24 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
-    * .project: more ignores
+        [r5] Added example code
 
-2008-04-15 15:42  Kevin van Zonneveld <kevin@vanzonneveld.net>
+2008-03-23 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
-    * ., .project, .settings: more ignores
+        [r2] Move Daemon Class to own repository
 
-2008-04-15 15:05  Kevin van Zonneveld <kevin@vanzonneveld.net>
-
-    * .: more ignores
-
-2008-03-24 15:16  Kevin van Zonneveld <kevin@vanzonneveld.net>
-
-    * example.php: added example code
-
-2008-03-24 14:49  Kevin van Zonneveld <kevin@vanzonneveld.net>
-
-    * example.php: added example code
-
-2008-03-24 14:37  Kevin van Zonneveld <kevin@vanzonneveld.net>
-
-    * example.php: added example code
-
-2008-03-23 14:11  Kevin van Zonneveld <kevin@vanzonneveld.net>
-
-    * .project, .settings,
-      .settings/org.eclipse.php.core.projectOptions.prefs,
-      Daemon.Class.php: Move Daemon Class to own repository

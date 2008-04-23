@@ -1,1 +1,9 @@
-System_Daemon turns PHP-CLI scripts into daemons
+System_Daemon is a PHP class that allows developers to create their own daemon 
+applications on Linux systems. The class is focussed entirely on creating & 
+spawning standalone daemons, and for example includes:
+
+   1. Methods to generate OS-specific startup-files (init.d) (currently only 
+      Debian/Ubuntu are supported), so that your application gets started on 
+      reboot as well.
+   2. Methods for logging purposes
+   3. Simple syntax
