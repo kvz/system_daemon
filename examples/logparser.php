@@ -21,30 +21,32 @@
  * but unless have already generated the init.d script, you have
  * no real way of killing it yet.
  * 
- * In this case wait 3 runs, which is the maximum in this example. 
+ * In this case wait 3 runs, which is the maximum for this example. 
  * 
- * If you're inpatient you can also type:
- * killall -9 example.php
+ * 
+ * In panic situations, you can always kill you daemon by typing
+ * 
+ * killall -9 logparser.php
  * OR:
  * killall -9 php
  * 
  */
 
-// Arguments 
+// Allowed arguments & their defaults 
 $runmode = array(
     "no-daemon" => false, 
     "help" => false,
     "write-initd" => false
 );
 
-// scan ar
+// Scan command line attributes for allowed arguments
 foreach ($argv as $k=>$arg) {
     if (substr($arg, 0, 2) == "--" && isset($runmode[substr($arg, 2)])) {
         $runmode[substr($arg, 2)] = true;
     }
 }
 
-// Help
+// Help mode. Shows allowed argumentents and quite directly
 if ($runmode["help"] == true) {
     echo "Usage: ".$argv[0]." [runmode]\n";
     echo "Available runmodes:\n"; 
@@ -54,21 +56,25 @@ if ($runmode["help"] == true) {
     die();
 }
     
-// Spawn Daemon 
-// conditional so use include
-if (!include "System/Daemon.php") {
-    die("Unable to locate System_Daemon class\n");
-}
+// Include Class
+require_once "System/Daemon.php";
 
+// Setup
 $daemon                 = new System_Daemon("logparser", true);
 $daemon->appDir         = dirname(__FILE__);
 $daemon->appDescription = "Parses logfiles of vsftpd and stores them in MySQL";
 $daemon->authorName     = "Kevin van Zonneveld";
 $daemon->authorEmail    = "kevin@vanzonneveld.net";
+
+// This program can also be run in the forground with runmode --no-daemon
 if (!$runmode["no-daemon"]) {
+    // Spawn Daemon 
     $daemon->start();
 }
-    
+
+// With the runmode --write-initd, this program can automatically write a 
+// system startup file called: 'init.d'
+// This will make sure your daemon will be started on reboot 
 if (!$runmode["write-initd"]) {
     $daemon->log(1, "not writing an init.d script this time");
 } else {
@@ -80,20 +86,49 @@ if (!$runmode["write-initd"]) {
 }
 
 // Run your code
+// Here comes your own actual code
+
+// This variable gives your own code the ability to breakdown the daemon:
 $runningOkay = true;
-$cnt         = 1;
+
+// This variable keeps track of how many 'runs' or 'loops' your daemon has
+// done so far. For example purposes, we're quitting on 3.
+$cnt = 1;
+
+// While checks on 3 things in this case:
+// - That the Daemon Class hasn't reported it's dying
+// - That your own code has been running Okay
+// - That we're not executing more than 3 runs 
 while (!$daemon->daemonIsDying() && $runningOkay && $cnt <=3) {
-    // do deamon stuff
+    // What mode are we in?
     $mode = "'".($daemon->daemonInBackground() ? "" : "non-" )."daemon' mode";
     
+    // Log something using the Daemon class's logging facility
+    // Depending on runmode it will either end up:
+    //  - In the /var/log/logparser.log
+    //  - On screen (in case we're not a daemon yet)  
     $daemon->log(1, $daemon->appName." running in ".$mode." ".$cnt."/3");
+    
+    // In the actuall logparser program, You could replace 'true'
+    // With e.g. a  parseLog('vsftpd') function, and have it return
+    // either true on success, or false on failure.
     $runningOkay = true;
     
-    // relax the system by sleeping for a little bit
+    // Should your parseLog('vsftpd') return false, then
+    // the daemon is automatically shut down.
+    // An extra log entry would be nice, we're using level 3, which is critical.
+    // Level 4 would be fatal and shuts down the daemon immediately, which in 
+    // this case is handled by the while condition.
+    if (!$runningOkay) {
+        $daemon->log(3, "parseLog() produces an error, so this will be my last run");
+    }
+    
+    // Relax the system by sleeping for a little bit
     sleep(2);
     $cnt++;
 }
 
-
+// Shut down the daemon nicely
+// This is ignored if the class is actually running in the foreground
 $daemon->stop();
 ?>

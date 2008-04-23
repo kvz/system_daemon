@@ -1,5 +1,7 @@
 2008-04-23 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
+        [r53] Created tools for package & changelog generation
+        [r52] Delete tools. svn2cl is in subversion-tools package.
         [r51] Reorganize directory structure
         [r50] Package.xml
 
@@ -48,4 +50,3 @@
 2008-03-23 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
         [r2] Move Daemon Class to own repository
-
