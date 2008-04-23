@@ -1,0 +1,54 @@
+2008-04-21 14:29  kevin
+
+	* .project, Daemon.Class.php, example.php: svn keywords
+
+2008-04-21 14:24  kevin
+
+	* Daemon.Class.php: process PHP_CodeSniffer pointers
+
+2008-04-19 15:01  kevin
+
+	* Daemon.Class.php: svn://svn.plutonia.nl/system_daemon
+
+2008-04-15 15:45  kevin
+
+	* ., .project: more ignores
+
+2008-04-15 15:44  kevin
+
+	* .: more ignores
+
+2008-04-15 15:43  kevin
+
+	* .project: more ignores
+
+2008-04-15 15:42  kevin
+
+	* ., .project, .settings: more ignores
+
+2008-04-15 15:05  kevin
+
+	* .: more ignores
+
+2008-03-24 15:16  kevin
+
+	* example.php: added example code
+
+2008-03-24 14:49  kevin
+
+	* example.php: added example code
+
+2008-03-24 14:37  kevin
+
+	* example.php: added example code
+
+2008-03-23 14:11  kevin
+
+	* .project, .settings,
+	  .settings/org.eclipse.php.core.projectOptions.prefs,
+	  Daemon.Class.php: Move Daemon Class to own repository
+
+2008-03-23 13:54  kevin
+
+	* .:
+

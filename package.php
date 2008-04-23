@@ -2,101 +2,112 @@
 /**
  * Script to generate package.xml file
  *
- * Taken from Information:LiveUser, thanks arnaud ;)
- * Original from PEAR::Log, thanks Jon ;)
- * More info http://www.developertutorials.com/pear-manual/developers.packagedef.html
+ * Taken from Limb PHP Framework http://limb-project.com 
+ * More info 
+ *  http://www.developertutorials.com/pear-manual/developers.packagedef.html
+ *  http://blog.astrumfutura.com/plugin/blogpdf
  *
  * @version   SVN: Release: $Id$
  */
+
+list($name, $baseVersion, $state) = explode('-', trim(file_get_contents(dirname(__FILE__) . '/docs/VERSION')));
+$notes = htmlspecialchars(file_get_contents(dirname(__FILE__) . '/docs/NOTES'));
+$summary = htmlspecialchars(file_get_contents(dirname(__FILE__) . '/docs/SUMMARY'));
+$description = htmlspecialchars(file_get_contents(dirname(__FILE__) . '/docs/DESCRIPTION'));
+$maintainers = file(dirname(__FILE__) . '/docs/MAINTAINERS');
+
+$version = $baseVersion . (isset($argv[3]) ? $argv[3] : '');
+$dir = dirname(__FILE__);
+
+$apiVersion = $baseVersion;
+$apiStability = $state;
+
 require_once 'PEAR/PackageFileManager2.php';
-require_once 'Console/Getopt.php';
+PEAR::setErrorHandling(PEAR_ERROR_DIE);
 
-$packagefile = 'package.xml';
-
-$version = '';
-$apiVersion = '';
-
-$notes = <<<EOT
-EOT;
-
-$description = <<<EOT
-  System_Daemon turns PHP-CLI scripts into daemons
-EOT;
-
-$options = array('filelistgenerator' => 'svn',
-    'package'           => 'Daemon',
-    'summary'           => 'Turn PHP scripts into Linux daemons',
-    'description'       => $description,
+$options = array(
+    'package'           => $name,
+    'summary'           => $summary,
     'version'           => $version,
-    'state'             => 'beta',
-    'license'           => 'BSD',
+    'state'             => $state,
+    'description'       => $description,
+    'notes'             => $notes,
     'filelistgenerator' => 'svn',
-    'ignore'            => array('package.php', 'package.xml', '.project', '.settings'),
-    'clearcontents'     => false,
-    'changelogoldtonew' => false,
+    'ignore'            => array('package2.php',
+                                 'package.xml',
+                                 '*.tgz',
+                                 '.svn',
+                                 'docs'
+                            ),
     'simpleoutput'      => true,
-    'packagedirectory'  => './',
-    'dir_roles'         => array('sql'               => 'data',
-                                 'docs'              => 'doc',
-                                 'scripts'           => 'script')
+    'clearcontents'     => true,
+    'baseinstalldir'    => 'System',
+    'packagedirectory'  => dirname(__FILE__),
+    'packagefile'       => 'package.xml',
+    'dir_roles'         => array(
+                                'docs' => 'doc',
+                                'examples' => 'doc',
+                                'tests' => 'test'
+                            ),
+    'roles'             => array(
+                                '*' => 'php'
+                            )
 );
 
 
-$p2 = &PEAR_PackageFileManager2::importOptions($packagefile, $options);
-$p2->setPackageType('php');
-$p2->addRelease();
-$p2->generateContents();
-$p2->setReleaseVersion($version);
-$p2->setAPIVersion($apiVersion);
-$p2->setReleaseStability('beta');
-$p2->setAPIStability('beta');
-$p2->setNotes($notes);
+$packagexml = new PEAR_PackageFileManager2;
+$e = $packagexml->setOptions($options);
 
-$result = $package->setOptions(array(
-));
+// Oddly enough, this is a PHP source code package...
+$packagexml->setPackageType('php');
+// Package name, summary and longer description
+$packagexml->setPackage($name);
+$packagexml->setSummary($summary);
+$packagexml->setDescription($description);
+// The channel where this package is hosted. Since we're installing from a local
+// downloaded file rather than a channel we'll pretend it's from PEAR.
+$packagexml->setChannel('pear.php.net');
 
-if (PEAR::isError($result)) {
-    echo $result->getMessage();
-    exit();
+foreach ($maintainers as $line) {
+    list($role, $nick, $name, $email, $active) = explode(',', $line);
+    $packagexml->addMaintainer($role, $nick, $name, $email, $active);
 }
 
-$package->addMaintainer('kevin',   'lead',      'Kevin van Zonneveld' ,'kevin@vanzonneveld.net');
+$packagexml->setNotes($notes);
+// Add any known dependencies such as PHP version, extensions, PEAR installer
+$packagexml->setPhpDep('5.1.2'); // spl_autoload_register
+$packagexml->setPearinstallerDep('1.4.0');
+$packagexml->addPackageDepWithChannel('optional', 'PEAR', 'pear.php.net', '1.4.0');
+$packagexml->setOSInstallCondition('(*ix|*ux|darwin*|*BSD|SunOS*)');
+//$packagexml->addPackageDepWithChannel('php',              '5.2.1', 'ge',  'php', false);
+//$packagexml->addPackageDepWithChannel('PEAR',             '1.3.3', 'ge',  'pkg', false);
+//$packagexml->addPackageDepWithChannel('Linux',            false,   'has', 'os',  false);
 
-$package->addDependency('php',              '5.2.1', 'ge',  'php', false);
-$package->addDependency('PEAR',             '1.3.3', 'ge',  'pkg', false);
-$package->addDependency('Linux',            false,   'has', 'os',  false);
 
-if (array_key_exists('make', $_GET) || (isset($_SERVER['argv'][1]) && $_SERVER['argv'][1] == 'make')) {
-    echo "package.xml generated\n";
-    $result = $package->writePackageFile();
+// Other info, like the Lead Developers. license, version details and stability type
+$packagexml->setLicense('New BSD License', 'http://opensource.org/licenses/bsd-license.php');
+$packagexml->setAPIVersion($baseVersion);
+$packagexml->setAPIStability($state);
+$packagexml->setReleaseVersion($baseVersion);
+$packagexml->setReleaseStability($state);
+// Add this as a release, and generate XML content
+$packagexml->addRelease();
+
+$packagexml->generateContents();
+
+if (isset($_GET['make']) || (isset($_SERVER['argv']) && @$_SERVER['argv'][1] == 'make')) {
+    $packagexml->writePackageFile();
 } else {
-    $result = $package->debugPackageFile();
+    $packagexml->debugPackageFile();
 }
+
+
+/*
+$result = $package->writePackageFile();
 
 if (PEAR::isError($result)) {
     echo $result->getMessage();
-    exit();
+    exit(1);
 }
-
-
-
-/**
- *     'changelogoldtonew' => false,
-    'notes'             => $notes,
-    'baseinstalldir'    => '/LiveUser',
-    'installexceptions' => array(
-        'LiveUser.php'            => '/',
-    ),
-    'installas'         => array(
-        'sql/Auth_XML.xml'           => 'misc/Auth_XML.xml',
-        'sql/Perm_XML.xml'           => 'misc/Perm_XML.xml',
-        'sql/README'                 => 'misc/schema/README',
-        'sql/install.php'            => 'misc/schema/install.php',
-    ),
-    'exceptions'         => array(
-        'lgpl.txt' => 'doc'
-    ),
- * 
- */
-
+*/
 ?>
