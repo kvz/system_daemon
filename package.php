@@ -33,11 +33,12 @@ $options = array(
     'description'       => $description,
     'notes'             => $notes,
     'filelistgenerator' => 'svn',
-    'ignore'            => array('package2.php',
-                                 'package.xml',
-                                 '*.tgz',
-                                 '.svn',
-                                 'docs'
+    'ignore'            => array(   'package2.php',
+                                    'package.xml',
+                                    '*.tgz',
+                                    '.svn',
+                                    'docs',
+                                    'tools'
                             ),
     'simpleoutput'      => true,
     'clearcontents'     => true,
