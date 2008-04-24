@@ -23,7 +23,7 @@ spawning standalone daemons, and for example includes:
   <active>yes</active>
  </lead>
  <date>2008-04-24</date>
- <time>09:44:53</time>
+ <time>09:59:15</time>
  <version>
   <release>0.1</release>
   <api>0.1</api>
@@ -85,6 +85,7 @@ spawning standalone daemons, and for example includes:
 2008-03-23 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
         [r2] Move Daemon Class to own repository
+
  </notes>
  <contents>
   <dir baseinstalldir="System" name="/">
@@ -109,7 +110,6 @@ spawning standalone daemons, and for example includes:
     <file name="changelog_gen.php" role="php" />
     <file name="package_gen.php" role="php" />
    </dir> <!-- /tools -->
-   <file name=".project" role="php" />
    <file name="ChangeLog.html" role="php" />
   </dir> <!-- / -->
  </contents>
@@ -122,13 +122,6 @@ spawning standalone daemons, and for example includes:
     <min>1.4.0</min>
    </pearinstaller>
   </required>
-  <optional>
-   <package>
-    <name>PEAR</name>
-    <channel>pear.php.net</channel>
-    <min>1.4.0</min>
-   </package>
-  </optional>
  </dependencies>
  <phprelease>
   <installconditions>
@@ -202,6 +195,7 @@ spawning standalone daemons, and for example includes:
 2008-03-23 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
         [r2] Move Daemon Class to own repository
+
    </notes>
   </release>
  </changelog>

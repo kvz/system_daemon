@@ -1,3 +1,4 @@
+#!/usr/bin/php -q
 <?php
 /**
  * Script to generate package.xml file
@@ -40,6 +41,7 @@ $options = array(
                                     'package.xml',
                                     '*.tgz',
                                     '.svn',
+                                    '.project',
                                     'docs',
                                     'tools'
                             ),
