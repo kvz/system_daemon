@@ -13,15 +13,16 @@
 $workspace_dir = realpath(dirname(__FILE__)."/..");
 
 list($name, $baseVersion, $state) = explode('-', trim(file_get_contents($workspace_dir . '/docs/VERSION')));
-$notes = htmlspecialchars(file_get_contents($workspace_dir . '/docs/NOTES'));
-$summary = htmlspecialchars(file_get_contents($workspace_dir . '/docs/SUMMARY'));
+
+$notes       = htmlspecialchars(file_get_contents($workspace_dir . '/docs/NOTES'));
+$summary     = htmlspecialchars(file_get_contents($workspace_dir . '/docs/SUMMARY'));
 $description = htmlspecialchars(file_get_contents($workspace_dir . '/docs/DESCRIPTION'));
 $maintainers = file($workspace_dir . '/docs/MAINTAINERS');
 
 $version = $baseVersion . (isset($argv[3]) ? $argv[3] : '');
-$dir = $workspace_dir;
+$dir     = $workspace_dir;
 
-$apiVersion = $baseVersion;
+$apiVersion   = $baseVersion;
 $apiStability = $state;
 
 require_once 'PEAR/PackageFileManager2.php';
@@ -80,7 +81,7 @@ $packagexml->setNotes($notes);
 // Add any known dependencies such as PHP version, extensions, PEAR installer
 $packagexml->setPhpDep('5.1.2'); // spl_autoload_register
 $packagexml->setPearinstallerDep('1.4.0');
-$packagexml->addPackageDepWithChannel('optional', 'PEAR', 'pear.php.net', '1.4.0');
+//$packagexml->addPackageDepWithChannel('optional', 'PEAR', 'pear.php.net', '1.4.0');
 $packagexml->setOSInstallCondition('(*ix|*ux|darwin*|*BSD|SunOS*)');
 
 // Other info, like the Lead Developers. license, version details and stability type

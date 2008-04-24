@@ -19,11 +19,6 @@ foreach ($cmd_reqs as $cmd=>$package) {
     }
 }
 
-function array_unique_save ($a, $pk = true) {
-    $a = array_diff_key($a, array_unique($a));
-    return ($pk ? $a : array_values($a));
-}
-
 // collect data
 $cmd  = "";
 $cmd .= "svn2cl -i --stdout --group-by-day --linelen=90000 ".$workspace_dir;

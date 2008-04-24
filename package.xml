@@ -6,25 +6,86 @@
  <name>System_Daemon</name>
  <channel>pear.php.net</channel>
  <summary>Turn PHP scripts into Linux daemons</summary>
- <description>System_Daemon turns PHP-CLI scripts into daemons</description>
+ <description>System_Daemon is a PHP class that allows developers to create their own daemon 
+applications on Linux systems. The class is focussed entirely on creating &amp;amp; 
+spawning standalone daemons, and for example includes:
+
+   1. Methods to generate OS-specific startup-files (init.d) (currently only 
+      Debian/Ubuntu are supported), so that your application gets started on 
+      reboot as well.
+   2. Methods for logging purposes
+   3. Simple syntax
+ </description>
  <lead>
   <name>Kevin van Zonneveld</name>
   <user>kevin</user>
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
- <date>2008-04-23</date>
- <time>14:20:38</time>
+ <date>2008-04-24</date>
+ <time>09:44:53</time>
  <version>
   <release>0.1</release>
   <api>0.1</api>
  </version>
  <stability>
-  <release>beta</release>
-  <api>beta</api>
+  <release>alpha</release>
+  <api>alpha</api>
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
- <notes>fixed</notes>
+ <notes>2008-04-23 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r53] Created tools for package &amp;amp; changelog generation
+        [r52] Delete tools. svn2cl is in subversion-tools package.
+        [r51] Reorganize directory structure
+        [r50] Package.xml
+
+2008-04-22 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r49] More packaging tryouts
+        [r48] Package.xml generator
+        [r46] Executable
+        [r45] Comments &amp;amp; executable
+        [r44] PEAR CS compliance
+        [r43] Comments
+        [r42] Readded autoloader code from the PHP_CodeSniffer package by Greg Sherwood and Marc McIntyre
+        [r41] Revised log facility
+        [r40] Improved logging facility
+        [r39] Replaced to many uids. fixed
+        [r38] Added more consistency in methodnames
+        [r37] Improved example
+        [r37] Added better PEAR independance
+        [r36] Removed autoloader code from the PHP_CodeSniffer package
+        [r35] Autoloader code from the PHP_CodeSniffer package by Greg Sherwood and Marc McIntyre
+        [r34] Added PHP-CLI requirement
+        [r32] Reorganise directory structure
+        [r30] Reorganise directory structue
+        [r26] Camelized every variable &amp;amp; function
+        [r22] Renamed initd to more distinct initdForge
+        [r21] More comments
+        [r19] Rename Daemon to System_Daemon and add Exception class
+
+2008-04-21 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r18] Process PHP_CodeSniffer pointers
+        [r13] Svn keywords
+
+2008-04-19 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r11] Svn://svn.plutonia.nl/system_daemon
+
+2008-04-15 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r10] More ignores
+
+2008-03-24 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r5] Added example code
+
+2008-03-23 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r2] Move Daemon Class to own repository
+ </notes>
  <contents>
   <dir baseinstalldir="System" name="/">
    <dir name="docs">
@@ -34,15 +95,22 @@
     <file name="SUMMARY" role="doc" />
     <file name="VERSION" role="doc" />
    </dir> <!-- /docs -->
+   <dir name="examples">
+    <file name="logparser.php" role="doc" />
+    <file name="simple.php" role="doc" />
+   </dir> <!-- /examples -->
    <dir name="System">
     <dir name="Daemon">
      <file name="Exception.php" role="php" />
     </dir> <!-- /System/Daemon -->
     <file name="Daemon.php" role="php" />
    </dir> <!-- /System -->
+   <dir name="tools">
+    <file name="changelog_gen.php" role="php" />
+    <file name="package_gen.php" role="php" />
+   </dir> <!-- /tools -->
    <file name=".project" role="php" />
-   <file name="example_logparser.php" role="php" />
-   <file name="package.php" role="php" />
+   <file name="ChangeLog.html" role="php" />
   </dir> <!-- / -->
  </contents>
  <dependencies>
@@ -53,13 +121,22 @@
    <pearinstaller>
     <min>1.4.0</min>
    </pearinstaller>
+  </required>
+  <optional>
    <package>
     <name>PEAR</name>
     <channel>pear.php.net</channel>
     <min>1.4.0</min>
    </package>
-  </required>
+  </optional>
  </dependencies>
+ <phprelease>
+  <installconditions>
+   <os>
+    <name>(*ix|*ux|darwin*|*BSD|SunOS*)</name>
+   </os>
+  </installconditions>
+ </phprelease>
  <phprelease />
  <changelog>
   <release>
@@ -68,12 +145,64 @@
     <api>0.1</api>
    </version>
    <stability>
-    <release>beta</release>
-    <api>beta</api>
+    <release>alpha</release>
+    <api>alpha</api>
    </stability>
-   <date>2008-04-23</date>
+   <date>2008-04-24</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
-   <notes>fixed</notes>
+   <notes>2008-04-23 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r53] Created tools for package &amp;amp; changelog generation
+        [r52] Delete tools. svn2cl is in subversion-tools package.
+        [r51] Reorganize directory structure
+        [r50] Package.xml
+
+2008-04-22 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r49] More packaging tryouts
+        [r48] Package.xml generator
+        [r46] Executable
+        [r45] Comments &amp;amp; executable
+        [r44] PEAR CS compliance
+        [r43] Comments
+        [r42] Readded autoloader code from the PHP_CodeSniffer package by Greg Sherwood and Marc McIntyre
+        [r41] Revised log facility
+        [r40] Improved logging facility
+        [r39] Replaced to many uids. fixed
+        [r38] Added more consistency in methodnames
+        [r37] Improved example
+        [r37] Added better PEAR independance
+        [r36] Removed autoloader code from the PHP_CodeSniffer package
+        [r35] Autoloader code from the PHP_CodeSniffer package by Greg Sherwood and Marc McIntyre
+        [r34] Added PHP-CLI requirement
+        [r32] Reorganise directory structure
+        [r30] Reorganise directory structue
+        [r26] Camelized every variable &amp;amp; function
+        [r22] Renamed initd to more distinct initdForge
+        [r21] More comments
+        [r19] Rename Daemon to System_Daemon and add Exception class
+
+2008-04-21 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r18] Process PHP_CodeSniffer pointers
+        [r13] Svn keywords
+
+2008-04-19 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r11] Svn://svn.plutonia.nl/system_daemon
+
+2008-04-15 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r10] More ignores
+
+2008-03-24 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r5] Added example code
+
+2008-03-23 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r2] Move Daemon Class to own repository
+   </notes>
   </release>
  </changelog>
 </package>
