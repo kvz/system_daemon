@@ -155,7 +155,7 @@ abstract class System_Daemon
     static private $_logLevels = array(
         0=> "debug",
         1=> "info",
-        2=> "waring",
+        2=> "warning",
         3=> "critical",
         4=> "fatal"
     );
@@ -443,6 +443,7 @@ abstract class System_Daemon
     static public function osInitDWrite( $overwrite=false )
     {
         try {
+            System_Daemon_OS::setProperties();
             $ret = System_Daemon_OS::initDWrite($overwrite);
         } catch (System_Daemon_OS_Exception $e) {
             // Catch-all for System_Daemon_OS errors...

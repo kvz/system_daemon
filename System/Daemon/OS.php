@@ -66,14 +66,14 @@ abstract class System_Daemon_OS extends System_Daemon
     private static $_intFunctionCache = array();
     
     /**
-     * Constructor. Also accesses the daemon specific properties
+     * Semi-Constructor. Accesses daemon specific properties
      *  
      * @param array $properties Allows you to overrule the otherwise inheritted
      * daemon properties. 
      * 
      * @return array
      */       
-    public function __construct($properties = false) 
+    public function setProperties($properties = false) 
     {
         if (!is_array($properties)) {
             // inherit from parent class
@@ -87,7 +87,7 @@ abstract class System_Daemon_OS extends System_Daemon
             // override
             self::$_daemonProperties = $properties;
         }
-    }
+    } // end setProperties
     
     
     /**
@@ -107,19 +107,28 @@ abstract class System_Daemon_OS extends System_Daemon
         $function = false, $line = false)
     {
         
-        $all_classes = get_declared_classes();
-        if (in_array("System_Daemon", $all_classes)) {
+        if (parent) {
             // preferably let parent System_Daemon class handle
             // any errors. throws exceptions as well, but gives
             // a single & independent point of log flow control.
             parent::log($level, $str, $file, $class, $function, $line);
-        } elseif (in_array("PEAR", $all_classes)) {
-            // PEAR exception if not standalone
-            throw new System_Daemon_OS_Exception($log_line);
-        } else {
-            // This should never happen
-            throw new Exception('Panic: No valid log facility available!');
-        }        
+        } elseif($level > 1) {
+            // Only make exceptions in case of errors
+            if (class_exists('System_Daemon_OS_Exception', true) === false) {
+                // Own exception
+                throw new System_Daemon_OS_Exception($log_line);
+            } elseif (class_exists('PEAR_Exception', true) === false) {
+                // PEAR exception if not standalone
+                throw new PEAR_Exception($log_line);
+            } elseif (class_exists('Exception', true) === false) {
+                // General exception
+                throw new Exception($log_line);
+            } else {
+                // This should never happen
+                trigger_error("Panic: No valid log facility available!\n", 
+                    E_USER_ERROR);
+            }                     
+        }
     }//end _log()   
         
     

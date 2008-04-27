@@ -75,12 +75,12 @@ if (!$runmode["no-daemon"]) {
 // system startup file called: 'init.d'
 // This will make sure your daemon will be started on reboot 
 if (!$runmode["write-initd"]) {
-    $daemon->log(1, "not writing an init.d script this time");
+    System_Daemon::log(1, "not writing an init.d script this time");
 } else {
-    if (($initd_location = $daemon->osInitDWrite()) === false) {
-        $daemon->log(2, "unable to write init.d script");
+    if (($initd_location = System_Daemon::osInitDWrite()) === false) {
+        System_Daemon::log(2, "unable to write init.d script");
     } else {
-        $daemon->log(1, "sucessfully written startup script: ".$initd_location);
+        System_Daemon::log(1, "sucessfully written startup script: ".$initd_location);
     }
 }
 
@@ -98,15 +98,15 @@ $cnt = 1;
 // - That the Daemon Class hasn't reported it's dying
 // - That your own code has been running Okay
 // - That we're not executing more than 3 runs 
-while (!$daemon->daemonIsDying() && $runningOkay && $cnt <=3) {
+while (!System_Daemon::daemonIsDying() && $runningOkay && $cnt <=3) {
     // What mode are we in?
-    $mode = "'".($daemon->daemonInBackground() ? "" : "non-" )."daemon' mode";
+    $mode = "'".(System_Daemon::daemonInBackground() ? "" : "non-" )."daemon' mode";
     
     // Log something using the Daemon class's logging facility
     // Depending on runmode it will either end up:
     //  - In the /var/log/logparser.log
     //  - On screen (in case we're not a daemon yet)  
-    $daemon->log(1, $daemon->appName." running in ".$mode." ".$cnt."/3");
+    System_Daemon::log(1, System_Daemon::$appName." running in ".$mode." ".$cnt."/3");
     
     // In the actuall logparser program, You could replace 'true'
     // With e.g. a  parseLog('vsftpd') function, and have it return
@@ -119,7 +119,7 @@ while (!$daemon->daemonIsDying() && $runningOkay && $cnt <=3) {
     // Level 4 would be fatal and shuts down the daemon immediately, which in 
     // this case is handled by the while condition.
     if (!$runningOkay) {
-        $daemon->log(3, "parseLog() produces an error, so this will be my last run");
+        System_Daemon::log(3, "parseLog() produces an error, so this will be my last run");
     }
     
     // Relax the system by sleeping for a little bit
@@ -129,5 +129,5 @@ while (!$daemon->daemonIsDying() && $runningOkay && $cnt <=3) {
 
 // Shut down the daemon nicely
 // This is ignored if the class is actually running in the foreground
-$daemon->stop();
+System_Daemon::stop();
 ?>
