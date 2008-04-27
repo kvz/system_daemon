@@ -19,7 +19,7 @@
  * 
  * If you run this code successfully, a daemon will be spawned
  * and stopped directly. You should find a log enty in 
- * /var/log/simpled.log
+ * /var/log/simple.log
  * 
  */
     
@@ -27,13 +27,13 @@
 require_once "System/Daemon.php";
 
 // Bare minimum setup
-$daemon                 = new System_Daemon("simpled", true);
+$daemon                 = new System_Daemon("simple", true);
 $daemon->appDir         = dirname(__FILE__);
-$daemon->log("Daemon not yet started so this will be written on-screen");
+$daemon->log(1, "Daemon not yet started so this will be written on-screen");
 
 // Spawn Deamon!
 $daemon->start();
-$daemon->log("Daemon: 'simpled' spawned! This will be written to /var/log/simpled.log");
+$daemon->log(1, "Daemon: 'simple' spawned! This will be written to /var/log/simple.log");
 
 // Your normal PHP code goes here. Only the code will run in the background
 // so you can close your terminal session, and the application will
