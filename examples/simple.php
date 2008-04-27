@@ -27,11 +27,12 @@
 require_once "System/Daemon.php";
 
 // Bare minimum setup
-System_Daemon::$appDir = dirname(__FILE__);
+System_Daemon::$appName = "simple";
+System_Daemon::$appDir  = dirname(__FILE__);
 System_Daemon::log(1, "Daemon not yet started so this will be written on-screen");
 
 // Spawn Deamon!
-System_Daemon::start("simple");
+System_Daemon::start();
 System_Daemon::log(1, "Daemon: 'simple' spawned! This will be written to ".
     "/var/log/simple.log");
 

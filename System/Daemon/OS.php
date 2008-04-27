@@ -66,7 +66,8 @@ abstract class System_Daemon_OS extends System_Daemon
     private static $_intFunctionCache = array();
     
     /**
-     * Semi-Constructor. Accesses daemon specific properties
+     * Either inherit daemon specific properties, or overrule
+     * them
      *  
      * @param array $properties Allows you to overrule the otherwise inheritted
      * daemon properties. 
@@ -82,11 +83,40 @@ abstract class System_Daemon_OS extends System_Daemon
                 self::$_daemonProperties["appDescription"] = parent::$appDescription;
                 self::$_daemonProperties["authorName"]     = parent::$authorName;
                 self::$_daemonProperties["authorEmail"]    = parent::$authorEmail;
-            }            
+            } else {
+                self::log(3, "Impossible to inherit daemon properties ".
+                    "from parent class", 
+                    __FILE__, __CLASS__, __FUNCTION__, __LINE__); 
+            }
         } else {
             // override
             self::$_daemonProperties = $properties;
         }
+        
+        // Tests
+        $required_props = array("appName", "appDescription", "appDir", 
+            "authorName", "authorEmail");
+        
+        // check if all required properties are available
+        if (!is_array(self::$_daemonProperties) || !count(self::$_daemonProperties)) {
+            self::_log(2, "No properties to forge init.d script", 
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false;
+        }
+        foreach ($required_props as $required_prop) {
+            if (!isset(self::$_daemonProperties[$required_prop]) || !self::$_daemonProperties[$required_prop]) {
+                self::_log(2, "Cannot forge an init.d script without a valid ".
+                    "daemon property: ".$required_prop, 
+                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                return false;
+            }
+            
+            // addslashes
+            self::$_daemonProperties[$required_prop] = addslashes(self::$_daemonProperties[$required_prop]);
+        }
+        
+        return true;
+        
     } // end setProperties
     
     
@@ -106,21 +136,20 @@ abstract class System_Daemon_OS extends System_Daemon
     private function _log($level, $str, $file = false, $class = false, 
         $function = false, $line = false)
     {
-        
-        if (parent) {
+        if (class_exists("System_Daemon")) {
             // preferably let parent System_Daemon class handle
             // any errors. throws exceptions as well, but gives
             // a single & independent point of log flow control.
             parent::log($level, $str, $file, $class, $function, $line);
         } elseif($level > 1) {
             // Only make exceptions in case of errors
-            if (class_exists('System_Daemon_OS_Exception', true) === false) {
+            if (class_exists("System_Daemon_OS_Exception", true) === false) {
                 // Own exception
                 throw new System_Daemon_OS_Exception($log_line);
-            } elseif (class_exists('PEAR_Exception', true) === false) {
+            } elseif (class_exists("PEAR_Exception", true) === false) {
                 // PEAR exception if not standalone
                 throw new PEAR_Exception($log_line);
-            } elseif (class_exists('Exception', true) === false) {
+            } elseif (class_exists("Exception", true) === false) {
                 // General exception
                 throw new Exception($log_line);
             } else {
@@ -249,25 +278,6 @@ abstract class System_Daemon_OS extends System_Daemon
 
             // daemon properties
             $properties     = self::$_daemonProperties;
-            $required_props = array("appName");
-            
-            // check if all required properties are available
-            if (!is_array($properties) || !count($properties)) {
-                self::_log(2, "No properties to forge init.d script", 
-                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-                return false;
-            }
-            foreach ($required_props as $required_prop) {
-                if (!isset($properties[$required_prop]) || !$properties[$required_prop]) {
-                    self::_log(2, "Cannot forge an init.d script without a valid ".
-                        "daemon property: ".$required_prop, 
-                        __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-                    return false;
-                }
-                
-                // addslashes
-                $required_props[$required_prop] = addslashes($required_prop);
-            }
                         
             // collect OS information
             list($main, $distro, $version) = array_values(self::determine());
@@ -308,27 +318,7 @@ abstract class System_Daemon_OS extends System_Daemon
         
         // daemon properties
         $properties     = self::$_daemonProperties;
-        $required_props = array("appName", "appDescription", "appDir", 
-            "authorName", "authorEmail");
-        
-        // check if all required properties are available
-        if (!is_array($properties) || !count($properties)) {
-            self::_log(2, "No properties to forge init.d script", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;
-        }
-        foreach ($required_props as $required_prop) {
-            if (!isset($properties[$required_prop]) || !$properties[$required_prop]) {
-                self::_log(2, "Cannot forge an init.d script without a valid ".
-                    "daemon property: ".$required_prop, 
-                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-                return false;
-            }
-            
-            // addslashes
-            $required_props[$required_prop] = addslashes($required_prop);
-        }
-        
+                
         // check path
         $daemon_filepath = $properties["appDir"]."/".$properties["appExecutable"];
         if (!file_exists($daemon_filepath)) {

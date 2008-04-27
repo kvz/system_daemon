@@ -60,6 +60,7 @@ if ($runmode["help"] == true) {
 require_once "System/Daemon.php";
 
 // Setup
+System_Daemon::$appName        = "logparser";
 System_Daemon::$appDir         = dirname(__FILE__);
 System_Daemon::$appDescription = "Parses logfiles of vsftpd and stores them in MySQL";
 System_Daemon::$authorName     = "Kevin van Zonneveld";
@@ -68,7 +69,7 @@ System_Daemon::$authorEmail    = "kevin@vanzonneveld.net";
 // This program can also be run in the forground with runmode --no-daemon
 if (!$runmode["no-daemon"]) {
     // Spawn Daemon 
-    System_Daemon::start("logparser", true);
+    System_Daemon::start(true);
 }
 
 // With the runmode --write-initd, this program can automatically write a 

@@ -235,17 +235,15 @@ abstract class System_Daemon
     /**
      * Spawn daemon process.
      * 
-     * @param string  $appName The unix name of your daemon application.
      * @param boolean $pear    Wether or not to run as a part of pear.
-     *      *
+     * 
      * @return void
      * @see stop()
      * @see _daemonInit()
      * @see _daemonBecome()
      */
-    static public function start($appName, $pear = true)
+    static public function start($pear = true)
     {
-        self::$appName = $appName;
         self::$pear    = $pear;
         
         // to run as a part of PEAR
@@ -443,7 +441,13 @@ abstract class System_Daemon
     static public function osInitDWrite( $overwrite=false )
     {
         try {
+            // init vars (needed for init.d script)
+            self::_daemonInit();
+            
+            // copy properties to OS object
             System_Daemon_OS::setProperties();
+            
+            // 
             $ret = System_Daemon_OS::initDWrite($overwrite);
         } catch (System_Daemon_OS_Exception $e) {
             // Catch-all for System_Daemon_OS errors...
@@ -474,6 +478,11 @@ abstract class System_Daemon
         ob_implicit_flush();
         
         // verify appName
+        if (!isset(self::$appName) || !self::$appName) {
+            self::log(4, "No appName set", 
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false;
+        }
         if (!self::_strIsUnix(self::$appName)) {
             // suggest a better appName
             $safe_name = self::_strToUnix(self::$appName);
