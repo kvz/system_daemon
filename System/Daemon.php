@@ -36,14 +36,14 @@ spl_autoload_register(array('System_Daemon', 'autoload'));
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * 
  */
-class System_Daemon
+abstract class System_Daemon
 {
     /**
      * Wether or not to run this class standalone, or as a part of PEAR
      *
      * @var boolean
      */
-    public $pear = true;
+    static public $pear = true;
     
     /**
      * Author name, e.g.: Kevin van zonneveld 
@@ -51,7 +51,7 @@ class System_Daemon
      *
      * @var string
      */
-    public $authorName;
+    static public $authorName;
 
     /**
      * Author name, e.g.: kevin@vanzonneveld.net 
@@ -59,14 +59,14 @@ class System_Daemon
      *
      * @var string
      */
-    public $authorEmail;
+    static public $authorEmail;
   
     /**
      * The application name, e.g.: logparser
      *
      * @var string
      */
-    public $appName;
+    static public $appName;
 
     /**
      * Daemon description, e.g.: Parses logfiles of vsftpd and stores them in MySQL
@@ -74,7 +74,7 @@ class System_Daemon
      *
      * @var string
      */
-    public $appDescription;
+    static public $appDescription;
 
     /**
      * The home directory of the applications, e.g.: /usr/local/logparser
@@ -83,7 +83,7 @@ class System_Daemon
      *
      * @var string
      */
-    public $appDir;
+    static public $appDir;
 
     /**
      * The executeble daemon file, e.g.: logparser.php
@@ -92,7 +92,7 @@ class System_Daemon
      *
      * @var string
      */
-    public $appExecutable;
+    static public $appExecutable;
 
     /**
      * The pid filepath , e.g.: /var/run/logparser.pid
@@ -100,7 +100,7 @@ class System_Daemon
      *
      * @var string
      */
-    public $appPidLocation;
+    static public $appPidLocation;
 
     /**
      * The log filepath , e.g.: /var/log/logparser_daemon.log
@@ -108,7 +108,7 @@ class System_Daemon
      *
      * @var string
      */
-    public $logLocation;
+    static public $logLocation;
 
     /**
      * The user id under which to run the process, e.g.: 1000
@@ -116,7 +116,7 @@ class System_Daemon
      * 
      * @var string
      */
-    public $appRunAsUID = 0;
+    static public $appRunAsUID = 0;
 
     /**
      * The group id under which to run the process, e.g.: 1000
@@ -124,7 +124,7 @@ class System_Daemon
      *
      * @var string
      */
-    public $appRunAsGID = 0;
+    static public $appRunAsGID = 0;
     
     /**
      * Kill daemon if it cannot assume the identity (uid + gid)
@@ -133,7 +133,7 @@ class System_Daemon
      *
      * @var string
      */
-    public $appDieOnIdentityCrisis = true;
+    static public $appDieOnIdentityCrisis = true;
 
     /**
      * Messages below this log level are ignored (not written 
@@ -143,7 +143,7 @@ class System_Daemon
      * @var integer
      */
     
-    public $logVerbosity = 1;
+    static public $logVerbosity = 1;
     
     
     
@@ -152,7 +152,7 @@ class System_Daemon
      *
      * @var array
      */
-    private $_logLevels = array(
+    static private $_logLevels = array(
         0=> "debug",
         1=> "info",
         2=> "waring",
@@ -165,38 +165,38 @@ class System_Daemon
      *
      * @var integer
      */
-    private $_processId = 0;
+    static protected $_processId = 0;
 
     /**
      * Wether the our daemon is being killed
      *
      * @var boolean
      */
-    private $_daemonIsDying = false;    
+    static protected $_daemonIsDying = false;    
     
     /**
      * Wether all the variables have been initialized
      *
      * @var boolean
      */
-    private $_daemonIsInitialized = false;
+    static protected $_daemonIsInitialized = false;
 
     /**
      * Wether the current process is a forked child
      *
      * @var boolean
      */
-    private $_processIsChild = false;
+    static protected $_processIsChild = false;
     
     /**
      * Cache that holds values of some functions 
      * for performance gain. Easier then doing 
-     * if (!isset($this->XXX)) { $this->XXX = $this->XXX(); }
+     * if (!isset(self::$XXX)) { self::$XXX = self::XXX(); }
      * every time, in my opinion. 
      *
      * @var array
      */
-    private $_intFunctionCache = array();
+    static private $_intFunctionCache = array();
 
 
     
@@ -210,13 +210,13 @@ class System_Daemon
      * @see _daemonInit()
      * @see autoload()
      */
-    public function __construct($appName, $pear = true)
+    static public function __construct($appName, $pear = true)
     {
-        $this->appName = $appName;
-        $this->pear    = $pear;
+        self::$appName = $appName;
+        self::$pear    = $pear;
         
         // to run as a part of PEAR
-        if ( $this->pear ) {
+        if ( self::$pear ) {
             include_once "PEAR.php";
             include_once "PEAR/Exception.php";
             
@@ -248,7 +248,7 @@ class System_Daemon
      *
      * @return void
      */
-    public static function autoload($className)
+    static public static function autoload($className)
     {
         $parent     = 'System_';
         $parent_len = strlen($parent);
@@ -278,15 +278,15 @@ class System_Daemon
      * @see _daemonInit()
      * @see _daemonBecome()
      */
-    public function start()
+    static public function start()
     {
         // initialize & check variables
-        $this->_daemonInit();
+        self::_daemonInit();
         
-        //$this->log(4, "test");
+        //self::log(4, "test");
         
         // become daemon
-        $this->_daemonBecome();
+        self::_daemonBecome();
 
     }//end start()
 
@@ -296,21 +296,21 @@ class System_Daemon
      * @return void
      * @see start()
      */
-    public function stop()
+    static public function stop()
     {
-        $this->log(1, "stopping ".$this->appName." daemon", 
+        self::log(1, "stopping ".self::$appName." daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-        $this->_daemonDie();
+        self::_daemonDie();
     }//end stop()
     
     /**
      * Almost every deamon requires a log file, this function can
      * facilitate that. Also handles class-generated errors, chooses 
      * either PEAR handling or PEAR-independant handling, depending on:
-     * $this->pear
+     * self::$pear
      * 
      * It logs a string according to error levels specified in array: 
-     * $this->_logLevels (4 is fatal and handles daemon's death)
+     * self::$_logLevels (4 is fatal and handles daemon's death)
      *
      * @param integer $level    What function the log record is from
      * @param string  $str      The log record
@@ -324,10 +324,10 @@ class System_Daemon
      * @see _logLevels
      * @see logLocation
      */
-    public function log($level, $str, $file = false, $class = false, 
+    static public function log($level, $str, $file = false, $class = false, 
         $function = false, $line = false)
     {
-        if ($level < $this->logVerbosity) {
+        if ($level < self::$logVerbosity) {
             return true;
         }
         
@@ -346,12 +346,12 @@ class System_Daemon
 
         // determine what process the log is originating from and forge a logline
         $str_date  = "[".date("M d H:i:s")."]"; 
-        $str_ident = "@".substr($this->_daemonWhatIAm(), 0, 1)."-".posix_getpid();
-        $str_level = str_pad($this->_logLevels[$level]."", 8, " ", STR_PAD_LEFT);
+        $str_ident = "@".substr(self::_daemonWhatIAm(), 0, 1)."-".posix_getpid();
+        $str_level = str_pad(self::$_logLevels[$level]."", 8, " ", STR_PAD_LEFT);
         $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
         
         if ($level > 0) {
-            if (!$this->daemonInBackground() || !is_writable($this->logLocation)) {
+            if (!self::daemonInBackground() || !is_writable(self::$logLocation)) {
                 // it's okay to echo if you're running as a fore-ground process
                 // maybe the command to write an init.d file was issued.
                 // in such a case it's important to echo failures to the 
@@ -360,21 +360,21 @@ class System_Daemon
             }
             
             // write to logfile
-            file_put_contents($this->logLocation, $log_line."\n", FILE_APPEND);
+            file_put_contents(self::$logLocation, $log_line."\n", FILE_APPEND);
         }
         
         if ($level > 1) {
-            if ($this->pear) {
-                PEAR::raiseError($log_line);
+            if (self::$pear) {
+                //PEAR::raiseError($log_line);
             }
         }
         
         if ($level == 4) {
             // to run as a part of pear
-            if ($this->pear) {            
+            if (self::$pear) {            
                 throw new System_Daemon_Exception($log_line);
             }
-            $this->_daemonDie();
+            self::_daemonDie();
         }
         
         return true;
@@ -388,29 +388,29 @@ class System_Daemon
      * 
      * @return void
      */
-    public function daemonHandleSig( $signo )
+    static public function daemonHandleSig( $signo )
     {
         // Must be public or else will throw a 
         // fatal error: Call to private method 
          
-        $this->log(0, $this->appName." daemon received signal: ".$signo, 
+        self::log(0, self::$appName." daemon received signal: ".$signo, 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         switch ($signo) {
         case SIGTERM:
             // handle shutdown tasks
-            if ($this->daemonInBackGround()) {
-                $this->_daemonDie();
+            if (self::daemonInBackGround()) {
+                self::_daemonDie();
             } else {
                 exit;
             }
             break;
         case SIGHUP:
             // handle restart tasks
-            $this->log(1, $this->appName." daemon received signal: restart", 
+            self::log(1, self::$appName." daemon received signal: restart", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             break;
         case SIGCHLD:
-            $this->log(1, $this->appName." daemon received signal: hold", 
+            self::log(1, self::$appName." daemon received signal: hold", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             while (pcntl_wait($status, WNOHANG OR WUNTRACED) > 0) {
                 usleep(1000);
@@ -427,9 +427,9 @@ class System_Daemon
      * 
      * @return boolean
      */
-    public function daemonInBackground()
+    static public function daemonInBackground()
     {
-        return $this->_processIsChild;
+        return self::$_processIsChild;
     }//end daemonInBackground()
     
     /**
@@ -438,26 +438,44 @@ class System_Daemon
      * 
      * @return boolean
      */
-    public function daemonIsDying()
+    static public function daemonIsDying()
     {
-        return $this->_daemonIsDying;
+        return self::$_daemonIsDying;
     }//end daemonIsDying()
+    
+    /**
+     * Uses OS class to writes an: 'init.d' script on the filesystem
+     *  
+     * @param bolean $overwrite May the existing init.d file be overwritten?
+     * 
+     * @return boolean
+     */
+    static public function osInitDWrite( $overwrite=false )
+    {
+        try {
+            $ret = System_Daemon_OS::initDWrite($overwrite);
+        } catch (System_Daemon_OS_Exception $e) {
+            // Catch-all for System_Daemon_OS errors...
+            self::log(2, "Unable to create startup file: " . $e->getMessage());
+        }
+    }//end osInitDWrite()
+        
     
     /**
      * Initializes, sanitizes & defaults unset variables
      *
      * @return boolean
      */
-    private function _daemonInit() 
+    static private function _daemonInit() 
     {
         // if already initialized, skip
-        if ($this->_daemonIsInitialized) {
+        if (self::$_daemonIsInitialized) {
             return true;
         }
         
         // system settings
-        $this->_processId      = 0;
-        $this->_processIsChild = false;
+        self::$_processId      = 0;
+        self::$_processIsChild = false;
         ini_set("max_execution_time", "0");
         ini_set("max_input_time", "0");
         ini_set("memory_limit", "1024M");
@@ -465,104 +483,104 @@ class System_Daemon
         ob_implicit_flush();
         
         // verify appName
-        if (!$this->_strIsUnix($this->appName)) {
+        if (!self::_strIsUnix(self::$appName)) {
             // suggest a better appName
-            $safe_name = $this->_strToUnix($this->appName);
-            $this->log(4, "'".$this->appName."' is not a valid daemon name, ".
+            $safe_name = self::_strToUnix(self::$appName);
+            self::log(4, "'".self::$appName."' is not a valid daemon name, ".
                 "try using something like '".$safe_name."' instead", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         
         // default appPidLocation
-        if (!$this->appPidLocation) {
-            $this->appPidLocation = "/var/run/".$this->appName.".pid";
+        if (!self::$appPidLocation) {
+            self::$appPidLocation = "/var/run/".self::$appName.".pid";
         }
         // verify appPidLocation
-        if (!is_writable($dir = dirname($this->appPidLocation))) {
-            $this->log(4, "".$this->appName." daemon cannot write to ".
+        if (!is_writable($dir = dirname(self::$appPidLocation))) {
+            self::log(4, "".self::$appName." daemon cannot write to ".
                 "pidfile directory: ".$dir, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
 
         // default logLocation
-        if (!$this->logLocation) {
-            $this->logLocation = "/var/log/".$this->appName.".log";
+        if (!self::$logLocation) {
+            self::$logLocation = "/var/log/".self::$appName.".log";
         }
         // verify logLocation
-        if (!is_writable($dir = dirname($this->logLocation))) {
-            $this->log(4, "".$this->appName." daemon cannot write ".
+        if (!is_writable($dir = dirname(self::$logLocation))) {
+            self::log(4, "".self::$appName." daemon cannot write ".
                 "to log directory: ".$dir,
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         
         // verify logVerbosity
-        if ($this->logVerbosity < 0 || $this->logVerbosity > 4) {
-            $this->log(4, "logVerbosity needs to be between 0 and 4 ".
-                "logVerbosity: ".$this->logVerbosity."", 
+        if (self::$logVerbosity < 0 || self::$logVerbosity > 4) {
+            self::log(4, "logVerbosity needs to be between 0 and 4 ".
+                "logVerbosity: ".self::$logVerbosity."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         
         // verify appRunAsUID
-        if (!is_numeric($this->appRunAsUID)) {
-            $this->log(4, "".$this->appName." daemon has invalid ".
-                "appRunAsUID: ".$this->appRunAsUID.". ",
+        if (!is_numeric(self::$appRunAsUID)) {
+            self::log(4, "".self::$appName." daemon has invalid ".
+                "appRunAsUID: ".self::$appRunAsUID.". ",
                 "It should be an integer", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        $passwd = posix_getpwuid($this->appRunAsUID);
+        $passwd = posix_getpwuid(self::$appRunAsUID);
         if (!is_array($passwd) || !count($passwd) || 
             !isset($passwd["name"]) || !$passwd["name"]) {
-            $this->log(4, "".$this->appName." daemon has invalid ".
-                "appRunAsUID: ".$this->appRunAsUID.". ".
+            self::log(4, "".self::$appName." daemon has invalid ".
+                "appRunAsUID: ".self::$appRunAsUID.". ".
                 "No matching user on the system. ", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;            
         }
 
         // verify appRunAsGID
-        if (!is_numeric($this->appRunAsGID)) {
-            $this->log(4, "".$this->appName." daemon has invalid ".
-                "appRunAsGID: ".$this->appRunAsGID.". ",
+        if (!is_numeric(self::$appRunAsGID)) {
+            self::log(4, "".self::$appName." daemon has invalid ".
+                "appRunAsGID: ".self::$appRunAsGID.". ",
                 "It should be an integer",  
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        $group = posix_getgrgid($this->appRunAsGID);
+        $group = posix_getgrgid(self::$appRunAsGID);
         if (!is_array($group) || !count($group) || 
             !isset($group["name"]) || !$group["name"]) {
-            $this->log(4, "".$this->appName." daemon has invalid ".
-                "appRunAsGID: ".$this->appRunAsGID.". ".
+            self::log(4, "".self::$appName." daemon has invalid ".
+                "appRunAsGID: ".self::$appRunAsGID.". ".
                 "No matching group on the system. ", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;            
         }
         
         // default appDir
-        if (!$this->appDir) {
-            $this->appDir = dirname($_SERVER["SCRIPT_FILENAME"]);
+        if (!self::$appDir) {
+            self::$appDir = dirname($_SERVER["SCRIPT_FILENAME"]);
         }
         // verify appDir
-        if (!is_dir($this->appDir)) {
-            $this->log(4, "".$this->appName." daemon has invalid appDir: ".
-                $this->appDir."", 
+        if (!is_dir(self::$appDir)) {
+            self::log(4, "".self::$appName." daemon has invalid appDir: ".
+                self::$appDir."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         
         // verify appExecutable
-        if (!$this->appExecutable) {
-            $this->appExecutable = basename($_SERVER["SCRIPT_FILENAME"]);
+        if (!self::$appExecutable) {
+            self::$appExecutable = basename($_SERVER["SCRIPT_FILENAME"]);
         }
 
         
         // combine appdir + exe here to make SURE we got our data right 
         
-        $this->_daemonIsInitialized = true;
+        self::$_daemonIsInitialized = true;
         return true;
     }//end _daemonInit()
 
@@ -571,11 +589,11 @@ class System_Daemon
      *
      * @return void
      */
-    private function _daemonBecome() 
+    static private function _daemonBecome() 
     {
 
-        $this->log(1, "starting ".$this->appName." daemon, output in: ". 
-            $this->logLocation, 
+        self::log(1, "starting ".self::$appName." daemon, output in: ". 
+            self::$logLocation, 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         
         // important for daemons
@@ -594,50 +612,50 @@ class System_Daemon
         pcntl_signal(SIGCHLD, array($this, "daemonHandleSig"));
 
         // allowed?
-        if ($this->_daemonIsRunning()) {
-            $this->log(4, "".$this->appName." daemon is still running. ".
+        if (self::_daemonIsRunning()) {
+            self::log(4, "".self::$appName." daemon is still running. ".
                 "exiting", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // fork process!
-        if (!$this->_daemonFork()) {
-            $this->log(4, "".$this->appName." daemon was unable to fork", 
+        if (!self::_daemonFork()) {
+            self::log(4, "".self::$appName." daemon was unable to fork", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // assume specified identity (uid & gid)
-        if (!posix_setuid($this->appRunAsUID) || 
-            !posix_setgid($this->appRunAsGID)) {
-            if ($this->appDieOnIdentityCrisis) {
+        if (!posix_setuid(self::$appRunAsUID) || 
+            !posix_setgid(self::$appRunAsGID)) {
+            if (self::$appDieOnIdentityCrisis) {
                 $lvl = 4;
                 $swt = "on";
             } else {
                 $lvl = 3;
                 $swt = "off";
             }
-            $this->log($lvl, "".$this->appName." daemon was unable assume ".
-                "identity (uid=".$this->appRunAsUID.", gid=".
-                $this->appRunAsGID.") ".
+            self::log($lvl, "".self::$appName." daemon was unable assume ".
+                "identity (uid=".self::$appRunAsUID.", gid=".
+                self::$appRunAsGID.") ".
                 "and appDieOnIdentityCrisis was ". $swt, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // additional PID succeeded check
-        if (!is_numeric($this->_processId) || $this->_processId < 1) {
-            $this->log(4, "".$this->appName." daemon didn't have a valid ".
-                "pid: '".$this->_processId."'", 
+        if (!is_numeric(self::$_processId) || self::$_processId < 1) {
+            self::log(4, "".self::$appName." daemon didn't have a valid ".
+                "pid: '".self::$_processId."'", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         } else {
-            if (!file_put_contents($this->appPidLocation, $this->_processId)) {
-                $this->log(4, "".$this->appName." daemon was unable ".
-                    "to write to pidfile: ".$this->appPidLocation."", 
+            if (!file_put_contents(self::$appPidLocation, self::$_processId)) {
+                self::log(4, "".self::$appName." daemon was unable ".
+                    "to write to pidfile: ".self::$appPidLocation."", 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             }
         }
 
         // change dir & umask
-        @chdir($this->appDir);
+        @chdir(self::$appDir);
         @umask(0);
     }//end _daemonBecome()
 
@@ -646,17 +664,17 @@ class System_Daemon
      *
      * @return boolean
      */
-    private function _daemonIsRunning() 
+    static private function _daemonIsRunning() 
     {
-        if(!file_exists($this->appPidLocation)) return false;
-        $pid = @file_get_contents($this->appPidLocation);
+        if(!file_exists(self::$appPidLocation)) return false;
+        $pid = @file_get_contents(self::$appPidLocation);
 
         if ($pid !== false) {
             if (!posix_kill(intval($pid), 0)) {
                 // not responding so unlink pidfile
-                @unlink($this->appPidLocation);
-                $this->log(2, "".$this->appName." daemon orphaned pidfile ".
-                    "found and removed: ".$this->appPidLocation, 
+                @unlink(self::$appPidLocation);
+                self::log(2, "".self::$appName." daemon orphaned pidfile ".
+                    "found and removed: ".self::$appPidLocation, 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
                 return false;
             } else {
@@ -672,28 +690,28 @@ class System_Daemon
      *
      * @return boolean
      */
-    private function _daemonFork()
+    static private function _daemonFork()
     {
-        $this->log(0, "forking ".$this->appName." daemon", 
+        self::log(0, "forking ".self::$appName." daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
 
         $pid = pcntl_fork();
         if ( $pid == -1 ) {
             // error
-            $this->log(3, "".$this->appName." daemon could not be forked", 
+            self::log(3, "".self::$appName." daemon could not be forked", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         } else if ($pid) {
             // parent
-            $this->log(0, "ending ".$this->appName." parent process", 
+            self::log(0, "ending ".self::$appName." parent process", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             // die without attracting attention
             exit();
         } else {
             // child
-            $this->_processIsChild = true;
-            $this->_daemonIsDying  = false;
-            $this->_processId      = posix_getpid();
+            self::$_processIsChild = true;
+            self::$_daemonIsDying  = false;
+            self::$_processId      = posix_getpid();
             return true;
         }
     }//end _daemonFork()
@@ -703,9 +721,9 @@ class System_Daemon
      *
      * @return string
      */
-    private function _daemonWhatIAm()
+    static private function _daemonWhatIAm()
     {
-        return ($this->daemonInBackground()?"child":"parent");
+        return (self::daemonInBackground()?"child":"parent");
     }//end _daemonWhatIAm()
 
     /**
@@ -714,18 +732,18 @@ class System_Daemon
      *
      * @return void
      */
-    private function _daemonDie()
+    static private function _daemonDie()
     {
-        if (!$this->daemonIsDying()) {
-            $this->_daemonIsDying       = true;
-            $this->_daemonIsInitialized = false;
-            if (!$this->daemonInBackground() || 
-                !file_exists($this->appPidLocation)) {
-                $this->log(1, "Not stopping ".$this->appName.
+        if (!self::daemonIsDying()) {
+            self::$_daemonIsDying       = true;
+            self::$_daemonIsInitialized = false;
+            if (!self::daemonInBackground() || 
+                !file_exists(self::$appPidLocation)) {
+                self::log(1, "Not stopping ".self::$appName.
                     ", daemon was not running",
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             } else {
-                @unlink($this->appPidLocation);
+                @unlink(self::$appPidLocation);
             }
             exit();
         }
@@ -741,7 +759,7 @@ class System_Daemon
      * 
      * @return boolean
      */   
-    private function _strIsUnix( $str )
+    static private function _strIsUnix( $str )
     {
         return preg_match('/^[a-z0-9_]+$/', $str);
     }//end _strIsUnix()
@@ -754,7 +772,7 @@ class System_Daemon
      * 
      * @return string
      */
-    private function _strToUnix( $str )
+    static private function _strToUnix( $str )
     {
         return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
     }//end _strToUnix()
