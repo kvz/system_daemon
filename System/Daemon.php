@@ -390,9 +390,9 @@ class System_Daemon
      */
     public function daemonHandleSig( $signo )
     {
-        // Must be public or else will throw error: 
-        // Fatal error: Call to private method 
-        // Daemon::daemonHandleSig() from context '' 
+        // Must be public or else will throw a 
+        // fatal error: Call to private method 
+         
         $this->log(0, $this->appName." daemon received signal: ".$signo, 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         switch ($signo) {
