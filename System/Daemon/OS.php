@@ -58,6 +58,31 @@ abstract class System_Daemon_OS
     
     
     /**
+     * Decide what facility to log to.
+     *  
+     * @param integer $level    What function the log record is from
+     * @param string  $str      The log record
+     * @param string  $file     What code file the log record is from
+     * @param string  $class    What class the log record is from
+     * @param string  $function What function the log record is from
+     * @param integer $line     What code line the log record is from
+     *
+     * @throws System_Daemon_Exception  
+     * @return void
+     */
+    private function log($level, $str, $file = false, $class = false, 
+        $function = false, $line = false)
+    {
+        if ($level > 1) {
+            if (parent) {
+                if (parent::$pear) {
+                    throw new System_Daemon_Exception($log_line);
+                }
+            }            
+        }
+    }//end log()   
+    
+    /**
      * Returns an array(main, distro, version) of the OS it's executed on
      *
      * @return array
@@ -194,7 +219,8 @@ abstract class System_Daemon_OS
      * Returns an: 'init.d' script as a string. for now only Debian & Ubuntu
      * 
      * @param integer $info Daemon properties
-     *
+     * 
+     * @throws System_Daemon_Exception
      * @return mixed boolean on failure, string on success
      */
     public static function initDForge( $properties = false )
@@ -215,14 +241,14 @@ abstract class System_Daemon_OS
         }
         
         if (!count($properties)) {
-            throw new System_Daemon_Exception("
+            self::log(2, "
                 No properties to forge init.d script");
         }
         
         // sanity
         $daemon_filepath = $properties["appDir"]."/".$properties["appExecutable"];
         if (!file_exists($daemon_filepath)) {
-            throw new System_Daemon_Exception(
+            self::log(2, 
                 "unable to forge startup script for non existing ".
                 "daemon_filepath: ".$daemon_filepath.", try setting a valid ".
                 "appDir or appExecutable", 
@@ -231,7 +257,7 @@ abstract class System_Daemon_OS
         }
 
         if (!is_executable($daemon_filepath)) {
-            throw new System_Daemon_Exception(
+            self::log(2, 
                 "unable to forge startup script. ".
                 "daemon_filepath: ".$daemon_filepath.", needs to be executable ".
                 "first", 
@@ -240,21 +266,21 @@ abstract class System_Daemon_OS
         }
         
         if (!$properties["authorName"]) {
-            throw new System_Daemon_Exception(
+            self::log(2, 
                 "unable to forge startup script for non existing ".
                 "authorName: ".$properties["authorName"]."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         if (!$properties["authorEmail"]) {
-            throw new System_Daemon_Exception(
+            self::log(2, 
                 "unable to forge startup script for non existing ".
                 "authorEmail: ".$properties["authorEmail"]."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         if (!$properties["appDescription"]) {
-            throw new System_Daemon_Exception(
+            self::log(2, 
                 "unable to forge startup script for non existing ".
                 "appDescription: ".$properties["appDescription"]."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -273,7 +299,7 @@ abstract class System_Daemon_OS
             break;
         default:
             // not supported yet
-            throw new System_Daemon_Exception(
+            self::log(2, 
                 "skeleton retrieval for OS: ".$distro.
                 " currently not supported ", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -283,7 +309,7 @@ abstract class System_Daemon_OS
 
         // open skeleton
         if (!$skeleton_filepath || !file_exists($skeleton_filepath)) {
-            throw new System_Daemon_Exception(
+            self::log(2, 
                 "skeleton file for OS: ".$distro." not found at: ".
                 $skeleton_filepath, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -310,7 +336,7 @@ abstract class System_Daemon_OS
                 break;
             default:
                 // not supported yet
-                throw new System_Daemon_Exception(
+                self::log(2, 
                     "skeleton modification for OS: ".$distro.
                     " currently not supported ", 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);

@@ -318,14 +318,20 @@ class System_Daemon
      * @param string  $class    What class the log record is from
      * @param string  $function What function the log record is from
      * @param integer $line     What code line the log record is from
-     *  
-     * @return void
+     *
+     * @throws System_Daemon_Exception  
+     * @return boolean
      * @see _logLevels
      * @see logLocation
      */
     public function log($level, $str, $file = false, $class = false, 
         $function = false, $line = false)
     {
+        if ($level < $this->logVerbosity) {
+            return true;
+        }
+        
+        
         if ( function_exists("debug_backtrace") && ($file == false || 
             $class == false || $function == false || $line == false) ) {
             // saves resources if arguments are passed.
@@ -349,7 +355,7 @@ class System_Daemon
                 // it's okay to echo if you're running as a fore-ground process
                 // maybe the command to write an init.d file was issued.
                 // in such a case it's important to echo failures to the 
-                // commandline
+                // STDOUT
                 echo $log_line."\n";
             }
             
@@ -370,6 +376,9 @@ class System_Daemon
             }
             $this->_daemonDie();
         }
+        
+        return true;
+        
     }//end log()    
     
     /**
@@ -722,7 +731,7 @@ class System_Daemon
         }
     }//end _daemonDie()
 
-
+    
     
     /**
      * Check if a string has a unix proof format (stripped spaces, 
