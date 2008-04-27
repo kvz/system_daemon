@@ -27,18 +27,17 @@
 require_once "System/Daemon.php";
 
 // Bare minimum setup
-$daemon         = new System_Daemon("simple", true);
-$daemon->appDir = dirname(__FILE__);
-$daemon->log(1, "Daemon not yet started so this will be written on-screen");
+System_Daemon::$appDir = dirname(__FILE__);
+System_Daemon::log(1, "Daemon not yet started so this will be written on-screen");
 
 // Spawn Deamon!
-$daemon->start();
-$daemon->log(1, "Daemon: 'simple' spawned! This will be written to ".
+System_Daemon::start("simple");
+System_Daemon::log(1, "Daemon: 'simple' spawned! This will be written to ".
     "/var/log/simple.log");
 
 // Your normal PHP code goes here. Only the code will run in the background
 // so you can close your terminal session, and the application will
 // still run.
 
-$daemon->stop();
+System_Daemon::stop();
 ?>

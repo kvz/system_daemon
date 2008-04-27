@@ -198,46 +198,7 @@ abstract class System_Daemon
      */
     static private $_intFunctionCache = array();
 
-
     
-    /**
-     * Constructs a System_Daemon object.
-     *
-     * @param string  $appName The unix name of your daemon application.
-     * @param boolean $pear    Wether or not to run as a part of pear.
-     *
-     * @see start()
-     * @see _daemonInit()
-     * @see autoload()
-     */
-    static public function __construct($appName, $pear = true)
-    {
-        self::$appName = $appName;
-        self::$pear    = $pear;
-        
-        // to run as a part of PEAR
-        if ( self::$pear ) {
-            include_once "PEAR.php";
-            include_once "PEAR/Exception.php";
-            
-            if (class_exists('System_Daemon_Exception', true) === false) {
-                throw new Exception('Class System_Daemon_Exception not found');
-            }            
-        }
-        
-        // check the PHP configuration
-        if (!defined("SIGHUP")) {
-            trigger_error("PHP is compiled without --enable-pcntl directive\n", 
-                E_USER_ERROR);
-        }        
-        
-        // check for CLI
-        if ((php_sapi_name() != 'cli')) {
-            trigger_error("You can only create daemon from the command line\n", 
-                E_USER_ERROR);
-        }
-        
-    }//end __construct()
 
     /**
      * Autoload static method for loading classes and interfaces.
@@ -270,16 +231,45 @@ abstract class System_Daemon
 
     }//end autoload()
     
+    
     /**
      * Spawn daemon process.
-     *
+     * 
+     * @param string  $appName The unix name of your daemon application.
+     * @param boolean $pear    Wether or not to run as a part of pear.
+     *      *
      * @return void
      * @see stop()
      * @see _daemonInit()
      * @see _daemonBecome()
      */
-    static public function start()
+    static public function start($appName, $pear = true)
     {
+        self::$appName = $appName;
+        self::$pear    = $pear;
+        
+        // to run as a part of PEAR
+        if ( self::$pear ) {
+            include_once "PEAR.php";
+            include_once "PEAR/Exception.php";
+            
+            if (class_exists('System_Daemon_Exception', true) === false) {
+                throw new Exception('Class System_Daemon_Exception not found');
+            }            
+        }
+        
+        // check the PHP configuration
+        if (!defined("SIGHUP")) {
+            trigger_error("PHP is compiled without --enable-pcntl directive\n", 
+                E_USER_ERROR);
+        }        
+        
+        // check for CLI
+        if ((php_sapi_name() != 'cli')) {
+            trigger_error("You can only create daemon from the command line\n", 
+                E_USER_ERROR);
+        }
+        
         // initialize & check variables
         self::_daemonInit();
         
@@ -759,7 +749,7 @@ abstract class System_Daemon
      * 
      * @return boolean
      */   
-    static private function _strIsUnix( $str )
+    static protected function _strIsUnix( $str )
     {
         return preg_match('/^[a-z0-9_]+$/', $str);
     }//end _strIsUnix()
@@ -772,7 +762,7 @@ abstract class System_Daemon
      * 
      * @return string
      */
-    static private function _strToUnix( $str )
+    static protected function _strToUnix( $str )
     {
         return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
     }//end _strToUnix()

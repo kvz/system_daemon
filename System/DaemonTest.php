@@ -66,13 +66,11 @@ class System_DaemonTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp() 
     {
-        global $daemon;
         // Bare minimum setup
-        $daemon               = new System_Daemon("testdaemon", true);
-        $daemon->appDir       = dirname(__FILE__);
-        $daemon->logVerbosity = 99; // so that the daemon can't log
+        System_Daemon::$appDir       = dirname(__FILE__);
+        System_Daemon::$logVerbosity = 99; // so that the daemon can't log
         // Becoming a daemon breaks the PHPUnit test mechanism.
-        //$daemon->start(); 
+        //System_Daemon::start(); 
     }
 
     /**
@@ -93,7 +91,7 @@ class System_DaemonTest extends PHPUnit_Framework_TestCase
     public function testDaemonInBackground() 
     {        
         global $daemon;
-        $this->assertEquals(false, $daemon->daemonInBackground());
+        $this->assertEquals(false, System_Daemon::daemonInBackground());
     }
 
     /**
@@ -104,7 +102,7 @@ class System_DaemonTest extends PHPUnit_Framework_TestCase
     public function testLog() 
     {
         global $daemon;
-        $this->assertEquals(true, $daemon->log(1, "test"));
+        $this->assertEquals(true, System_Daemon::log(1, "test"));
     }
 }
 
