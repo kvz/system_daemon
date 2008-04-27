@@ -46,8 +46,10 @@ if ($r) {
     die("command: ".$cmd." failed!\n");
 }
 
-$olddir = chdir($workspace_dir);
-$cmd    = "pear package";
+$olddir = getcwd(); 
+chdir($workspace_dir);
+
+$cmd = "pear package";
 exec($cmd, $o, $r);
 if ($r) {
     print_r($o);

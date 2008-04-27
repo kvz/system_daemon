@@ -22,8 +22,8 @@ spawning standalone daemons, and for example includes:
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
- <date>2008-04-24</date>
- <time>09:59:15</time>
+ <date>2008-04-27</date>
+ <time>14:24:07</time>
  <version>
   <release>0.1</release>
   <api>0.1</api>
@@ -33,8 +33,20 @@ spawning standalone daemons, and for example includes:
   <api>alpha</api>
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
- <notes>2008-04-23 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ <notes>2008-04-27 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
+        [r58] Becoming a daemon breaks the PHPUnit test mechanism.
+        [r57] Added basic Unit Test
+        [r57] Moved OS functions to own class
+
+2008-04-24 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r56] Improved the packaging tools
+        [r55] Improved the tools
+
+2008-04-23 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r54] Improved the examples
         [r53] Created tools for package &amp;amp; changelog generation
         [r52] Delete tools. svn2cl is in subversion-tools package.
         [r51] Reorganize directory structure
@@ -88,7 +100,7 @@ spawning standalone daemons, and for example includes:
 
  </notes>
  <contents>
-  <dir baseinstalldir="System" name="/">
+  <dir baseinstalldir="./" name="/">
    <dir name="docs">
     <file name="DESCRIPTION" role="doc" />
     <file name="MAINTAINERS" role="doc" />
@@ -97,20 +109,34 @@ spawning standalone daemons, and for example includes:
     <file name="VERSION" role="doc" />
    </dir> <!-- /docs -->
    <dir name="examples">
+    <dir name="System">
+     <dir name="Daemon">
+      <file name="Exception.php" role="doc" />
+      <file name="Log.php" role="doc" />
+      <file name="OS.php" role="doc" />
+      <file name="OSTest.php" role="doc" />
+     </dir> <!-- /examples/System/Daemon -->
+     <file name="Daemon.php" role="doc" />
+     <file name="DaemonTest.php" role="doc" />
+    </dir> <!-- /examples/System -->
     <file name="logparser.php" role="doc" />
     <file name="simple.php" role="doc" />
    </dir> <!-- /examples -->
    <dir name="System">
     <dir name="Daemon">
      <file name="Exception.php" role="php" />
+     <file name="Log.php" role="php" />
+     <file name="OS.php" role="php" />
+     <file name="OSTest.php" role="php" />
     </dir> <!-- /System/Daemon -->
     <file name="Daemon.php" role="php" />
+    <file name="DaemonTest.php" role="php" />
    </dir> <!-- /System -->
    <dir name="tools">
     <file name="changelog_gen.php" role="php" />
     <file name="package_gen.php" role="php" />
    </dir> <!-- /tools -->
-   <file name="ChangeLog.html" role="php" />
+   <file name="package.php" role="php" />
   </dir> <!-- / -->
  </contents>
  <dependencies>
@@ -141,10 +167,22 @@ spawning standalone daemons, and for example includes:
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2008-04-24</date>
+   <date>2008-04-27</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
-   <notes>2008-04-23 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+   <notes>2008-04-27 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
+        [r58] Becoming a daemon breaks the PHPUnit test mechanism.
+        [r57] Added basic Unit Test
+        [r57] Moved OS functions to own class
+
+2008-04-24 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r56] Improved the packaging tools
+        [r55] Improved the tools
+
+2008-04-23 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r54] Improved the examples
         [r53] Created tools for package &amp;amp; changelog generation
         [r52] Delete tools. svn2cl is in subversion-tools package.
         [r51] Reorganize directory structure

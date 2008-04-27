@@ -60,7 +60,7 @@ $options = array(
                             ),
     "simpleoutput"      => true,
     "clearcontents"     => true,
-    "baseinstalldir"    => "System",
+    "baseinstalldir"    => "./",
     "packagedirectory"  => $workspace_dir,
     "packagefile"       => "package.xml",
     "dir_roles"         => array(

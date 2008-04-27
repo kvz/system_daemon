@@ -1,5 +1,17 @@
+2008-04-27 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r58] Becoming a daemon breaks the PHPUnit test mechanism.
+        [r57] Added basic Unit Test
+        [r57] Moved OS functions to own class
+
+2008-04-24 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r56] Improved the packaging tools
+        [r55] Improved the tools
+
 2008-04-23 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
+        [r54] Improved the examples
         [r53] Created tools for package & changelog generation
         [r52] Delete tools. svn2cl is in subversion-tools package.
         [r51] Reorganize directory structure
