@@ -102,7 +102,7 @@ $cnt = 1;
 // - That we're not executing more than 3 runs 
 while (!System_Daemon::daemonIsDying() && $runningOkay && $cnt <=3) {
     // What mode are we in?
-    $mode = "'".(System_Daemon::daemonInBackground() ? "" : "non-" ).
+    $mode = "'".(System_Daemon::daemonIsInBackground() ? "" : "non-" ).
         "daemon' mode";
     
     // Log something using the Daemon class's logging facility

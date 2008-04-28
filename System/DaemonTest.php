@@ -88,10 +88,10 @@ class System_DaemonTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testDaemonInBackground() 
+    public function testDaemonIsInBackground() 
     {        
         global $daemon;
-        $this->assertEquals(false, System_Daemon::daemonInBackground());
+        $this->assertEquals(false, System_Daemon::daemonIsInBackground());
     }
 
     /**

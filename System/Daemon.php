@@ -338,7 +338,7 @@ abstract class System_Daemon
         $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
         
         if ($level > 0) {
-            if (!self::daemonInBackground() || !is_writable(self::$logLocation)) {
+            if (!self::daemonIsInBackground() || !is_writable(self::$logLocation)) {
                 // it's okay to echo if you're running as a fore-ground process
                 // maybe the command to write an init.d file was issued.
                 // in such a case it's important to echo failures to the 
@@ -385,7 +385,7 @@ abstract class System_Daemon
         switch ($signo) {
         case SIGTERM:
             // handle shutdown tasks
-            if (self::daemonInBackGround()) {
+            if (self::daemonIsInBackground()) {
                 self::_daemonDie();
             } else {
                 exit;
@@ -414,10 +414,10 @@ abstract class System_Daemon
      * 
      * @return boolean
      */
-    static public function daemonInBackground()
+    static public function daemonIsInBackground()
     {
         return self::$processIsChild;
-    }//end daemonInBackground()
+    }//end daemonIsInBackground()
     
     /**
      * Wether the our daemon is being killed, you might 
@@ -618,7 +618,7 @@ abstract class System_Daemon
         pcntl_signal(SIGCHLD, array($this, "daemonHandleSig"));
 
         // allowed?
-        if (self::_daemonIsRunning()) {
+        if (self::daemonIsRunning()) {
             self::log(4, "".self::$appName." daemon is still running. ".
                 "exiting", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -670,7 +670,7 @@ abstract class System_Daemon
      *
      * @return boolean
      */
-    static protected function _daemonIsRunning() 
+    static protected function daemonIsRunning() 
     {
         if(!file_exists(self::$appPidLocation)) return false;
         $pid = @file_get_contents(self::$appPidLocation);
@@ -689,7 +689,7 @@ abstract class System_Daemon
         } else {
             return false;
         }
-    }//end _daemonIsRunning()
+    }//end daemonIsRunning()
 
     /**
      * Fork process and kill parent process, the heart of the 'daemonization'
@@ -729,7 +729,7 @@ abstract class System_Daemon
      */
     static private function _daemonWhatIAm()
     {
-        return (self::daemonInBackground()?"child":"parent");
+        return (self::daemonIsInBackground()?"child":"parent");
     }//end _daemonWhatIAm()
 
     /**
@@ -743,7 +743,7 @@ abstract class System_Daemon
         if (!self::daemonIsDying()) {
             self::$daemonIsDying       = true;
             self::$daemonIsInitialized = false;
-            if (!self::daemonInBackground() || 
+            if (!self::daemonIsInBackground() || 
                 !file_exists(self::$appPidLocation)) {
                 self::log(1, "Not stopping ".self::$appName.
                     ", daemon was not running",
