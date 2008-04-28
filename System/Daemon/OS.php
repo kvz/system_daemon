@@ -66,61 +66,6 @@ abstract class System_Daemon_OS extends System_Daemon
     private static $_intFunctionCache = array();
     
     /**
-     * Either inherit daemon specific properties, or overrule
-     * them
-     *  
-     * @param array $properties Allows you to overrule the otherwise inheritted
-     * daemon properties. 
-     * 
-     * @return array
-     */       
-    public function setProperties($properties = false) 
-    {
-        if (!is_array($properties)) {
-            // inherit from parent class
-            if (parent::$appName) {
-                self::$_daemonProperties["appName"]        = parent::$appName;
-                self::$_daemonProperties["appDescription"] = parent::$appDescription;
-                self::$_daemonProperties["authorName"]     = parent::$authorName;
-                self::$_daemonProperties["authorEmail"]    = parent::$authorEmail;
-            } else {
-                self::log(3, "Impossible to inherit daemon properties ".
-                    "from parent class", 
-                    __FILE__, __CLASS__, __FUNCTION__, __LINE__); 
-            }
-        } else {
-            // override
-            self::$_daemonProperties = $properties;
-        }
-        
-        // Tests
-        $required_props = array("appName", "appDescription", "appDir", 
-            "authorName", "authorEmail");
-        
-        // check if all required properties are available
-        if (!is_array(self::$_daemonProperties) || !count(self::$_daemonProperties)) {
-            self::_log(2, "No properties to forge init.d script", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;
-        }
-        foreach ($required_props as $required_prop) {
-            if (!isset(self::$_daemonProperties[$required_prop]) || !self::$_daemonProperties[$required_prop]) {
-                self::_log(2, "Cannot forge an init.d script without a valid ".
-                    "daemon property: ".$required_prop, 
-                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-                return false;
-            }
-            
-            // addslashes
-            self::$_daemonProperties[$required_prop] = addslashes(self::$_daemonProperties[$required_prop]);
-        }
-        
-        return true;
-        
-    } // end setProperties
-    
-    
-    /**
      * Decide what facility to log to.
      *  
      * @param integer $level    What function the log record is from
@@ -160,7 +105,46 @@ abstract class System_Daemon_OS extends System_Daemon
         }
     }//end _log()   
         
-    
+    /**
+     * Sets daemon specific properties
+     *  
+     * @param array $properties Contains the daemon properties
+     * 
+     * @return array
+     */       
+    public function setProperties($properties = false) 
+    {
+        if (!is_array($properties) || !count($properties)) {
+            self::_log(2, "No properties to forge init.d script", 
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false; 
+        }
+                
+        // Tests
+        $required_props = array("appName", "appDescription", "appDir", 
+            "authorName", "authorEmail");
+        
+        // check if all required properties are available
+        foreach ($required_props as $required_prop) {
+            if (!isset($required_props[$required_prop]) 
+                || !$required_props[$required_prop]) {
+                self::_log(2, "Cannot forge an init.d script without a valid ".
+                    "daemon property: ".$required_prop, 
+                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                return false;
+            }
+        
+            // addslashes
+            $required_props[$required_prop] = 
+                addslashes($required_props[$required_prop]);
+        }
+        
+        // override
+        self::$_daemonProperties = $properties;
+        return true;
+        
+    } // end setProperties
+        
     /**
      * Returns an array(main, distro, version) of the OS it's executed on
      *

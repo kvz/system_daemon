@@ -142,7 +142,6 @@ abstract class System_Daemon
      *
      * @var integer
      */
-    
     static public $logVerbosity = 1;
     
     
@@ -197,9 +196,9 @@ abstract class System_Daemon
      * @var array
      */
     static private $_intFunctionCache = array();
-
     
-
+    
+    
     /**
      * Autoload static method for loading classes and interfaces.
      * Code from the PHP_CodeSniffer package by Greg Sherwood and 
@@ -209,7 +208,7 @@ abstract class System_Daemon
      *
      * @return void
      */
-    static public static function autoload($className)
+    static public function autoload($className)
     {
         $parent     = 'System_';
         $parent_len = strlen($parent);
@@ -440,14 +439,21 @@ abstract class System_Daemon
      */
     static public function osInitDWrite( $overwrite=false )
     {
+        // init vars (needed for init.d script)
+        self::_daemonInit();
+        
+        $properties = array();
+        $properties["appName"]        = self::$appName;
+        $properties["appDescription"] = self::$appDescription;
+        $properties["authorName"]     = self::$authorName;
+        $properties["authorEmail"]    = self::$authorEmail;
+            
+            
         try {
-            // init vars (needed for init.d script)
-            self::_daemonInit();
-            
             // copy properties to OS object
-            System_Daemon_OS::setProperties();
+            System_Daemon_OS::setProperties($properties);
             
-            // 
+            // try to write init.d 
             $ret = System_Daemon_OS::initDWrite($overwrite);
         } catch (System_Daemon_OS_Exception $e) {
             // Catch-all for System_Daemon_OS errors...
@@ -455,6 +461,7 @@ abstract class System_Daemon
         }
     }//end osInitDWrite()
         
+    
     
     /**
      * Initializes, sanitizes & defaults unset variables
@@ -664,7 +671,7 @@ abstract class System_Daemon
      *
      * @return boolean
      */
-    static private function _daemonIsRunning() 
+    static protected function _daemonIsRunning() 
     {
         if(!file_exists(self::$appPidLocation)) return false;
         $pid = @file_get_contents(self::$appPidLocation);
@@ -776,7 +783,6 @@ abstract class System_Daemon
     {
         return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
     }//end _strToUnix()
-
 
 }//end class
 ?>
