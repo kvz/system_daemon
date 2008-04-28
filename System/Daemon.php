@@ -605,17 +605,19 @@ abstract class System_Daemon
         // important for daemons
         // see http://nl2.php.net/manual/en/function.pcntl-signal.php
         declare(ticks = 1);
-
-        // setup signal handlers
-        pcntl_signal(SIGCONT, array($this, "daemonHandleSig"));
-        pcntl_signal(SIGALRM, array($this, "daemonHandleSig"));
-        pcntl_signal(SIGINT, array($this, "daemonHandleSig"));
-        pcntl_signal(SIGABRT, array($this, "daemonHandleSig"));
         
-        pcntl_signal(SIGTERM, array($this, "daemonHandleSig"));
-        pcntl_signal(SIGHUP, array($this, "daemonHandleSig"));
-        pcntl_signal(SIGUSR1, array($this, "daemonHandleSig"));
-        pcntl_signal(SIGCHLD, array($this, "daemonHandleSig"));
+        // setup signal handlers
+        //pcntl_signal(SIGCONT, array($instance, "daemonHandleSig"));
+        pcntl_signal(SIGCONT, array("System_Daemon", "daemonHandleSig"));
+
+ 		pcntl_signal(SIGALRM, array("System_Daemon", "daemonHandleSig"));
+        pcntl_signal(SIGINT, array("System_Daemon", "daemonHandleSig"));
+        pcntl_signal(SIGABRT, array("System_Daemon", "daemonHandleSig"));
+        
+        pcntl_signal(SIGTERM, array("System_Daemon", "daemonHandleSig"));
+        pcntl_signal(SIGHUP, array("System_Daemon", "daemonHandleSig"));
+        pcntl_signal(SIGUSR1, array("System_Daemon", "daemonHandleSig"));
+        pcntl_signal(SIGCHLD, array("System_Daemon", "daemonHandleSig"));
 
         // allowed?
         if (self::daemonIsRunning()) {
