@@ -164,28 +164,28 @@ abstract class System_Daemon
      *
      * @var integer
      */
-    static protected $_processId = 0;
+    static protected $processId = 0;
 
     /**
      * Wether the our daemon is being killed
      *
      * @var boolean
      */
-    static protected $_daemonIsDying = false;    
+    static protected $daemonIsDying = false;    
     
     /**
      * Wether all the variables have been initialized
      *
      * @var boolean
      */
-    static protected $_daemonIsInitialized = false;
+    static protected $daemonIsInitialized = false;
 
     /**
      * Wether the current process is a forked child
      *
      * @var boolean
      */
-    static protected $_processIsChild = false;
+    static protected $processIsChild = false;
     
     /**
      * Cache that holds values of some functions 
@@ -234,7 +234,7 @@ abstract class System_Daemon
     /**
      * Spawn daemon process.
      * 
-     * @param boolean $pear    Wether or not to run as a part of pear.
+     * @param boolean $pear Wether or not to run as a part of pear.
      * 
      * @return void
      * @see stop()
@@ -416,7 +416,7 @@ abstract class System_Daemon
      */
     static public function daemonInBackground()
     {
-        return self::$_processIsChild;
+        return self::$processIsChild;
     }//end daemonInBackground()
     
     /**
@@ -427,7 +427,7 @@ abstract class System_Daemon
      */
     static public function daemonIsDying()
     {
-        return self::$_daemonIsDying;
+        return self::$daemonIsDying;
     }//end daemonIsDying()
     
     /**
@@ -442,12 +442,11 @@ abstract class System_Daemon
         // init vars (needed for init.d script)
         self::_daemonInit();
         
-        $properties = array();
+        $properties                   = array();
         $properties["appName"]        = self::$appName;
         $properties["appDescription"] = self::$appDescription;
         $properties["authorName"]     = self::$authorName;
         $properties["authorEmail"]    = self::$authorEmail;
-            
             
         try {
             // copy properties to OS object
@@ -460,7 +459,7 @@ abstract class System_Daemon
             self::log(2, "Unable to create startup file: " . $e->getMessage());
         }
     }//end osInitDWrite()
-        
+    
     
     
     /**
@@ -471,13 +470,13 @@ abstract class System_Daemon
     static private function _daemonInit() 
     {
         // if already initialized, skip
-        if (self::$_daemonIsInitialized) {
+        if (self::$daemonIsInitialized) {
             return true;
         }
         
         // system settings
-        self::$_processId      = 0;
-        self::$_processIsChild = false;
+        self::$processId      = 0;
+        self::$processIsChild = false;
         ini_set("max_execution_time", "0");
         ini_set("max_input_time", "0");
         ini_set("memory_limit", "1024M");
@@ -490,9 +489,9 @@ abstract class System_Daemon
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
-        if (!self::_strIsUnix(self::$appName)) {
+        if (!self::strIsUnix(self::$appName)) {
             // suggest a better appName
-            $safe_name = self::_strToUnix(self::$appName);
+            $safe_name = self::strToUnix(self::$appName);
             self::log(4, "'".self::$appName."' is not a valid daemon name, ".
                 "try using something like '".$safe_name."' instead", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -587,7 +586,7 @@ abstract class System_Daemon
         
         // combine appdir + exe here to make SURE we got our data right 
         
-        self::$_daemonIsInitialized = true;
+        self::$daemonIsInitialized = true;
         return true;
     }//end _daemonInit()
 
@@ -649,12 +648,12 @@ abstract class System_Daemon
         }
 
         // additional PID succeeded check
-        if (!is_numeric(self::$_processId) || self::$_processId < 1) {
+        if (!is_numeric(self::$processId) || self::$processId < 1) {
             self::log(4, "".self::$appName." daemon didn't have a valid ".
-                "pid: '".self::$_processId."'", 
+                "pid: '".self::$processId."'", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         } else {
-            if (!file_put_contents(self::$appPidLocation, self::$_processId)) {
+            if (!file_put_contents(self::$appPidLocation, self::$processId)) {
                 self::log(4, "".self::$appName." daemon was unable ".
                     "to write to pidfile: ".self::$appPidLocation."", 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -716,9 +715,9 @@ abstract class System_Daemon
             exit();
         } else {
             // child
-            self::$_processIsChild = true;
-            self::$_daemonIsDying  = false;
-            self::$_processId      = posix_getpid();
+            self::$processIsChild = true;
+            self::$daemonIsDying  = false;
+            self::$processId      = posix_getpid();
             return true;
         }
     }//end _daemonFork()
@@ -742,8 +741,8 @@ abstract class System_Daemon
     static private function _daemonDie()
     {
         if (!self::daemonIsDying()) {
-            self::$_daemonIsDying       = true;
-            self::$_daemonIsInitialized = false;
+            self::$daemonIsDying       = true;
+            self::$daemonIsInitialized = false;
             if (!self::daemonInBackground() || 
                 !file_exists(self::$appPidLocation)) {
                 self::log(1, "Not stopping ".self::$appName.
@@ -766,10 +765,10 @@ abstract class System_Daemon
      * 
      * @return boolean
      */   
-    static protected function _strIsUnix( $str )
+    static protected function strIsUnix( $str )
     {
         return preg_match('/^[a-z0-9_]+$/', $str);
-    }//end _strIsUnix()
+    }//end strIsUnix()
 
     /**
      * Convert a string to a unix proof format (strip spaces, 
@@ -779,10 +778,10 @@ abstract class System_Daemon
      * 
      * @return string
      */
-    static protected function _strToUnix( $str )
+    static protected function strToUnix( $str )
     {
         return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
-    }//end _strToUnix()
+    }//end strToUnix()
 
 }//end class
 ?>

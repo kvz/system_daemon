@@ -53,7 +53,7 @@ abstract class System_Daemon_OS extends System_Daemon
      *
      * @var array
      */
-    static protected $_daemonProperties = array();
+    static protected $daemonProperties = array();
     
     /**
      * Cache that holds values of some functions 
@@ -78,7 +78,7 @@ abstract class System_Daemon_OS extends System_Daemon
      * @throws System_Daemon_OS_Exception  
      * @return void
      */
-    static protected function _log($level, $str, $file = false, $class = false, 
+    static protected function log($level, $str, $file = false, $class = false, 
         $function = false, $line = false)
     {
         if (class_exists("System_Daemon")) {
@@ -86,7 +86,7 @@ abstract class System_Daemon_OS extends System_Daemon
             // any errors. throws exceptions as well, but gives
             // a single & independent point of log flow control.
             parent::log($level, $str, $file, $class, $function, $line);
-        } elseif($level > 1) {
+        } elseif ($level > 1) {
             // Only make exceptions in case of errors
             if (class_exists("System_Daemon_OS_Exception", true) === false) {
                 // Own exception
@@ -103,7 +103,7 @@ abstract class System_Daemon_OS extends System_Daemon
                     E_USER_ERROR);
             }                     
         }
-    }//end _log()   
+    }//end log()   
         
     /**
      * Sets daemon specific properties
@@ -115,7 +115,7 @@ abstract class System_Daemon_OS extends System_Daemon
     public function setProperties($properties = false) 
     {
         if (!is_array($properties) || !count($properties)) {
-            self::_log(2, "No properties to forge init.d script", 
+            self::log(2, "No properties to forge init.d script", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false; 
         }
@@ -128,7 +128,7 @@ abstract class System_Daemon_OS extends System_Daemon
         foreach ($required_props as $required_prop) {
             if (!isset($required_props[$required_prop]) 
                 || !$required_props[$required_prop]) {
-                self::_log(2, "Cannot forge an init.d script without a valid ".
+                self::log(2, "Cannot forge an init.d script without a valid ".
                     "daemon property: ".$required_prop, 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
                 return false;
@@ -140,7 +140,7 @@ abstract class System_Daemon_OS extends System_Daemon
         }
         
         // override
-        self::$_daemonProperties = $properties;
+        self::$daemonProperties = $properties;
         return true;
         
     } // end setProperties
@@ -212,32 +212,32 @@ abstract class System_Daemon_OS extends System_Daemon
         
         // as many safety checks as possible
         if (!$overwrite && file_exists(($initd_location))) {
-            self::_log(2, "init.d script already exists", 
+            self::log(2, "init.d script already exists", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         } 
         if (!is_dir($dir = dirname($initd_location))) {
-            self::_log(3, "init.d directory: '".$dir."' does not ".
+            self::log(3, "init.d directory: '".$dir."' does not ".
                 "exist. Can this be a correct path?", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         if (!is_writable($dir = dirname($initd_location))) {
-            self::_log(3, "init.d directory: '".$dir."' cannot be ".
+            self::log(3, "init.d directory: '".$dir."' cannot be ".
                 "written to. Check the permissions", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         
         if (!file_put_contents($initd_location, $initd_body)) {
-            self::_log(3, "init.d file: '".$initd_location."' cannot be ".
+            self::log(3, "init.d file: '".$initd_location."' cannot be ".
                 "written to. Check the permissions", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         
         if (!chmod($initd_location, 0777)) {
-            self::_log(3, "init.d file: '".$initd_location."' cannot be ".
+            self::log(3, "init.d file: '".$initd_location."' cannot be ".
                 "chmodded. Check the permissions", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
@@ -261,7 +261,7 @@ abstract class System_Daemon_OS extends System_Daemon
             $initd_location = false;
 
             // daemon properties
-            $properties     = self::$_daemonProperties;
+            $properties = self::$daemonProperties;
                         
             // collect OS information
             list($main, $distro, $version) = array_values(self::determine());
@@ -275,7 +275,7 @@ abstract class System_Daemon_OS extends System_Daemon
                 break;
             default:
                 // not supported yet
-                self::_log(2, "skeleton retrieval for OS: ".$distro.
+                self::log(2, "skeleton retrieval for OS: ".$distro.
                     " currently not supported ", 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
                 return false;
@@ -290,8 +290,6 @@ abstract class System_Daemon_OS extends System_Daemon
     /**
      * Returns an: 'init.d' script as a string. for now only Debian & Ubuntu
      * 
-     * @param array $properties Daemon properties
-     * 
      * @throws System_Daemon_Exception
      * @return mixed boolean on failure, string on success
      */
@@ -301,12 +299,12 @@ abstract class System_Daemon_OS extends System_Daemon
         $skeleton_filepath = false;
         
         // daemon properties
-        $properties     = self::$_daemonProperties;
+        $properties = self::$daemonProperties;
                 
         // check path
         $daemon_filepath = $properties["appDir"]."/".$properties["appExecutable"];
         if (!file_exists($daemon_filepath)) {
-            self::_log(2, 
+            self::log(2, 
                 "unable to forge startup script for non existing ".
                 "daemon_filepath: ".$daemon_filepath.", try setting a valid ".
                 "appDir or appExecutable", 
@@ -316,7 +314,7 @@ abstract class System_Daemon_OS extends System_Daemon
         
         // daemon file needs to be executable 
         if (!is_executable($daemon_filepath)) {
-            self::_log(2, 
+            self::log(2, 
                 "unable to forge startup script. ".
                 "daemon_filepath: ".$daemon_filepath.", needs to be executable ".
                 "first", 
@@ -336,7 +334,7 @@ abstract class System_Daemon_OS extends System_Daemon
             break;
         default:
             // not supported yet
-            self::_log(2, 
+            self::log(2, 
                 "skeleton retrieval for OS: ".$distro.
                 " currently not supported ", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -346,7 +344,7 @@ abstract class System_Daemon_OS extends System_Daemon
 
         // open skeleton
         if (!$skeleton_filepath || !file_exists($skeleton_filepath)) {
-            self::_log(2, 
+            self::log(2, 
                 "skeleton file for OS: ".$distro." not found at: ".
                 $skeleton_filepath, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -373,7 +371,7 @@ abstract class System_Daemon_OS extends System_Daemon
                 break;
             default:
                 // not supported yet
-                self::_log(2, 
+                self::log(2, 
                     "skeleton modification for OS: ".$distro.
                     " currently not supported ", 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);

@@ -62,7 +62,7 @@ require_once "System/Daemon.php";
 // Setup
 System_Daemon::$appName        = "logparser";
 System_Daemon::$appDir         = dirname(__FILE__);
-System_Daemon::$appDescription = "Parses logfiles of vsftpd and stores them in MySQL";
+System_Daemon::$appDescription = "Parses vsftpd logfiles and stores them in MySQL";
 System_Daemon::$authorName     = "Kevin van Zonneveld";
 System_Daemon::$authorEmail    = "kevin@vanzonneveld.net";
 
@@ -81,7 +81,8 @@ if (!$runmode["write-initd"]) {
     if (($initd_location = System_Daemon::osInitDWrite()) === false) {
         System_Daemon::log(2, "unable to write init.d script");
     } else {
-        System_Daemon::log(1, "sucessfully written startup script: ".$initd_location);
+        System_Daemon::log(1, "sucessfully written startup script: ".
+            $initd_location);
     }
 }
 
@@ -101,13 +102,15 @@ $cnt = 1;
 // - That we're not executing more than 3 runs 
 while (!System_Daemon::daemonIsDying() && $runningOkay && $cnt <=3) {
     // What mode are we in?
-    $mode = "'".(System_Daemon::daemonInBackground() ? "" : "non-" )."daemon' mode";
+    $mode = "'".(System_Daemon::daemonInBackground() ? "" : "non-" ).
+        "daemon' mode";
     
     // Log something using the Daemon class's logging facility
     // Depending on runmode it will either end up:
     //  - In the /var/log/logparser.log
     //  - On screen (in case we're not a daemon yet)  
-    System_Daemon::log(1, System_Daemon::$appName." running in ".$mode." ".$cnt."/3");
+    System_Daemon::log(1, System_Daemon::$appName." running in ".
+        $mode." ".$cnt."/3");
     
     // In the actuall logparser program, You could replace 'true'
     // With e.g. a  parseLog('vsftpd') function, and have it return
@@ -120,7 +123,8 @@ while (!System_Daemon::daemonIsDying() && $runningOkay && $cnt <=3) {
     // Level 4 would be fatal and shuts down the daemon immediately, which in 
     // this case is handled by the while condition.
     if (!$runningOkay) {
-        System_Daemon::log(3, "parseLog() produces an error, so this will be my last run");
+        System_Daemon::log(3, "parseLog() produces an error, ".
+            "so this will be my last run");
     }
     
     // Relax the system by sleeping for a little bit
