@@ -15,7 +15,6 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  */
 
-error_reporting(E_ALL);
 spl_autoload_register(array('System_Daemon', 'autoload'));
 
 /**
