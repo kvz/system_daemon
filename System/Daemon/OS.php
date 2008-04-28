@@ -53,7 +53,7 @@ abstract class System_Daemon_OS extends System_Daemon
      *
      * @var array
      */
-    private static $_daemonProperties = array();
+    static protected $_daemonProperties = array();
     
     /**
      * Cache that holds values of some functions 
@@ -78,7 +78,7 @@ abstract class System_Daemon_OS extends System_Daemon
      * @throws System_Daemon_OS_Exception  
      * @return void
      */
-    private function _log($level, $str, $file = false, $class = false, 
+    static protected function _log($level, $str, $file = false, $class = false, 
         $function = false, $line = false)
     {
         if (class_exists("System_Daemon")) {
