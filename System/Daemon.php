@@ -62,7 +62,7 @@ abstract class System_Daemon
      *
      * @var mixed
      */
-    static public $usePEARLog = false;
+    static public $usePEARLogInstance = false;
     
     /**
      * Author name, e.g.: Kevin van zonneveld 
@@ -240,6 +240,14 @@ abstract class System_Daemon
     static protected $processIsChild = false;
     
     /**
+     * Wether SAFE_MODE is on or off. This is important for ini_set
+     * behavior
+     *
+     * @var boolean
+     */
+    static protected $safe_mode = false;
+    
+    /**
      * Cache that holds values of some functions 
      * for performance gain. Easier then doing 
      * if (!isset(self::$XXX)) { self::$XXX = self::XXX(); }
@@ -248,8 +256,6 @@ abstract class System_Daemon
      * @var array
      */
     static private $_intFunctionCache = array();
-    
-    
     
     /**
      * Autoload static method for loading classes and interfaces.
@@ -561,10 +567,12 @@ abstract class System_Daemon
             return true;
         }
         
+        self::$safe_mode = ((boolean)@ini_get("safe_mode") === FALSE) ? FALSE : TRUE;
+        
         // system settings
         self::$processId      = 0;
         self::$processIsChild = false;
-        if (!ini_get('safe_mode')) {
+        if (!self::$safe_mode) {
             foreach (self::$iniSettings as $setting=>$value) {
                 ini_set($setting, $value);
             }
