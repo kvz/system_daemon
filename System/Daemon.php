@@ -307,7 +307,7 @@ abstract class System_Daemon
         self::$usePEAR    = $usePEAR;
         
         // to run as a part of PEAR
-        if ( self::$usePEAR ) {
+        if (self::$usePEAR) {
             include_once "PEAR.php";
             include_once "PEAR/Exception.php";
             
@@ -482,7 +482,7 @@ abstract class System_Daemon
             }
         }
         
-        return true;
+        return $log_succeeded;
         
     }//end log()    
     
@@ -559,7 +559,7 @@ abstract class System_Daemon
     /**
      * Uses OS class to writes an: 'init.d' script on the filesystem
      *  
-     * @param bolean $overwrite May the existing init.d file be overwritten?
+     * @param boolean $overwrite May the existing init.d file be overwritten?
      * 
      * @return boolean
      */
