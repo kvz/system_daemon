@@ -85,13 +85,15 @@ if (!$runmode["no-daemon"]) {
 // system startup file called: 'init.d'
 // This will make sure your daemon will be started on reboot 
 if (!$runmode["write-initd"]) {
-    System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "not writing an init.d script this time");
+    System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "not writing ".
+        "an init.d script this time");
 } else {
     if (($initd_location = System_Daemon::osInitDWrite()) === false) {
-        System_Daemon::log(SYSTEM_DAEMON_LOG_NOTICE, "unable to write init.d script");
+        System_Daemon::log(SYSTEM_DAEMON_LOG_NOTICE, "unable to write ".
+            "init.d script");
     } else {
-        System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "sucessfully written startup script: ".
-            $initd_location);
+        System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "sucessfully written ".
+            "startup script: ".$initd_location);
     }
 }
 

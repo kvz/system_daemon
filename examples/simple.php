@@ -30,7 +30,8 @@ require_once "System/Daemon.php";
 // Bare minimum setup
 System_Daemon::$appName = "simple";
 System_Daemon::$appDir  = dirname(__FILE__);
-System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon not yet started so this will be written on-screen");
+System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon not yet started so ".
+    "this will be written on-screen");
 
 // Spawn Deamon!
 System_Daemon::start();

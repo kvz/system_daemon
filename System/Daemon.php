@@ -20,14 +20,14 @@ spl_autoload_register(array("System_Daemon", "autoload"));
 
 // Make these corresponding with PEAR
 // Ensures compatibility while maintaining independency
-define("SYSTEM_DAEMON_LOG_EMERG",    0);     /* System is unusable */
-define("SYSTEM_DAEMON_LOG_ALERT",    1);     /* Immediate action required */
-define("SYSTEM_DAEMON_LOG_CRIT",     2);     /* Critical conditions */
-define("SYSTEM_DAEMON_LOG_ERR",      3);     /* Error conditions */
-define("SYSTEM_DAEMON_LOG_WARNING",  4);     /* Warning conditions */
-define("SYSTEM_DAEMON_LOG_NOTICE",   5);     /* Normal but significant */
-define("SYSTEM_DAEMON_LOG_INFO",     6);     /* Informational */
-define("SYSTEM_DAEMON_LOG_DEBUG",    7);     /* Debug-level messages */
+define("SYSTEM_DAEMON_LOG_EMERG", 0);    /* System is unusable */
+define("SYSTEM_DAEMON_LOG_ALERT", 1);    /* Immediate action required */
+define("SYSTEM_DAEMON_LOG_CRIT", 2);     /* Critical conditions */
+define("SYSTEM_DAEMON_LOG_ERR", 3);      /* Error conditions */
+define("SYSTEM_DAEMON_LOG_WARNING", 4);  /* Warning conditions */
+define("SYSTEM_DAEMON_LOG_NOTICE", 5);   /* Normal but significant */
+define("SYSTEM_DAEMON_LOG_INFO", 6);     /* Informational */
+define("SYSTEM_DAEMON_LOG_DEBUG", 7);    /* Debug-level messages */
 
 /**
  * System_Daemon. Create daemons with practicle functions 
@@ -577,7 +577,7 @@ abstract class System_Daemon
             return true;
         }
         
-        self::$safe_mode = ((boolean)@ini_get("safe_mode") === FALSE) ? FALSE : TRUE;
+        self::$safe_mode = ((boolean)@ini_get("safe_mode") === false) ? false : true;
         
         // system settings
         self::$processId      = 0;
@@ -625,7 +625,8 @@ abstract class System_Daemon
         }
         // verify logLocation
         if (!is_writable($dir = dirname(self::$logLocation))) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName." daemon cannot write ".
+            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+                " daemon cannot write ".
                 "to log directory: ".$dir,
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
@@ -652,7 +653,8 @@ abstract class System_Daemon
         $passwd = posix_getpwuid(self::$appRunAsUID);
         if (!is_array($passwd) || !count($passwd) || 
             !isset($passwd["name"]) || !$passwd["name"]) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName." daemon has invalid ".
+            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+                " daemon has invalid ".
                 "appRunAsUID: ".self::$appRunAsUID.". ".
                 "No matching user on the system. ", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
