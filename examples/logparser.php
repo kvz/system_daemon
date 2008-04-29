@@ -66,6 +66,14 @@ System_Daemon::$appDir         = dirname(__FILE__);
 System_Daemon::$appDescription = "Parses vsftpd logfiles and stores them in MySQL";
 System_Daemon::$authorName     = "Kevin van Zonneveld";
 System_Daemon::$authorEmail    = "kevin@vanzonneveld.net";
+System_Daemon::$iniSettings    = array(
+    "max_execution_time" => "0",
+    "max_input_time" => "0",
+    "memory_limit" => "1024M"
+);
+
+System_Daemon::setSigHandler(SIGCONT, array("System_Daemon", "daemonHandleSig"));
+
 
 // This program can also be run in the forground with runmode --no-daemon
 if (!$runmode["no-daemon"]) {

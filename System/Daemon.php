@@ -155,6 +155,18 @@ abstract class System_Daemon
      */
     static public $logVerbosity = SYSTEM_DAEMON_LOG_INFO;
     
+    /**
+     * Some ini settings to help the daemon. These are public
+     * and may be overwritten.
+     *
+     * @var array
+     */    
+    static public $iniSettings = array(
+        "max_execution_time" => "0",
+        "max_input_time" => "0",
+        "memory_limit" => "128M"
+    );    
+    
     
     
     /**
@@ -544,9 +556,11 @@ abstract class System_Daemon
         // system settings
         self::$processId      = 0;
         self::$processIsChild = false;
-        ini_set("max_execution_time", "0");
-        ini_set("max_input_time", "0");
-        ini_set("memory_limit", "1024M");
+        if (!ini_get('safe_mode')) {
+            foreach (self::$iniSettings as $setting=>$value) {
+                ini_set($setting, $value);
+            }
+        }
         set_time_limit(0);        
         ob_implicit_flush();
         
