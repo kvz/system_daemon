@@ -34,8 +34,9 @@ System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon not yet started so this will 
 
 // Spawn Deamon!
 System_Daemon::start();
-System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon: 'simple' spawned! This will be written to ".
-    "/var/log/simple.log");
+System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon: '".System_Daemon::$appName.
+    "' spawned! This will be written to ".
+    System_Daemon::$logLocation);
 
 // Your normal PHP code goes here. Only the code will run in the background
 // so you can close your terminal session, and the application will

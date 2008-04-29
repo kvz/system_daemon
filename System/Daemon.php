@@ -54,7 +54,15 @@ abstract class System_Daemon
      *
      * @var boolean
      */
-    static public $use_pear = true;
+    static public $usePEAR = true;
+    
+    /**
+     * Accepts a PEAR_Log instance to handle all logging.
+     * This will replace System_Daemon's own logging facility 
+     *
+     * @var mixed
+     */
+    static public $usePEARLog = false;
     
     /**
      * Author name, e.g.: Kevin van zonneveld 
@@ -278,19 +286,19 @@ abstract class System_Daemon
     /**
      * Spawn daemon process.
      * 
-     * @param boolean $use_pear Wether or not to run as a part of pear.
+     * @param boolean $usePEAR Wether or not to run as a part of pear.
      * 
      * @return void
      * @see stop()
      * @see _daemonInit()
      * @see _daemonBecome()
      */
-    static public function start($use_pear = true)
+    static public function start($usePEAR = true)
     {
-        self::$use_pear    = $use_pear;
+        self::$usePEAR    = $usePEAR;
         
         // to run as a part of PEAR
-        if ( self::$use_pear ) {
+        if ( self::$usePEAR ) {
             include_once "PEAR.php";
             include_once "PEAR/Exception.php";
             
@@ -302,7 +310,7 @@ abstract class System_Daemon
         // check the PHP configuration
         if (!defined("SIGHUP")) {
             $msg = "PHP is compiled without --enable-pcntl directive";
-            if ( self::$use_pear ) {
+            if ( self::$usePEAR ) {
                 throw new System_Daemon_Exception($msg);
             } else {
                 trigger_error($msg, E_USER_ERROR);
@@ -312,7 +320,7 @@ abstract class System_Daemon
         // check for CLI
         if ((php_sapi_name() != 'cli')) {
             $msg = "You can only create daemon from the command line";
-            if ( self::$use_pear ) {
+            if ( self::$usePEAR ) {
                 throw new System_Daemon_Exception($msg);
             } else {
                 trigger_error($msg, E_USER_ERROR);
@@ -370,7 +378,7 @@ abstract class System_Daemon
      * Almost every deamon requires a log file, this function can
      * facilitate that. Also handles class-generated errors, chooses 
      * either PEAR handling or PEAR-independant handling, depending on:
-     * self::$use_pear
+     * self::$usePEAR
      * 
      * It logs a string according to error levels specified in array: 
      * self::$_logLevels (4 is fatal and handles daemon's death)
@@ -427,7 +435,7 @@ abstract class System_Daemon
         }
         
         if ($level < SYSTEM_DAEMON_LOG_WARNING) {
-            if (self::$use_pear) {
+            if (self::$usePEAR) {
                 throw new System_Daemon_Exception($log_line);
             }
             if ($level == SYSTEM_DAEMON_LOG_EMERG) {
