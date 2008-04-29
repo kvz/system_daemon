@@ -415,10 +415,9 @@ abstract class System_Daemon
         }
         
         // Make use of a PEAR_Log() instance
-        if ($usePEARLogInstance !== false) {
-            return call_user_func($usePEARLogInstance, $str, $level);
+        if (self::$usePEARLogInstance !== false) {
+            self::$usePEARLogInstance->log($str, $level);
         }
-        
         
         if ( function_exists("debug_backtrace") && ($file == false || 
             $class == false || $function == false || $line == false) ) {

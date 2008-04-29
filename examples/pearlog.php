@@ -28,20 +28,19 @@ error_reporting(E_ALL);
 require_once "System/Daemon.php";
 
 // Initialize PEAR_Log instance
+$my_log_instance = &Log::factory('file', '/tmp/pearlog.log', 'pearlog');
 
 // Bare minimum setup
-System_Daemon::$appName = "pearlog";
-System_Daemon::$appDir  = dirname(__FILE__);
-System_Daemon::$usePEARLogInstance = &Log::factory('file', '/tmp/pearlog.log', 
-    'pearlog');
-System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon not yet started so ".
-    "this will be written on-screen");
+System_Daemon::$appName            = "pearlog";
+System_Daemon::$appDir             = dirname(__FILE__);
+System_Daemon::$usePEARLogInstance = $my_log_instance;
+System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon not yet started. ".
+    "Every logline will end up in whatever \$usePEARLogInstance->log() says");
 
 // Spawn Deamon!
 System_Daemon::start();
-System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon: '".System_Daemon::$appName.
-    "' spawned! This will be written to ".
-    System_Daemon::$logLocation);
+System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon started. ".
+    "Every logline will end up in whatever \$usePEARLogInstance->log() says");
 
 // Your normal PHP code goes here. Only the code will run in the background
 // so you can close your terminal session, and the application will
