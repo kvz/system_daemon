@@ -98,7 +98,7 @@ abstract class System_Daemon_OS extends System_Daemon
                 // General exception
                 throw new Exception($log_line);
             } else {
-                // This should never happen
+                // This should never happen when running in 'PEAR-mode'
                 trigger_error("Panic: No valid log facility available!\n", 
                     E_USER_ERROR);
             }                     
@@ -115,7 +115,8 @@ abstract class System_Daemon_OS extends System_Daemon
     public function setProperties($properties = false) 
     {
         if (!is_array($properties) || !count($properties)) {
-            self::log(2, "No properties to forge init.d script", 
+            self::log(SYSTEM_DAEMON_LOG_WARNING, "No properties to ".
+                "forge init.d script", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false; 
         }
@@ -128,7 +129,8 @@ abstract class System_Daemon_OS extends System_Daemon
         foreach ($required_props as $required_prop) {
             if (!isset($required_props[$required_prop]) 
                 || !$required_props[$required_prop]) {
-                self::log(2, "Cannot forge an init.d script without a valid ".
+                self::log(SYSTEM_DAEMON_LOG_WARNING, "Cannot forge an ".
+                    "init.d script without a valid ".
                     "daemon property: ".$required_prop, 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
                 return false;
@@ -212,32 +214,36 @@ abstract class System_Daemon_OS extends System_Daemon
         
         // as many safety checks as possible
         if (!$overwrite && file_exists(($initd_location))) {
-            self::log(2, "init.d script already exists", 
+            self::log(SYSTEM_DAEMON_LOG_WARNING, "init.d script already exists", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         } 
         if (!is_dir($dir = dirname($initd_location))) {
-            self::log(3, "init.d directory: '".$dir."' does not ".
+            self::log(SYSTEM_DAEMON_LOG_WARNING, "init.d directory: '".
+                $dir."' does not ".
                 "exist. Can this be a correct path?", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         if (!is_writable($dir = dirname($initd_location))) {
-            self::log(3, "init.d directory: '".$dir."' cannot be ".
+            self::log(SYSTEM_DAEMON_LOG_WARNING, "init.d directory: '".
+                $dir."' cannot be ".
                 "written to. Check the permissions", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         
         if (!file_put_contents($initd_location, $initd_body)) {
-            self::log(3, "init.d file: '".$initd_location."' cannot be ".
+            self::log(SYSTEM_DAEMON_LOG_WARNING, "init.d file: '".
+                $initd_location."' cannot be ".
                 "written to. Check the permissions", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         
         if (!chmod($initd_location, 0777)) {
-            self::log(3, "init.d file: '".$initd_location."' cannot be ".
+            self::log(SYSTEM_DAEMON_LOG_WARNING, "init.d file: '".
+                $initd_location."' cannot be ".
                 "chmodded. Check the permissions", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
@@ -275,7 +281,8 @@ abstract class System_Daemon_OS extends System_Daemon
                 break;
             default:
                 // not supported yet
-                self::log(2, "skeleton retrieval for OS: ".$distro.
+                self::log(SYSTEM_DAEMON_LOG_WARNING, "skeleton retrieval for OS: ".
+                    $distro.
                     " currently not supported ", 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
                 return false;
@@ -304,7 +311,7 @@ abstract class System_Daemon_OS extends System_Daemon
         // check path
         $daemon_filepath = $properties["appDir"]."/".$properties["appExecutable"];
         if (!file_exists($daemon_filepath)) {
-            self::log(2, 
+            self::log(SYSTEM_DAEMON_LOG_WARNING, 
                 "unable to forge startup script for non existing ".
                 "daemon_filepath: ".$daemon_filepath.", try setting a valid ".
                 "appDir or appExecutable", 
@@ -314,7 +321,7 @@ abstract class System_Daemon_OS extends System_Daemon
         
         // daemon file needs to be executable 
         if (!is_executable($daemon_filepath)) {
-            self::log(2, 
+            self::log(SYSTEM_DAEMON_LOG_WARNING, 
                 "unable to forge startup script. ".
                 "daemon_filepath: ".$daemon_filepath.", needs to be executable ".
                 "first", 
@@ -334,7 +341,7 @@ abstract class System_Daemon_OS extends System_Daemon
             break;
         default:
             // not supported yet
-            self::log(2, 
+            self::log(SYSTEM_DAEMON_LOG_WARNING, 
                 "skeleton retrieval for OS: ".$distro.
                 " currently not supported ", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -344,7 +351,7 @@ abstract class System_Daemon_OS extends System_Daemon
 
         // open skeleton
         if (!$skeleton_filepath || !file_exists($skeleton_filepath)) {
-            self::log(2, 
+            self::log(SYSTEM_DAEMON_LOG_WARNING, 
                 "skeleton file for OS: ".$distro." not found at: ".
                 $skeleton_filepath, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -371,7 +378,7 @@ abstract class System_Daemon_OS extends System_Daemon
                 break;
             default:
                 // not supported yet
-                self::log(2, 
+                self::log(SYSTEM_DAEMON_LOG_WARNING, 
                     "skeleton modification for OS: ".$distro.
                     " currently not supported ", 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
