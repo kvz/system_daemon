@@ -24,16 +24,17 @@
  */
     
 // Include Class
+error_reporting(E_ALL);
 require_once "System/Daemon.php";
 
 // Bare minimum setup
 System_Daemon::$appName = "simple";
 System_Daemon::$appDir  = dirname(__FILE__);
-System_Daemon::log(1, "Daemon not yet started so this will be written on-screen");
+System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon not yet started so this will be written on-screen");
 
 // Spawn Deamon!
 System_Daemon::start();
-System_Daemon::log(1, "Daemon: 'simple' spawned! This will be written to ".
+System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon: 'simple' spawned! This will be written to ".
     "/var/log/simple.log");
 
 // Your normal PHP code goes here. Only the code will run in the background

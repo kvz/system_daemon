@@ -163,14 +163,14 @@ abstract class System_Daemon
      * @var array
      */
     static private $_logLevels = array(
-        SYSTEM_DAEMON_EMERG => "emerg",
-        SYSTEM_DAEMON_ALERT => "alert",
-        SYSTEM_DAEMON_CRIT => "crit",
-        SYSTEM_DAEMON_ERR => "err",
-        SYSTEM_DAEMON_WARNING => "warning",
-        SYSTEM_DAEMON_NOTICE => "notice",
-        SYSTEM_DAEMON_INFO => "info",
-        SYSTEM_DAEMON_DEBUG => "debug"        
+        SYSTEM_DAEMON_LOG_EMERG => "emerg",
+        SYSTEM_DAEMON_LOG_ALERT => "alert",
+        SYSTEM_DAEMON_LOG_CRIT => "crit",
+        SYSTEM_DAEMON_LOG_ERR => "err",
+        SYSTEM_DAEMON_LOG_WARNING => "warning",
+        SYSTEM_DAEMON_LOG_NOTICE => "notice",
+        SYSTEM_DAEMON_LOG_INFO => "info",
+        SYSTEM_DAEMON_LOG_DEBUG => "debug"        
     );
     
     /**
@@ -401,7 +401,7 @@ abstract class System_Daemon
         $str_level = str_pad(self::$_logLevels[$level]."", 8, " ", STR_PAD_LEFT);
         $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
         
-        if ($level > SYSTEM_DAEMON_LOG_DEBUG) {
+        if ($level < SYSTEM_DAEMON_LOG_DEBUG) {
             if (!self::daemonIsInBackground() || !is_writable(self::$logLocation)) {
                 // it's okay to echo if you're running as a fore-ground process
                 // maybe the command to write an init.d file was issued.
@@ -414,18 +414,13 @@ abstract class System_Daemon
             file_put_contents(self::$logLocation, $log_line."\n", FILE_APPEND);
         }
         
-        if ($level > SYSTEM_DAEMON_LOG_NOTICE) {
+        if ($level < SYSTEM_DAEMON_LOG_WARNING) {
             if (self::$use_pear) {
-                //PEAR::raiseError($log_line);
-            }
-        }
-        
-        if ($level == SYSTEM_DAEMON_LOG_EMERG) {
-            // to run as a part of pear
-            if (self::$use_pear) {            
                 throw new System_Daemon_Exception($log_line);
             }
-            self::_daemonDie();
+            if ($level == SYSTEM_DAEMON_LOG_EMERG) {
+                self::_daemonDie();
+            }
         }
         
         return true;

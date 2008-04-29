@@ -57,6 +57,7 @@ if ($runmode["help"] == true) {
 }
     
 // Include Class
+error_reporting(E_ALL);
 require_once "System/Daemon.php";
 
 // Setup
@@ -76,12 +77,12 @@ if (!$runmode["no-daemon"]) {
 // system startup file called: 'init.d'
 // This will make sure your daemon will be started on reboot 
 if (!$runmode["write-initd"]) {
-    System_Daemon::log(1, "not writing an init.d script this time");
+    System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "not writing an init.d script this time");
 } else {
     if (($initd_location = System_Daemon::osInitDWrite()) === false) {
-        System_Daemon::log(2, "unable to write init.d script");
+        System_Daemon::log(SYSTEM_DAEMON_LOG_NOTICE, "unable to write init.d script");
     } else {
-        System_Daemon::log(1, "sucessfully written startup script: ".
+        System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "sucessfully written startup script: ".
             $initd_location);
     }
 }
@@ -109,8 +110,8 @@ while (!System_Daemon::daemonIsDying() && $runningOkay && $cnt <=3) {
     // Depending on runmode it will either end up:
     //  - In the /var/log/logparser.log
     //  - On screen (in case we're not a daemon yet)  
-    System_Daemon::log(1, System_Daemon::$appName." running in ".
-        $mode." ".$cnt."/3");
+    System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, System_Daemon::$appName.
+        " running in ".$mode." ".$cnt."/3");
     
     // In the actuall logparser program, You could replace 'true'
     // With e.g. a  parseLog('vsftpd') function, and have it return
@@ -123,7 +124,8 @@ while (!System_Daemon::daemonIsDying() && $runningOkay && $cnt <=3) {
     // Level 4 would be fatal and shuts down the daemon immediately, which in 
     // this case is handled by the while condition.
     if (!$runningOkay) {
-        System_Daemon::log(3, "parseLog() produces an error, ".
+        System_Daemon::log(SYSTEM_DAEMON_LOG_CRITICAL, "parseLog() ".
+            "produces an error, ".
             "so this will be my last run");
     }
     
