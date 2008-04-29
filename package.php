@@ -16,7 +16,6 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  */
 
-
 $workspace_dir = realpath(dirname(__FILE__)."");
 
 $parts    = explode("-", trim(file_get_contents($workspace_dir."/docs/VERSION")));
