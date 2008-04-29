@@ -78,7 +78,7 @@ System_Daemon::setSigHandler(SIGCONT, array("System_Daemon", "daemonHandleSig"))
 // This program can also be run in the forground with runmode --no-daemon
 if (!$runmode["no-daemon"]) {
     // Spawn Daemon 
-    System_Daemon::start(true);
+    System_Daemon::start();
 }
 
 // With the runmode --write-initd, this program can automatically write a 
