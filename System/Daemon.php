@@ -423,8 +423,8 @@ abstract class System_Daemon
         // Save resources if arguments are passed.
         // But by falling back to debug_backtrace() it still works 
         // if someone forgets to pass them.
-        if ( function_exists("debug_backtrace") && ($file == false || 
-            $class == false || $function == false || $line == false) ) {
+        if (function_exists("debug_backtrace") && ($file == false 
+            || $class == false || $function == false || $line == false)) {
             $dbg_bt   = @debug_backtrace();
             $class    = (isset($dbg_bt[1]["class"])?$dbg_bt[1]["class"]:"");
             $function = (isset($dbg_bt[1]["function"])?$dbg_bt[1]["function"]:"");
@@ -440,13 +440,16 @@ abstract class System_Daemon
         
         $non_debug     = ($level < SYSTEM_DAEMON_LOG_DEBUG);
         $log_succeeded = true;
+        $log_echoed    = false;
         
-        if (!self::daemonIsInBackground() && $non_debug) {
+        if (!self::daemonIsInBackground() && $non_debug && !$log_echoed) {
             // It's okay to echo if you're running as a foreground process.
             // Maybe the command to write an init.d file was issued.
             // In such a case it's important to echo failures to the 
             // STDOUT
             echo $log_line."\n";
+            $log_echoed = true;
+            // but still try to also log to file for future reference
         } 
         
         // 'Touch' logfile 
@@ -455,8 +458,9 @@ abstract class System_Daemon
         }
         
         // Not writable even after touch? Allowed to echo again!!
-        if (!is_writable(self::$logLocation) && $non_debug) { 
+        if (!is_writable(self::$logLocation) && $non_debug && !$log_echoed) { 
             echo $log_line."\n";
+            $log_echoed = true;
             $log_succeeded = false;
         } 
         
