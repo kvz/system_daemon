@@ -410,20 +410,21 @@ abstract class System_Daemon
         $function = false, $line = false)
     {
         // if verbosity level is not matched, don't do anything
-        if ($level < self::$logVerbosity) {
+        if ($level > self::$logVerbosity) {
             return true;
         }
         
         // Make use of a PEAR_Log() instance
         if (self::$usePEARLogInstance !== false) {
             self::$usePEARLogInstance->log($str, $level);
+            return true;
         }
         
+        // Save resources if arguments are passed.
+        // But by falling back to debug_backtrace() it still works 
+        // if someone forgets to pass them.
         if ( function_exists("debug_backtrace") && ($file == false || 
             $class == false || $function == false || $line == false) ) {
-            // saves resources if arguments are passed.
-            // but by using debug_backtrace() it still works 
-            // if someone forgets to pass them
             $dbg_bt   = @debug_backtrace();
             $class    = (isset($dbg_bt[1]["class"])?$dbg_bt[1]["class"]:"");
             $function = (isset($dbg_bt[1]["function"])?$dbg_bt[1]["function"]:"");
@@ -431,29 +432,47 @@ abstract class System_Daemon
             $line     = $dbg_bt[0]["line"];
         }
 
-        // determine what process the log is originating from and forge a logline
+        // Determine what process the log is originating from and forge a logline
+        //$str_ident = "@".substr(self::_daemonWhatIAm(), 0, 1)."-".posix_getpid();
         $str_date  = "[".date("M d H:i:s")."]"; 
-        $str_ident = "@".substr(self::_daemonWhatIAm(), 0, 1)."-".posix_getpid();
         $str_level = str_pad(self::$_logLevels[$level]."", 8, " ", STR_PAD_LEFT);
         $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
         
-        if ($level < SYSTEM_DAEMON_LOG_DEBUG) {
-            if (!self::daemonIsInBackground() || !is_writable(self::$logLocation)) {
-                // it's okay to echo if you're running as a fore-ground process
-                // maybe the command to write an init.d file was issued.
-                // in such a case it's important to echo failures to the 
-                // STDOUT
-                echo $log_line."\n";
-            }
-            
-            // write to logfile
-            file_put_contents(self::$logLocation, $log_line."\n", FILE_APPEND);
+        $non_debug     = ($level < SYSTEM_DAEMON_LOG_DEBUG);
+        $log_succeeded = true;
+        
+        if (!self::daemonIsInBackground() && $non_debug) {
+            // It's okay to echo if you're running as a foreground process.
+            // Maybe the command to write an init.d file was issued.
+            // In such a case it's important to echo failures to the 
+            // STDOUT
+            echo $log_line."\n";
+        } 
+        
+        // 'Touch' logfile 
+        if (!file_exists(self::$logLocation)) {
+            file_put_contents(self::$logLocation, "");
         }
         
+        // Not writable even after touch? Allowed to echo again!!
+        if (!is_writable(self::$logLocation) && $non_debug) { 
+            echo $log_line."\n";
+            $log_succeeded = false;
+        } 
+        
+        // Append to logfile
+        if (!file_put_contents(self::$logLocation, $log_line."\n", FILE_APPEND)) {
+            $log_succeeded = false;
+        }
+        
+        // These are pretty serious errors
         if ($level < SYSTEM_DAEMON_LOG_WARNING) {
+            // Throw an exception
             if (self::$usePEAR) {
                 throw new System_Daemon_Exception($log_line);
             }
+            // An emergency logentry is reason for the deamon to 
+            // die immediately 
             if ($level == SYSTEM_DAEMON_LOG_EMERG) {
                 self::_daemonDie();
             }
@@ -482,6 +501,7 @@ abstract class System_Daemon
         self::log(SYSTEM_DAEMON_LOG_DEBUG, self::$appName.
             " daemon received signal: ".$signo, 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            
         switch ($signo) {
         case SIGTERM:
             // handle shutdown tasks
@@ -633,9 +653,11 @@ abstract class System_Daemon
         }
         
         // verify logVerbosity
-        if (self::$logVerbosity < 0 || self::$logVerbosity > 4) {
+        if (self::$logVerbosity < SYSTEM_DAEMON_LOG_EMERG 
+            || self::$logVerbosity > SYSTEM_DAEMON_LOG_DEBUG) {
             self::log(SYSTEM_DAEMON_LOG_EMERG, "logVerbosity needs to be ". 
-                "between 0 and 4 ".
+                "between ".SYSTEM_DAEMON_LOG_EMERG." and ".
+                SYSTEM_DAEMON_LOG_DEBUG." ".
                 "logVerbosity: ".self::$logVerbosity."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
