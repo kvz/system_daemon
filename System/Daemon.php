@@ -173,43 +173,9 @@ abstract class System_Daemon
         "max_execution_time" => "0",
         "max_input_time" => "0",
         "memory_limit" => "128M"
-    );    
-    
-    
-    
-    /**
-     * Available log levels
-     *
-     * @var array
-     */
-    static private $_logLevels = array(
-        SYSTEM_DAEMON_LOG_EMERG => "emerg",
-        SYSTEM_DAEMON_LOG_ALERT => "alert",
-        SYSTEM_DAEMON_LOG_CRIT => "crit",
-        SYSTEM_DAEMON_LOG_ERR => "err",
-        SYSTEM_DAEMON_LOG_WARNING => "warning",
-        SYSTEM_DAEMON_LOG_NOTICE => "notice",
-        SYSTEM_DAEMON_LOG_INFO => "info",
-        SYSTEM_DAEMON_LOG_DEBUG => "debug"        
     );
     
-    /**
-     * Available signal handlers
-     * setSigHandler can overwrite these values individually.
-     *
-     * @var array
-     * @see setSigHandler()
-     */
-    static private $_sigHandlers = array(
-        SIGCONT => array("System_Daemon", "daemonHandleSig"),
-        SIGALRM => array("System_Daemon", "daemonHandleSig"),
-        SIGINT => array("System_Daemon", "daemonHandleSig"),
-        SIGABRT => array("System_Daemon", "daemonHandleSig"),
-        SIGTERM => array("System_Daemon", "daemonHandleSig"),
-        SIGHUP => array("System_Daemon", "daemonHandleSig"),
-        SIGUSR1 => array("System_Daemon", "daemonHandleSig"),
-        SIGCHLD => array("System_Daemon", "daemonHandleSig")
-    );
+    
     
     /**
      * The current process identifier
@@ -247,6 +213,42 @@ abstract class System_Daemon
      */
     static protected $safe_mode = false;
     
+    
+    
+    /**
+     * Available log levels
+     *
+     * @var array
+     */
+    static private $_logLevels = array(
+        SYSTEM_DAEMON_LOG_EMERG => "emerg",
+        SYSTEM_DAEMON_LOG_ALERT => "alert",
+        SYSTEM_DAEMON_LOG_CRIT => "crit",
+        SYSTEM_DAEMON_LOG_ERR => "err",
+        SYSTEM_DAEMON_LOG_WARNING => "warning",
+        SYSTEM_DAEMON_LOG_NOTICE => "notice",
+        SYSTEM_DAEMON_LOG_INFO => "info",
+        SYSTEM_DAEMON_LOG_DEBUG => "debug"        
+    );
+    
+    /**
+     * Available signal handlers
+     * setSigHandler can overwrite these values individually.
+     *
+     * @var array
+     * @see setSigHandler()
+     */
+    static private $_sigHandlers = array(
+        SIGCONT => array("System_Daemon", "daemonHandleSig"),
+        SIGALRM => array("System_Daemon", "daemonHandleSig"),
+        SIGINT => array("System_Daemon", "daemonHandleSig"),
+        SIGABRT => array("System_Daemon", "daemonHandleSig"),
+        SIGTERM => array("System_Daemon", "daemonHandleSig"),
+        SIGHUP => array("System_Daemon", "daemonHandleSig"),
+        SIGUSR1 => array("System_Daemon", "daemonHandleSig"),
+        SIGCHLD => array("System_Daemon", "daemonHandleSig")
+    );
+
     /**
      * Cache that holds values of some functions 
      * for performance gain. Easier then doing 
@@ -256,6 +258,8 @@ abstract class System_Daemon
      * @var array
      */
     static private $_intFunctionCache = array();
+    
+    
     
     /**
      * Autoload static method for loading classes and interfaces.
@@ -287,7 +291,6 @@ abstract class System_Daemon
         }
 
     }//end autoload()
-    
     
     /**
      * Spawn daemon process.
@@ -342,7 +345,7 @@ abstract class System_Daemon
         self::_daemonBecome();
 
     }//end start()
-
+    
     /**
      * Stop daemon process.
      *
@@ -384,7 +387,9 @@ abstract class System_Daemon
      * Almost every deamon requires a log file, this function can
      * facilitate that. Also handles class-generated errors, chooses 
      * either PEAR handling or PEAR-independant handling, depending on:
-     * self::$usePEAR
+     * self::$usePEAR.
+     * Also supports PEAR_Log if you referenc to a valid instance of it
+     * in $usePEARLogInstance.
      * 
      * It logs a string according to error levels specified in array: 
      * self::$_logLevels (4 is fatal and handles daemon's death)
@@ -404,8 +409,14 @@ abstract class System_Daemon
     static public function log($level, $str, $file = false, $class = false, 
         $function = false, $line = false)
     {
+        // if verbosity level is not matched, don't do anything
         if ($level < self::$logVerbosity) {
             return true;
+        }
+        
+        // Make use of a PEAR_Log() instance
+        if ($usePEARLogInstance !== false) {
+            return call_user_func($usePEARLogInstance, $str, $level);
         }
         
         
@@ -454,9 +465,9 @@ abstract class System_Daemon
     }//end log()    
     
     /**
-     * Signal handler function
-     * This is the default signal handler. You can overrule
-     * individual signals with the setSigHandler() method
+     * Default signal handler.
+     * You can overrule various signals with the 
+     * setSigHandler() method
      *
      * @param integer $signo The posix signal received.
      * 
