@@ -122,6 +122,15 @@ abstract class System_Daemon
     static public $appPidLocation;
 
     /**
+     * Messages below this log level are ignored (not written 
+     * to logfile, not displayed on screen) 
+     * Defaults to: 6, info. Meaning info & higher are logged.
+     *
+     * @var integer
+     */
+    static public $logVerbosity = SYSTEM_DAEMON_LOG_INFO;
+        
+    /**
      * The log filepath , e.g.: /var/log/logparser_daemon.log
      * Defaults to: /var/log/${appName}_daemon.log
      *
@@ -154,15 +163,6 @@ abstract class System_Daemon
      */
     static public $appDieOnIdentityCrisis = true;
 
-    /**
-     * Messages below this log level are ignored (not written 
-     * to logfile, not displayed on screen) 
-     * Defaults to: 6, info. Meaning info & higher are logged.
-     *
-     * @var integer
-     */
-    static public $logVerbosity = SYSTEM_DAEMON_LOG_INFO;
-    
     /**
      * Some ini settings to help the daemon. These are public
      * and may be overwritten.
