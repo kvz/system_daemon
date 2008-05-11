@@ -18,17 +18,6 @@
 // Autoloader borrowed from PHP_CodeSniffer, see function for credits
 spl_autoload_register(array("System_Daemon", "autoload"));
 
-// Make these corresponding with PEAR
-// Ensures compatibility while maintaining independency
-define("SYSTEM_DAEMON_LOG_EMERG", 0);    /* System is unusable */
-define("SYSTEM_DAEMON_LOG_ALERT", 1);    /* Immediate action required */
-define("SYSTEM_DAEMON_LOG_CRIT", 2);     /* Critical conditions */
-define("SYSTEM_DAEMON_LOG_ERR", 3);      /* Error conditions */
-define("SYSTEM_DAEMON_LOG_WARNING", 4);  /* Warning conditions */
-define("SYSTEM_DAEMON_LOG_NOTICE", 5);   /* Normal but significant */
-define("SYSTEM_DAEMON_LOG_INFO", 6);     /* Informational */
-define("SYSTEM_DAEMON_LOG_DEBUG", 7);    /* Debug-level messages */
-
 /**
  * System_Daemon. Create daemons with practicle functions 
  * like $daemon->start()
@@ -49,6 +38,52 @@ define("SYSTEM_DAEMON_LOG_DEBUG", 7);    /* Debug-level messages */
  */
 abstract class System_Daemon
 {
+    // Make these corresponding with PEAR
+    // Ensures compatibility while maintaining independency
+    
+    /**
+     * System is unusable
+     */
+    const LOG_EMERG = 0;
+
+    /**
+     * Immediate action required
+     */
+    
+    const LOG_ALERT = 1;
+    
+    /**
+     * Critical conditions
+     */
+    const LOG_CRIT = 2;
+    
+    /**
+     * Error conditions
+     */
+    const LOG_ERR = 3;
+    
+    /**
+     * Warning conditions
+     */
+    const LOG_WARNING = 4;
+    
+    /**
+     * Normal but significant
+     */
+    const LOG_NOTICE = 5;
+    
+    /**
+     * Informational
+     */
+    const LOG_INFO = 6;
+    
+    /**
+     * Debug-level messages
+     */
+    const LOG_DEBUG = 7;
+    
+    
+    
     /**
      * Wether or not to run this class standalone, or as a part of PEAR
      *
@@ -128,7 +163,7 @@ abstract class System_Daemon
      *
      * @var integer
      */
-    static public $logVerbosity = SYSTEM_DAEMON_LOG_INFO;
+    static public $logVerbosity = self::LOG_INFO;
         
     /**
      * The log filepath , e.g.: /var/log/logparser_daemon.log
@@ -221,14 +256,14 @@ abstract class System_Daemon
      * @var array
      */
     static private $_logLevels = array(
-        SYSTEM_DAEMON_LOG_EMERG => "emerg",
-        SYSTEM_DAEMON_LOG_ALERT => "alert",
-        SYSTEM_DAEMON_LOG_CRIT => "crit",
-        SYSTEM_DAEMON_LOG_ERR => "err",
-        SYSTEM_DAEMON_LOG_WARNING => "warning",
-        SYSTEM_DAEMON_LOG_NOTICE => "notice",
-        SYSTEM_DAEMON_LOG_INFO => "info",
-        SYSTEM_DAEMON_LOG_DEBUG => "debug"        
+        self::LOG_EMERG => "emerg",
+        self::LOG_ALERT => "alert",
+        self::LOG_CRIT => "crit",
+        self::LOG_ERR => "err",
+        self::LOG_WARNING => "warning",
+        self::LOG_NOTICE => "notice",
+        self::LOG_INFO => "info",
+        self::LOG_DEBUG => "debug"        
     );
     
     /**
@@ -339,7 +374,7 @@ abstract class System_Daemon
         // initialize & check variables
         self::_daemonInit();
         
-        //self::log(SYSTEM_DAEMON_LOG_EMERG, "test");
+        //self::log(self::LOG_EMERG, "test");
         
         // become daemon
         self::_daemonBecome();
@@ -354,7 +389,7 @@ abstract class System_Daemon
      */
     static public function stop()
     {
-        self::log(SYSTEM_DAEMON_LOG_INFO, "stopping ".self::$appName." daemon", 
+        self::log(self::LOG_INFO, "stopping ".self::$appName." daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         self::_daemonDie();
     }//end stop()
@@ -372,7 +407,7 @@ abstract class System_Daemon
     {
         if (!isset(self::$_sigHandlers[$signal])) {
             // the signal should be defined already
-            self::log(SYSTEM_DAEMON_LOG_NOTICE, "You can only overrule a ".
+            self::log(self::LOG_NOTICE, "You can only overrule a ".
                 "handler that has been defined already.", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
@@ -438,7 +473,7 @@ abstract class System_Daemon
         $str_level = str_pad(self::$_logLevels[$level]."", 8, " ", STR_PAD_LEFT);
         $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
         
-        $non_debug     = ($level < SYSTEM_DAEMON_LOG_DEBUG);
+        $non_debug     = ($level < self::LOG_DEBUG);
         $log_succeeded = true;
         $log_echoed    = false;
         
@@ -470,14 +505,14 @@ abstract class System_Daemon
         }
         
         // These are pretty serious errors
-        if ($level < SYSTEM_DAEMON_LOG_WARNING) {
+        if ($level < self::LOG_WARNING) {
             // Throw an exception
             if (self::$usePEAR) {
                 throw new System_Daemon_Exception($log_line);
             }
             // An emergency logentry is reason for the deamon to 
             // die immediately 
-            if ($level == SYSTEM_DAEMON_LOG_EMERG) {
+            if ($level == self::LOG_EMERG) {
                 self::_daemonDie();
             }
         }
@@ -502,7 +537,7 @@ abstract class System_Daemon
         // Must be public or else will throw a 
         // fatal error: Call to private method 
          
-        self::log(SYSTEM_DAEMON_LOG_DEBUG, self::$appName.
+        self::log(self::LOG_DEBUG, self::$appName.
             " daemon received signal: ".$signo, 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             
@@ -517,12 +552,12 @@ abstract class System_Daemon
             break;
         case SIGHUP:
             // handle restart tasks
-            self::log(SYSTEM_DAEMON_LOG_INFO, self::$appName.
+            self::log(self::LOG_INFO, self::$appName.
                 " daemon received signal: restart", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             break;
         case SIGCHLD:
-            self::log(SYSTEM_DAEMON_LOG_INFO, self::$appName.
+            self::log(self::LOG_INFO, self::$appName.
                 " daemon received signal: hold", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             while (pcntl_wait($status, WNOHANG OR WUNTRACED) > 0) {
@@ -582,7 +617,7 @@ abstract class System_Daemon
             $ret = System_Daemon_OS::initDWrite($overwrite);
         } catch (System_Daemon_OS_Exception $e) {
             // Catch-all for System_Daemon_OS errors...
-            self::log(SYSTEM_DAEMON_LOG_WARNING, "Unable to create startup file: ".
+            self::log(self::LOG_WARNING, "Unable to create startup file: ".
                 $e->getMessage());
         }
     }//end osInitDWrite()
@@ -616,14 +651,14 @@ abstract class System_Daemon
         
         // verify appName
         if (!isset(self::$appName) || !self::$appName) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "No appName set", 
+            self::log(self::LOG_EMERG, "No appName set", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         if (!self::strIsUnix(self::$appName)) {
             // suggest a better appName
             $safe_name = self::strToUnix(self::$appName);
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "'".self::$appName.
+            self::log(self::LOG_EMERG, "'".self::$appName.
                 "' is not a valid daemon name, ".
                 "try using something like '".$safe_name."' instead", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -636,7 +671,7 @@ abstract class System_Daemon
         }
         // verify appPidLocation
         if (!is_writable($dir = dirname(self::$appPidLocation))) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$appName.
                 " daemon cannot write to ".
                 "pidfile directory: ".$dir, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -649,7 +684,7 @@ abstract class System_Daemon
         }
         // verify logLocation
         if (!is_writable($dir = dirname(self::$logLocation))) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$appName.
                 " daemon cannot write ".
                 "to log directory: ".$dir,
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -657,11 +692,11 @@ abstract class System_Daemon
         }
         
         // verify logVerbosity
-        if (self::$logVerbosity < SYSTEM_DAEMON_LOG_EMERG 
-            || self::$logVerbosity > SYSTEM_DAEMON_LOG_DEBUG) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "logVerbosity needs to be ". 
-                "between ".SYSTEM_DAEMON_LOG_EMERG." and ".
-                SYSTEM_DAEMON_LOG_DEBUG." ".
+        if (self::$logVerbosity < self::LOG_EMERG 
+            || self::$logVerbosity > self::LOG_DEBUG) {
+            self::log(self::LOG_EMERG, "logVerbosity needs to be ". 
+                "between ".self::LOG_EMERG." and ".
+                self::LOG_DEBUG." ".
                 "logVerbosity: ".self::$logVerbosity."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
@@ -669,7 +704,7 @@ abstract class System_Daemon
         
         // verify appRunAsUID
         if (!is_numeric(self::$appRunAsUID)) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$appName.
                 " daemon has invalid ".
                 "appRunAsUID: ".self::$appRunAsUID.". ",
                 "It should be an integer", 
@@ -679,7 +714,7 @@ abstract class System_Daemon
         $passwd = posix_getpwuid(self::$appRunAsUID);
         if (!is_array($passwd) || !count($passwd) || 
             !isset($passwd["name"]) || !$passwd["name"]) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$appName.
                 " daemon has invalid ".
                 "appRunAsUID: ".self::$appRunAsUID.". ".
                 "No matching user on the system. ", 
@@ -689,7 +724,7 @@ abstract class System_Daemon
 
         // verify appRunAsGID
         if (!is_numeric(self::$appRunAsGID)) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$appName.
                 " daemon has invalid ".
                 "appRunAsGID: ".self::$appRunAsGID.". ",
                 "It should be an integer",  
@@ -699,7 +734,7 @@ abstract class System_Daemon
         $group = posix_getgrgid(self::$appRunAsGID);
         if (!is_array($group) || !count($group) || 
             !isset($group["name"]) || !$group["name"]) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$appName.
                 " daemon has invalid ".
                 "appRunAsGID: ".self::$appRunAsGID.". ".
                 "No matching group on the system. ", 
@@ -713,7 +748,7 @@ abstract class System_Daemon
         }
         // verify appDir
         if (!is_dir(self::$appDir)) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$appName.
                 " daemon has invalid appDir: ".
                 self::$appDir."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -740,7 +775,7 @@ abstract class System_Daemon
     static private function _daemonBecome() 
     {
 
-        self::log(SYSTEM_DAEMON_LOG_INFO, "starting ".self::$appName.
+        self::log(self::LOG_INFO, "starting ".self::$appName.
             " daemon, output in: ". 
             self::$logLocation, 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -758,7 +793,7 @@ abstract class System_Daemon
         
         // allowed?
         if (self::daemonIsRunning()) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$appName.
                 " daemon is still running. ".
                 "exiting", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -766,7 +801,7 @@ abstract class System_Daemon
 
         // fork process!
         if (!self::_daemonFork()) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$appName.
                 " daemon was unable to fork", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
@@ -775,10 +810,10 @@ abstract class System_Daemon
         if (!posix_setuid(self::$appRunAsUID) || 
             !posix_setgid(self::$appRunAsGID)) {
             if (self::$appDieOnIdentityCrisis) {
-                $lvl = SYSTEM_DAEMON_LOG_EMERG;
+                $lvl = self::LOG_EMERG;
                 $swt = "on";
             } else {
-                $lvl = SYSTEM_DAEMON_LOG_CRIT;
+                $lvl = self::LOG_CRIT;
                 $swt = "off";
             }
             self::log($lvl, "".self::$appName." daemon was unable assume ".
@@ -790,13 +825,13 @@ abstract class System_Daemon
 
         // additional PID succeeded check
         if (!is_numeric(self::$processId) || self::$processId < 1) {
-            self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$appName.
                 " daemon didn't have a valid ".
                 "pid: '".self::$processId."'", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         } else {
             if (!file_put_contents(self::$appPidLocation, self::$processId)) {
-                self::log(SYSTEM_DAEMON_LOG_EMERG, "".self::$appName.
+                self::log(self::LOG_EMERG, "".self::$appName.
                     " daemon was unable ".
                     "to write to pidfile: ".self::$appPidLocation."", 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -822,7 +857,7 @@ abstract class System_Daemon
             if (!posix_kill(intval($pid), 0)) {
                 // not responding so unlink pidfile
                 @unlink(self::$appPidLocation);
-                self::log(SYSTEM_DAEMON_LOG_WARNING, "".self::$appName.
+                self::log(self::LOG_WARNING, "".self::$appName.
                     " daemon orphaned pidfile ".
                     "found and removed: ".self::$appPidLocation, 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -842,19 +877,19 @@ abstract class System_Daemon
      */
     static private function _daemonFork()
     {
-        self::log(SYSTEM_DAEMON_LOG_DEBUG, "forking ".self::$appName.
+        self::log(self::LOG_DEBUG, "forking ".self::$appName.
             " daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         $pid = pcntl_fork();
         if ( $pid == -1 ) {
             // error
-            self::log(SYSTEM_DAEMON_LOG_WARNING, "".self::$appName.
+            self::log(self::LOG_WARNING, "".self::$appName.
                 " daemon could not be forked", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         } else if ($pid) {
             // parent
-            self::log(SYSTEM_DAEMON_LOG_DEBUG, "ending ".self::$appName.
+            self::log(self::LOG_DEBUG, "ending ".self::$appName.
                 " parent process", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             // die without attracting attention
@@ -891,7 +926,7 @@ abstract class System_Daemon
             self::$daemonIsInitialized = false;
             if (!self::daemonIsInBackground() || 
                 !file_exists(self::$appPidLocation)) {
-                self::log(SYSTEM_DAEMON_LOG_INFO, "Not stopping ".self::$appName.
+                self::log(self::LOG_INFO, "Not stopping ".self::$appName.
                     ", daemon was not running",
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             } else {

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.7.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+    http://pear.php.net/dtd/tasks-1.0.xsd
+    http://pear.php.net/dtd/package-2.0
+    http://pear.php.net/dtd/package-2.0.xsd">
+ <name>System_Daemon</name>
+ <channel>pear.php.net</channel>
+ <summary>Turn PHP scripts into Linux daemons</summary>
+ <description>System_Daemon is a PHP class that allows developers to create their own daemon 
+applications on Linux systems. The class is focussed entirely on creating &amp;amp; 
+spawning standalone daemons, and for example includes:
+
+   1. Methods to generate OS-specific startup-files (init.d) (currently only 
+      Debian/Ubuntu are supported), so that your application gets started on 
+      reboot as well.
+   2. Methods for logging purposes
+   3. Simple syntax
+ </description>
+ <lead>
+  <name>Kevin van Zonneveld</name>
+  <user>kevin</user>
+  <email>kevin@vanzonneveld.net</email>
+  <active>yes</active>
+ </lead>
+ <date>2008-05-11</date>
+ <time>16:34:50</time>
+ <version>
+  <release>0.2</release>
+  <api>0.2</api>
+ </version>
+ <stability>
+  <release>alpha</release>
+  <api>alpha</api>
+ </stability>
+ <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
+ <notes>2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r93] Added version mapping
+        [r92] Improved Package Tool
+        [r91] Incomplete - # 6: Log should be an optional dependency
+        [r91] http://trac.phpjs.org/projects/system_daemon/ticket/6
+        [r90] Incomplete - # 5: tests should be added to a tests dir and added to package.xml
+        [r90] http://trac.phpjs.org/projects/system_daemon/ticket/5
+
+2008-05-06 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r89] Minor improvements to code layout
+
+2008-04-29 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r88] Improved the packaging tools
+        [r87] Added optional support for acceptance of an instance of PEAR&apos;s Log package
+        [r84] Improved code layout
+        [r81] Improved SAFE_MODE check
+        [r80] Added a &apos;nopear&apos; example
+        [r78] Allowed for ini_sets to be defined outside of the class
+        [r78] Enabled a SAFE_MODE check for the ini_sets
+        [r77] Made log levels comply with PEAR_LOG_ levels.
+        [r76] You can now pass your own custom handlers to the various sig states.</notes>
+ <contents>
+  <dir baseinstalldir="./" name="/">
+   <dir name="docs">
+    <file name="DESCRIPTION" role="doc" />
+    <file name="MAINTAINERS" role="doc" />
+    <file name="MAPPING" role="doc" />
+    <file name="NOTES" role="doc" />
+    <file name="SUMMARY" role="doc" />
+    <file name="VERSION" role="doc" />
+   </dir> <!-- /docs -->
+   <dir name="examples">
+    <dir name="System">
+     <dir name="Daemon">
+      <dir name="OS">
+       <file name="Exception.php" role="doc" />
+      </dir> <!-- /examples/System/Daemon/OS -->
+      <file name="Exception.php" role="doc" />
+      <file name="OS.php" role="doc" />
+     </dir> <!-- /examples/System/Daemon -->
+     <file name="Daemon.php" role="doc" />
+    </dir> <!-- /examples/System -->
+    <file name="logparser.php" role="doc" />
+    <file name="nopear.php" role="doc" />
+    <file name="pearlog.php" role="doc" />
+    <file name="simple.php" role="doc" />
+   </dir> <!-- /examples -->
+   <dir name="System">
+    <dir name="Daemon">
+     <dir name="OS">
+      <file name="Exception.php" role="php" />
+     </dir> <!-- /System/Daemon/OS -->
+     <file name="Exception.php" role="php" />
+     <file name="OS.php" role="php" />
+    </dir> <!-- /System/Daemon -->
+    <file name="Daemon.php" role="php" />
+   </dir> <!-- /System -->
+   <dir name="tests">
+    <file name="DaemonTest.php" role="test" />
+    <file name="OSTest.php" role="test" />
+   </dir> <!-- /tests -->
+   <dir name="tools">
+    <file name="changelog_gen.php" role="php" />
+    <file name="package_gen.php" role="php" />
+   </dir> <!-- /tools -->
+   <file name="package.php" role="php" />
+  </dir> <!-- / -->
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5.1.2</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0</min>
+   </pearinstaller>
+  </required>
+  <optional>
+   <package>
+    <name>Log</name>
+    <channel>pear.php.net</channel>
+    <min>1.0</min>
+   </package>
+  </optional>
+ </dependencies>
+ <phprelease>
+  <installconditions>
+   <os>
+    <name>(*ix|*ux|darwin*|*BSD|SunOS*)</name>
+   </os>
+  </installconditions>
+ </phprelease>
+ <phprelease />
+ <changelog>
+  <release>
+   <version>
+    <release>0.2</release>
+    <api>0.2</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2008-05-11</date>
+   <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
+   <notes>2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r93] Added version mapping
+        [r92] Improved Package Tool
+        [r91] Incomplete - # 6: Log should be an optional dependency
+        [r91] http://trac.phpjs.org/projects/system_daemon/ticket/6
+        [r90] Incomplete - # 5: tests should be added to a tests dir and added to package.xml
+        [r90] http://trac.phpjs.org/projects/system_daemon/ticket/5
+
+2008-05-06 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r89] Minor improvements to code layout
+
+2008-04-29 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r88] Improved the packaging tools
+        [r87] Added optional support for acceptance of an instance of PEAR&apos;s Log package
+        [r84] Improved code layout
+        [r81] Improved SAFE_MODE check
+        [r80] Added a &apos;nopear&apos; example
+        [r78] Allowed for ini_sets to be defined outside of the class
+        [r78] Enabled a SAFE_MODE check for the ini_sets
+        [r77] Made log levels comply with PEAR_LOG_ levels.
+        [r76] You can now pass your own custom handlers to the various sig states.</notes>
+  </release>
+ </changelog>
+</package>

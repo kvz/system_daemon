@@ -7,3 +7,10 @@ spawning standalone daemons, and for example includes:
       reboot as well.
    2. Methods for logging purposes
    3. Simple syntax
+   4. Support for PEAR's Log package
+   5. Can run with or without PEAR (PEAR adds more elegance & functionality)
+   6. Default signal handlers, but optionally reroute signals to your own 
+      handlers. 
+   7. Log levels comply with PEAR_LOG_ levels but are called SYSTEM_DAEMON_LOG_ 
+      for (in)dependency reasons
+   8. Set options like max RAM usage
