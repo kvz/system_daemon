@@ -809,13 +809,13 @@ abstract class System_Daemon
         // assume specified identity (uid & gid)
         if (!posix_setuid(self::$appRunAsUID) || 
             !posix_setgid(self::$appRunAsGID)) {
+            $lvl = self::LOG_CRIT;
+            $swt = "off";
             if (self::$appDieOnIdentityCrisis) {
                 $lvl = self::LOG_EMERG;
                 $swt = "on";
-            } else {
-                $lvl = self::LOG_CRIT;
-                $swt = "off";
             }
+            
             self::log($lvl, "".self::$appName." daemon was unable assume ".
                 "identity (uid=".self::$appRunAsUID.", gid=".
                 self::$appRunAsGID.") ".
@@ -829,13 +829,13 @@ abstract class System_Daemon
                 " daemon didn't have a valid ".
                 "pid: '".self::$processId."'", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-        } else {
-            if (!file_put_contents(self::$appPidLocation, self::$processId)) {
-                self::log(self::LOG_EMERG, "".self::$appName.
-                    " daemon was unable ".
-                    "to write to pidfile: ".self::$appPidLocation."", 
-                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            }
+        }
+         
+        if (!file_put_contents(self::$appPidLocation, self::$processId)) {
+            self::log(self::LOG_EMERG, "".self::$appName.
+                " daemon was unable ".
+                "to write to pidfile: ".self::$appPidLocation."", 
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // change dir & umask
@@ -854,6 +854,7 @@ abstract class System_Daemon
         $pid = @file_get_contents(self::$appPidLocation);
 
         if ($pid !== false) {
+            // ping app
             if (!posix_kill(intval($pid), 0)) {
                 // not responding so unlink pidfile
                 @unlink(self::$appPidLocation);
