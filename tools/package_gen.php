@@ -8,6 +8,7 @@
  * More info 
  *  http://www.developertutorials.com/pear-manual/developers.packagedef.html
  *  http://blog.astrumfutura.com/plugin/blogpdf
+ *  http://trac.piece-framework.com/piece-unity/browser/trunk/package.php?rev=887
  * 
  * PHP version 5
  * 

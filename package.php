@@ -29,15 +29,28 @@ if (is_file($workspace_dir."/package.xml")) {
     rename($workspace_dir."/package.xml", $workspace_dir."/package.xml.bak");
 }
 
+// Get highest revision in current changelog
+$notes_current = file_get_contents($workspace_dir."/docs/NOTES");
+preg_match('/^[^\[]+(\[r\d+\])(.*)/', $notes_current, $match);
+$revision_current = preg_replace('/[^\d]/', '', $match[1]);
+$revision_get     = $revision_current + 1; 
 
-$cmd = "php ".$workspace_dir."/tools/changelog_gen.php > ".
-    $workspace_dir."/docs/NOTES";
+// Read changes up from current revision
+$cmd = "php ".$workspace_dir."/tools/changelog_gen.php ".
+    $revision_get;
 exec($cmd, $o, $r);
 if ($r) {
     print_r($o);
     die("command: ".$cmd." failed!\n");
 }
 
+// If there are any updates, overwrite changelog
+$change_log = trim(implode("\n", $o));
+if ($change_log) {
+    file_put_contents($workspace_dir."/docs/NOTES", $change_log);
+}
+
+// Build XML
 $cmd = "php ".$workspace_dir."/tools/package_gen.php make";
 exec($cmd, $o, $r);
 if ($r) {
@@ -48,6 +61,7 @@ if ($r) {
 $olddir = getcwd(); 
 chdir($workspace_dir);
 
+// Build tgz
 $cmd = "pear package";
 exec($cmd, $o, $r);
 if ($r) {

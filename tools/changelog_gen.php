@@ -34,9 +34,14 @@ foreach ($cmd_reqs as $cmd=>$package) {
     }
 }
 
+if (isset($argv[1]) && is_numeric($argv[1])) {
+    $rev = "--revision=HEAD:".$argv[1];
+    
+}
+
 // collect data
 $cmd  = "";
-$cmd .= "svn2cl -i --stdout --group-by-day --linelen=90000 ".$workspace_dir;
+$cmd .= "svn2cl -i --stdout --group-by-day ".$rev." --linelen=90000 ".$workspace_dir;
 exec($cmd, $o, $r);
 if ($r) {
     die("Executing: ".$cmd." failed miserably\n");
@@ -77,13 +82,15 @@ foreach ($o as $i=>$line_raw) {
     }
     
     // remove the file which the comment is about
-    $comment = preg_replace('/^([^:])+:(\s*)/', '', $comment);
+    $comment = preg_replace('/^([^:])+:(\s+)/', '', $comment);
     $comment = trim($comment);
     
     // don't record empty lines
     if (!$comment) continue;
     
-    $comment = ucfirst($comment);
+    if (!substr($comment, 0, 7) == "http://") {
+        $comment = ucfirst($comment);
+    }
     
     // record what's left
     $blocks[$cur_block][$comment][] = $revision;
