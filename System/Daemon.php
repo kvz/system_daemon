@@ -460,7 +460,7 @@ abstract class System_Daemon
         // Not writable even after touch? Allowed to echo again!!
         if (!is_writable(self::$logLocation) && $non_debug && !$log_echoed) { 
             echo $log_line."\n";
-            $log_echoed = true;
+            $log_echoed    = true;
             $log_succeeded = false;
         } 
         
