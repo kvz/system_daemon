@@ -18,26 +18,15 @@
 
 $workspace_dir = realpath(dirname(__FILE__)."");
 
-$parts    = explode("-", trim(file_get_contents($workspace_dir."/docs/VERSION")));
-$packfile = $parts[0]."-".$parts[1].".tgz";
-
-if (is_file($workspace_dir."/".$packfile)) {
-    unlink($workspace_dir."/".$packfile);
-}
-
-if (is_file($workspace_dir."/package.xml")) {
-    rename($workspace_dir."/package.xml", $workspace_dir."/package.xml.bak");
-}
-
-// Get highest revision in current changelog
-$notes_current = file_get_contents($workspace_dir."/docs/NOTES");
-preg_match('/^[^\[]+(\[r\d+\])(.*)/', $notes_current, $match);
-$revision_current = preg_replace('/[^\d]/', '', $match[1]);
-$revision_get     = $revision_current + 1; 
+// Determine build version + corresponding SVN revision basedd on MAPPING file
+$mapping = parse_ini_file($workspace_dir."/docs/MAPPING");
+asort($mapping);
+$build_version  = end(array_keys($mapping));
+$build_revision = preg_replace('/[^\d]/', '', end($mapping));
 
 // Read changes up from current revision
 $cmd = "php ".$workspace_dir."/tools/changelog_gen.php ".
-    $revision_get;
+    $build_revision;
 exec($cmd, $o, $r);
 if ($r) {
     print_r($o);
@@ -51,6 +40,9 @@ if ($change_log) {
 }
 
 // Build XML
+if (is_file($workspace_dir."/package.xml")) {
+    rename($workspace_dir."/package.xml", $workspace_dir."/package.xml.bak");
+}
 $cmd = "php ".$workspace_dir."/tools/package_gen.php make";
 exec($cmd, $o, $r);
 if ($r) {
@@ -62,6 +54,11 @@ $olddir = getcwd();
 chdir($workspace_dir);
 
 // Build tgz
+$parts    = explode("-", trim(file_get_contents($workspace_dir."/docs/VERSION")));
+$packfile = $parts[0]."-".$parts[1].".tgz";
+if (is_file($workspace_dir."/".$packfile)) {
+    unlink($workspace_dir."/".$packfile);
+}
 $cmd = "pear package";
 exec($cmd, $o, $r);
 if ($r) {
