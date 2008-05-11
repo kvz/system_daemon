@@ -1,16 +1,7 @@
-2008-05-06 Kevin van Zonneveld <kevin@vanzonneveld.net>
+2008-05-11 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
-        [r89] Minor improvements to code layout
-
-2008-04-29 Kevin van Zonneveld <kevin@vanzonneveld.net>
-
-        [r88] Improved the packaging tools
-        [r87] Added optional support for acceptance of an instance of PEAR's Log package
-        [r84] Improved code layout
-        [r81] Improved SAFE_MODE check
-        [r80] Added a 'nopear' example
-        [r78] Allowed for ini_sets to be defined outside of the class
-        [r78] Enabled a SAFE_MODE check for the ini_sets
-        [r77] Made log levels comply with PEAR_LOG_ levels.
-        [r76] You can now pass your own custom handlers to the various sig states.
-
+        [r92] Improved Package Tool
+        [r91] Incomplete - # 6: Log should be an optional dependency
+        [r91] http://trac.phpjs.org/projects/system_daemon/ticket/6
+        [r90] Incomplete - # 5: tests should be added to a tests dir and added to package.xml
+        [r90] http://trac.phpjs.org/projects/system_daemon/ticket/5
