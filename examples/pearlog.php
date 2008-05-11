@@ -34,12 +34,12 @@ $my_log_instance = &Log::factory('file', '/tmp/pearlog.log', 'pearlog');
 System_Daemon::$appName            = "pearlog";
 System_Daemon::$appDir             = dirname(__FILE__);
 System_Daemon::$usePEARLogInstance = $my_log_instance;
-System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon not yet started. ".
+System_Daemon::log(System_Daemon::LOG_INFO, "Daemon not yet started. ".
     "Every logline will end up in whatever \$usePEARLogInstance->log() says");
 
 // Spawn Deamon!
 System_Daemon::start();
-System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "Daemon started. ".
+System_Daemon::log(System_Daemon::LOG_INFO, "Daemon started. ".
     "Every logline will end up in whatever \$usePEARLogInstance->log() says");
 
 // Your normal PHP code goes here. Only the code will run in the background

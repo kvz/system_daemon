@@ -85,14 +85,14 @@ if (!$runmode["no-daemon"]) {
 // system startup file called: 'init.d'
 // This will make sure your daemon will be started on reboot 
 if (!$runmode["write-initd"]) {
-    System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "not writing ".
+    System_Daemon::log(System_Daemon::LOG_INFO, "not writing ".
         "an init.d script this time");
 } else {
     if (($initd_location = System_Daemon::osInitDWrite()) === false) {
-        System_Daemon::log(SYSTEM_DAEMON_LOG_NOTICE, "unable to write ".
+        System_Daemon::log(System_Daemon::LOG_NOTICE, "unable to write ".
             "init.d script");
     } else {
-        System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, "sucessfully written ".
+        System_Daemon::log(System_Daemon::LOG_INFO, "sucessfully written ".
             "startup script: ".$initd_location);
     }
 }
@@ -120,7 +120,7 @@ while (!System_Daemon::daemonIsDying() && $runningOkay && $cnt <=3) {
     // Depending on runmode it will either end up:
     //  - In the /var/log/logparser.log
     //  - On screen (in case we're not a daemon yet)  
-    System_Daemon::log(SYSTEM_DAEMON_LOG_INFO, System_Daemon::$appName.
+    System_Daemon::log(System_Daemon::LOG_INFO, System_Daemon::$appName.
         " running in ".$mode." ".$cnt."/3");
     
     // In the actuall logparser program, You could replace 'true'
@@ -134,7 +134,7 @@ while (!System_Daemon::daemonIsDying() && $runningOkay && $cnt <=3) {
     // Level 4 would be fatal and shuts down the daemon immediately, which in 
     // this case is handled by the while condition.
     if (!$runningOkay) {
-        System_Daemon::log(SYSTEM_DAEMON_LOG_CRITICAL, "parseLog() ".
+        System_Daemon::log(System_Daemon::LOG_CRITICAL, "parseLog() ".
             "produces an error, ".
             "so this will be my last run");
     }
