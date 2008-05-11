@@ -97,6 +97,7 @@ $packagexml->setNotes($notes);
 $packagexml->setPhpDep("5.1.2"); // spl_autoload_register
 $packagexml->setPearinstallerDep("1.4.0");
 $packagexml->setOSInstallCondition("(*ix|*ux|darwin*|*BSD|SunOS*)");
+$packagexml->addPackageDepWithChannel("optional", "Log", "pear.php.net", "1.0");
 
 // Other info, like the Lead Developers. license, version details 
 // and stability type
