@@ -356,7 +356,9 @@ abstract class System_Daemon_OS extends System_Daemon
                 $skeleton_filepath, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
-        } elseif ($skeleton = file_get_contents($skeleton_filepath)) {
+        }
+        
+        if ($skeleton = file_get_contents($skeleton_filepath)) {
             // skeleton opened, set replace vars
             switch (strtolower($distro)){
             case "debian":
