@@ -309,10 +309,21 @@ class System_Daemon
      * 
      * @see start()
      */
-    private function __construct() {
+    private function __construct() 
+    {
         
     }
-
+    
+    /**
+     * Gets called when the member you trying to access in not visible.
+     * 
+     * 
+     */
+    private function __set($name, $value) 
+    {
+        echo("__set called to set $name to $value\n");
+        $this->$name = $value;        
+    }
     
 
     /**

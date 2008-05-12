@@ -33,7 +33,7 @@ System_Daemon::$appDir  = dirname(__FILE__);
 System_Daemon::log(System_Daemon::LOG_INFO, "Daemon not yet started so ".
     "this will be written on-screen");
 
-System_Daemon::$_kevin = "aap";
+System_Daemon::$vin = "aap";
 die();
 
 // Spawn Deamon!
