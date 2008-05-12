@@ -36,7 +36,7 @@ spl_autoload_register(array("System_Daemon", "autoload"));
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * 
  */
-abstract class System_Daemon
+class System_Daemon
 {
     // Make these corresponding with PEAR
     // Ensures compatibility while maintaining independency
@@ -293,9 +293,28 @@ abstract class System_Daemon
      * @var array
      */
     static private $_intFunctionCache = array();
+
+    /**
+     *  test
+     *
+     * @var string
+     */
+    static private $_kevin = array();
     
+
     
+    /**
+     * Making the class non-abstract with a private constructor does a better
+     * job of preventing instantiation than just marking the class as abstract.
+     * 
+     * @see start()
+     */
+    private function __construct() {
+        
+    }
+
     
+
     /**
      * Autoload static method for loading classes and interfaces.
      * Code from the PHP_CodeSniffer package by Greg Sherwood and 
