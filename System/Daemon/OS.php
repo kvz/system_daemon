@@ -26,7 +26,7 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * 
  */
-abstract class System_Daemon_OS extends System_Daemon
+class System_Daemon_OS extends System_Daemon
 {
 
     /**
@@ -65,6 +65,20 @@ abstract class System_Daemon_OS extends System_Daemon
      */
     private static $_intFunctionCache = array();
     
+    
+    
+    /**
+     * Making the class non-abstract with a private constructor does a better
+     * job of preventing instantiation than just marking the class as abstract.
+     * 
+     */
+    private function __construct() 
+    {
+        
+    }    
+    
+    
+    
     /**
      * Decide what facility to log to.
      *  
@@ -86,7 +100,7 @@ abstract class System_Daemon_OS extends System_Daemon
             // any errors. throws exceptions as well, but gives
             // a single & independent point of log flow control.
             parent::log($level, $str, $file, $class, $function, $line);
-        } elseif ($level > 1) {
+        } elseif ($level < parent::LOG_NOTICE) {
             // Only make exceptions in case of errors
             if (class_exists("System_Daemon_OS_Exception", true) === false) {
                 // Own exception

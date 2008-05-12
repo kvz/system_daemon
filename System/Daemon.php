@@ -85,134 +85,6 @@ class System_Daemon
     
     
     /**
-     * Wether or not to run this class standalone, or as a part of PEAR
-     *
-     * @var boolean
-     */
-    static public $usePEAR = true;
-    
-    /**
-     * Accepts a PEAR_Log instance to handle all logging.
-     * This will replace System_Daemon's own logging facility 
-     *
-     * @var mixed
-     */
-    static public $usePEARLogInstance = false;
-    
-    /**
-     * Author name, e.g.: Kevin van zonneveld 
-     * Required for forging init.d script
-     *
-     * @var string
-     */
-    static public $authorName;
-
-    /**
-     * Author name, e.g.: kevin@vanzonneveld.net 
-     * Required for forging init.d script
-     *
-     * @var string
-     */
-    static public $authorEmail;
-  
-    /**
-     * The application name, e.g.: logparser
-     *
-     * @var string
-     */
-    static public $appName;
-
-    /**
-     * Daemon description, e.g.: Parses logfiles of vsftpd and stores them in MySQL
-     * Required for forging init.d script
-     *
-     * @var string
-     */
-    static public $appDescription;
-
-    /**
-     * The home directory of the applications, e.g.: /usr/local/logparser
-     * Defaults to: SCRIPT_NAME dir
-     * Highly recommended to set this yourself though
-     *
-     * @var string
-     */
-    static public $appDir;
-
-    /**
-     * The executeble daemon file, e.g.: logparser.php
-     * Defaults to: SCRIPT_NAME basename
-     * Recommended to set this yourself though
-     *
-     * @var string
-     */
-    static public $appExecutable;
-
-    /**
-     * The pid filepath , e.g.: /var/run/logparser.pid
-     * Defaults to: /var/run/${appName}.pid
-     *
-     * @var string
-     */
-    static public $appPidLocation;
-
-    /**
-     * Messages below this log level are ignored (not written 
-     * to logfile, not displayed on screen) 
-     * Defaults to: 6, info. Meaning info & higher are logged.
-     *
-     * @var integer
-     */
-    static public $logVerbosity = self::LOG_INFO;
-        
-    /**
-     * The log filepath , e.g.: /var/log/logparser_daemon.log
-     * Defaults to: /var/log/${appName}_daemon.log
-     *
-     * @var string
-     */
-    static public $logLocation;
-
-    /**
-     * The user id under which to run the process, e.g.: 1000
-     * Defaults to: 0, root (warning, very insecure!)
-     * 
-     * @var string
-     */
-    static public $appRunAsUID = 0;
-
-    /**
-     * The group id under which to run the process, e.g.: 1000
-     * Defaults to: 0, root (warning, very insecure!)
-     *
-     * @var string
-     */
-    static public $appRunAsGID = 0;
-    
-    /**
-     * Kill daemon if it cannot assume the identity (uid + gid)
-     * that you specified.
-     * Defaults to: true
-     *
-     * @var string
-     */
-    static public $appDieOnIdentityCrisis = true;
-
-    /**
-     * Some ini settings to help the daemon. These are public
-     * and may be overwritten.
-     *
-     * @var array
-     */    
-    static public $iniSettings = array(
-        "max_execution_time" => "0",
-        "max_input_time" => "0",
-        "memory_limit" => "128M"
-    );
-    
-    
-    
-    /**
      * The current process identifier
      *
      * @var integer
@@ -226,13 +98,6 @@ class System_Daemon
      */
     static protected $daemonIsDying = false;    
     
-    /**
-     * Wether all the variables have been initialized
-     *
-     * @var boolean
-     */
-    static protected $daemonIsInitialized = false;
-
     /**
      * Wether the current process is a forked child
      *
@@ -248,14 +113,12 @@ class System_Daemon
      */
     static protected $safe_mode = false;
     
-    
-    
     /**
      * Available log levels
      *
      * @var array
      */
-    static private $_logLevels = array(
+    static protected $logLevels = array(
         self::LOG_EMERG => "emerg",
         self::LOG_ALERT => "alert",
         self::LOG_CRIT => "crit",
@@ -265,6 +128,168 @@ class System_Daemon
         self::LOG_INFO => "info",
         self::LOG_DEBUG => "debug"        
     );
+    
+    /**
+     * Wether all the options have been initialized
+     *
+     * @var boolean
+     */
+    static protected $optionsAreInitialized = false;
+    
+    /**
+     * Definitions for all Options
+     *
+     * @var array
+     * @see optionGet()
+     * @see optionValidate()
+     * @see optionSet()
+     * @see optionDefaultSet()
+     * @see optionsSet()
+     * @see $optionDefinitions
+     * @see $optionsAreInitialized
+     * @see $_options
+     */
+    static protected $optionDefinitions = array(
+        "usePEAR" => array(
+            "type" => "boolean",
+            "default" => true,
+            "punch" => "Wether to run this class using PEAR",
+            "detail" => "Will run standalone when false",
+            "required" => true 
+        ),
+        "usePEARLogInstance" => array(
+            "type" => "boolean|object",
+            "default" => false,
+            "punch" => "Accepts a PEAR_Log instance to handle all logging",
+            "detail" => "This will replace System_Daemon's own logging facility",
+            "required" => true
+        ),
+        
+        "authorName" => array(
+            "type" => "string/0-50",
+            "punch" => "Author name",
+            "example" => "Kevin van zonneveld",   
+            "detail" => "Required for forging init.d script"
+        ),
+        "authorEmail" => array(
+            "type" => "string/email",
+            "punch" => "Author e-mail",
+            "example" => "kevin@vanzonneveld.net",
+            "detail" => "Required for forging init.d script"
+        ),
+        "appName" => array(
+            "type" => "string/unix",
+            "punch" => "The application name",
+            "example" => "logparser",
+            "detail" => "Must be UNIX-proof; Required for running daemon",
+            "required" => true
+        ),
+        "appDescription" => array(
+            "type" => "string",
+            "punch" => "Daemon description",
+            "example" => "Parses logfiles of vsftpd and stores them in MySQL",
+            "detail" => "Required for forging init.d script"
+        ),
+        "appDir" => array(
+            "type" => "string/existing_dirpath",
+            "default" => "@dirname:SCRIPT_NAME",
+            "punch" => "The home directory of the daemon",
+            "example" => "/usr/local/logparser",
+            "detail" => "Highly recommended to set this yourself",
+            "required" => true
+        ),
+        "appExecutable" => array(
+            "type" => "string/existing_filepath",
+            "default" => "@basename:{SERVER[SCRIPT_NAME]}",
+            "punch" => "The executable daemon file",
+            "example" => "logparser.php",
+            "detail" => "Recommended to set this yourself; Required for init.d",
+            "required" => true
+        ),
+        
+        "logVerbosity" => array(
+            "type" => "number/0-7",
+            "default" => self::LOG_INFO,
+            "punch" => "Messages below this log level are ignored",
+            "example" => "",
+            "detail" => "Not written to logfile; not displayed on screen",
+            "required" => true
+        ),
+        "logLocation" => array(
+            "type" => "string/creatable_filepath",
+            "default" => "/var/log/{OPTIONS[appName]}.log",
+            "punch" => "The log filepath",
+            "example" => "/var/log/logparser_daemon.log",
+            "detail" => "",
+            "required" => true
+        ),
+        
+        "appRunAsUID" => array(
+            "type" => "number/0-65000",
+            "default" => 0,
+            "punch" => "The user id under which to run the process",
+            "example" => "1000",
+            "detail" => "Defaults to root which is insecure!",
+            "required" => true
+        ),
+        "appRunAsGID" => array(
+            "type" => "number/0-65000",
+            "default" => 0,
+            "punch" => "The group id under which to run the process",
+            "example" => "1000",
+            "detail" => "Defaults to root which is insecure!",
+            "required" => true
+        ),
+        "appPidLocation" => array(
+            "type" => "string/creatable_filepath",
+            "default" => "/var/run/{OPTIONS[appName]}.pid",
+            "punch" => "The pid filepath",
+            "example" => "/var/run/logparser.pid",
+            "detail" => "",
+            "required" => true
+        ),
+        "appDieOnIdentityCrisis" => array(
+            "type" => "boolean",
+            "default" => true,
+            "punch" => "Kill daemon if it cannot assume the identity",
+            "detail" => "",
+            "required" => true
+        ),
+
+        "sysMaxExecutionTime" => array(
+            "type" => "integer",
+            "default" => 0,
+            "punch" => "Maximum execution time of each script in seconds",
+            "detail" => "0 is infinite"
+        ),
+        "sysMaxInputTime" => array(
+            "type" => "integer",
+            "default" => 0,
+            "punch" => "Maximum amount of time each script may spend parsing request data",
+            "detail" => "0 is infinite"
+        ),
+        "sysMemoryLimit" => array(
+            "type" => "string",
+            "default" => "128M",
+            "punch" => "Maximum amount of memory a script may consume",
+            "detail" => "0 is infinite"
+        ),        
+    );
+
+    
+    /**
+     * Keep track of active state for all Options
+     *
+     * @var array
+     * @see optionGet()
+     * @see optionValidate()
+     * @see optionSet()
+     * @see optionDefaultSet()
+     * @see optionsSet()
+     * @see $optionDefinitions
+     * @see $_options
+     */
+    static private $_options = array();
     
     /**
      * Available signal handlers
@@ -293,13 +318,6 @@ class System_Daemon
      * @var array
      */
     static private $_intFunctionCache = array();
-
-    /**
-     *  test
-     *
-     * @var string
-     */
-    static private $_kevin = array();
     
 
     
@@ -312,20 +330,10 @@ class System_Daemon
     private function __construct() 
     {
         
-    }
+    }    
     
-    /**
-     * Gets called when the member you trying to access in not visible.
-     * 
-     * 
-     */
-    private function __set($name, $value) 
-    {
-        echo("__set called to set $name to $value\n");
-        $this->$name = $value;        
-    }
     
-
+    
     /**
      * Autoload static method for loading classes and interfaces.
      * Code from the PHP_CodeSniffer package by Greg Sherwood and 
@@ -362,17 +370,17 @@ class System_Daemon
      * 
      * @param boolean $usePEAR Wether or not to run as a part of pear.
      * 
-     * @return void
+     * @return boolean
      * @see stop()
-     * @see _daemonInit()
+     * @see optionsInit()
      * @see _daemonBecome()
      */
     static public function start($usePEAR = true)
     {
-        self::$usePEAR    = $usePEAR;
+        self::optionSet("usePEAR", $usePEAR);
         
-        // to run as a part of PEAR
-        if (self::$usePEAR) {
+        // To run as a part of PEAR
+        if (self::$_options["usePEAR"]) {
             include_once "PEAR.php";
             include_once "PEAR/Exception.php";
             
@@ -381,33 +389,44 @@ class System_Daemon
             }            
         }
         
-        // check the PHP configuration
+        // Check the PHP configuration
         if (!defined("SIGHUP")) {
             $msg = "PHP is compiled without --enable-pcntl directive";
-            if ( self::$usePEAR ) {
+            if (self::$_options["usePEAR"]) {
                 throw new System_Daemon_Exception($msg);
             } else {
                 trigger_error($msg, E_USER_ERROR);
             }
         }        
         
-        // check for CLI
+        // Check for CLI
         if ((php_sapi_name() != 'cli')) {
             $msg = "You can only create daemon from the command line";
-            if ( self::$usePEAR ) {
+            if (self::$_options["usePEAR"]) {
                 throw new System_Daemon_Exception($msg);
             } else {
                 trigger_error($msg, E_USER_ERROR);
             }
         }
         
-        // initialize & check variables
-        self::_daemonInit();
+        // Initialize & check variables
+        if (self::optionsInit() === false) {
+            $msg = "Crucial options are not set. Review log.";
+            if (self::$_options["usePEAR"]) {
+                throw new System_Daemon_Exception($msg);
+            } else {
+                trigger_error($msg, E_USER_ERROR);
+            } 
+        }
         
-        //self::log(self::LOG_EMERG, "test");
+        // Debugging!
+        print_r(self::$_options);
+        die();
         
-        // become daemon
+        // Become daemon
         self::_daemonBecome();
+        
+        return true;
 
     }//end start()
     
@@ -419,10 +438,232 @@ class System_Daemon
      */
     static public function stop()
     {
-        self::log(self::LOG_INFO, "stopping ".self::$appName." daemon", 
+        self::log(self::LOG_INFO, "stopping ".
+            self::$_options["appName"]." daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         self::_daemonDie();
     }//end stop()
+
+    /**
+     * Retrieves any option found in $optionDefinitions
+     * 
+     * @param string $name Name of the Option
+     *
+     * @return boolean
+     * @see optionValidate()
+     * @see optionSet()
+     * @see optionDefaultSet()
+     * @see optionsSet()
+     * @see $optionDefinitions
+     * @see $optionAreInitialized
+     * @see $_options
+     */
+    static public function optionGet($name)
+    {
+        return self::$_options[$name];
+    }//end optionGet()    
+    
+    /**
+     * Validates any option found in $optionDefinitions
+     * 
+     * @param string $name    Name of the Option
+     * @param mixed  $value   Value of the Option
+     * @param string &$reason Why something does not validate
+     *
+     * @return boolean
+     * @see optionGet()
+     * @see optionSet()
+     * @see optionDefaultSet()
+     * @see optionsSet()
+     * @see $optionDefinitions
+     * @see $optionAreInitialized
+     * @see $_options
+     */
+    static public function optionValidate($name, $value, &$reason="")
+    {
+        $reason = false;
+        
+        if (!$reason && !isset(self::$optionDefinitions[$name])) {
+            $reason = "Option ".$name." not found in definitions";
+        }
+        
+        $definition = self::$optionDefinitions[$name];
+        
+        if (!$reason && !isset($definition["type"])) {
+            $reason = "Option ".$name.":type not found in definitions";
+        }
+        
+        // Compile array of allowd main & subtypes
+        $allowed_types = array();
+        $raw_types = explode("|", $definition["type"]);
+        foreach ($raw_types as $raw_type) {
+            $raw_subtypes = explode("/", $raw_type);
+            $type_a = array_shift($raw_subtypes);
+            $allowed_types[$type_a] = $raw_subtypes;
+        }
+        
+        // Loop over main & subtypes to detect matching format
+        if (!$reason) {
+            $type_valid = false;
+            foreach ($allowed_types as $type_a=>$sub_types) {
+                foreach ($sub_types as $type_b) {
+                    
+                    // Determine range based on subtype
+                    // Range is used to contain an integer or strlen 
+                    // between min-max
+                    $parts = explode("-", $type_b);
+                    $from = $to = false;
+                    if (count($parts) == 2 ){
+                        $from = $parts[0];
+                        $to = $parts[1];  
+                    }
+            
+                    switch ($type_a) {
+                    case "string":
+                        switch ($type_b) {
+                        case "unix":
+                            $type_valid = self::strIsUnix($value);
+                            break;
+                        case "existing_dirpath":
+                            $type_valid = is_dir($value);
+                            break;
+                        case "existing_filepath":
+                            $type_valid = is_file($value);
+                            break;
+                        case "creatable_filepath":
+                            $type_valid = is_dir(dirname($value)) && is_writable(dirname($value));
+                            break;
+                        default:
+                            if (!is_resource($value) && !is_array($value) 
+                                && !is_object($value)) {
+                                if ($from === false && $to === false) {
+                                    $type_valid = true;
+                                } else {
+                                    // Enfore range as well
+                                    if (strlen($value) >= $from && strlen($value) <= $to) {
+                                        $type_valid = true;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                        break;
+                    case "number":
+                        switch ($type_b) {
+                        default:
+                            // range
+                            if (is_numeric($value)) {
+                                if ($from === false && $to === false) {
+                                    $type_valid = true;
+                                } else {
+                                    // Enfore range as well
+                                    if ($value >= $from && $value <= $to) {
+                                        $type_valid = true;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                        break;
+                    }                
+                }
+            }
+        }
+        
+        if (!$type_valid) {
+            $reason = "Option ".$name." does not match type: ".
+                $definition["type"]."";
+        }
+        
+        if ($reason !== false) {
+            return false;
+        }
+        
+        return true;
+    }//end optionValidate()    
+    
+    /**
+     * Sets any option found in $optionDefinitions
+     * 
+     * @param string  $name         Name of the Option
+     * @param mixed   $value        Value of the Option
+     *
+     * @return boolean
+     * @see optionGet()
+     * @see optionValidate()
+     * @see optionDefaultSet()
+     * @see optionsSet()
+     * @see $optionDefinitions
+     * @see $optionAreInitialized
+     * @see $_options
+     */
+    static public function optionSet($name, $value)
+    {
+        // not validated?
+        if (!self::optionValidate($name, $value, $reason)) {
+            // default not used or failed as well!
+            return false;
+        }
+        
+        self::$_options[$name] = $value;
+    }//end optionSet()
+
+    
+    /**
+     * Sets any option found in $optionDefinitions to its default value
+     * 
+     * @param string $name Name of the Option
+     *
+     * @return boolean
+     * @see optionGet()
+     * @see optionValidate()
+     * @see optionSet()
+     * @see optionsSet()
+     * @see $optionDefinitions
+     * @see $optionAreInitialized
+     * @see $_options
+     */
+    static public function optionDefaultSet($name)
+    {
+        if (!isset(self::$optionDefinitions[$name])) {
+            return false;
+        }
+        
+        if (!isset(self::$optionDefinitions[$name]["default"])) {
+            return false;
+        }
+        
+        
+        self::$_options[$name] = self::$optionDefinitions[$name]["default"];
+        
+        
+        return true;
+    }//end optionDefaultSet()    
+    
+    /**
+     * Sets an array of options found in $optionDefinitions
+     * 
+     * @param array $use_options Array with Options
+     *
+     * @return boolean
+     * @see optionGet()
+     * @see optionValidate()
+     * @see optionSet()
+     * @see optionDefaultSet()
+     * @see $optionDefinitions
+     * @see $optionAreInitialized
+     * @see $_options
+     */
+    static public function optionsSet($use_options)
+    {
+        foreach ($use_options as $name=>$value) {
+            if (!self::optionSet($name, $value)) {
+                return false;
+            }
+        }
+        return true;
+    }//end optionsSet()
+    
     
     /**
      * Overrule or add signal handlers.
@@ -452,12 +693,12 @@ class System_Daemon
      * Almost every deamon requires a log file, this function can
      * facilitate that. Also handles class-generated errors, chooses 
      * either PEAR handling or PEAR-independant handling, depending on:
-     * self::$usePEAR.
+     * self::$_options["usePEAR"].
      * Also supports PEAR_Log if you referenc to a valid instance of it
-     * in $usePEARLogInstance.
+     * in self::$_options["usePEARLogInstance"].
      * 
      * It logs a string according to error levels specified in array: 
-     * self::$_logLevels (4 is fatal and handles daemon's death)
+     * self::$logLevels (0 is fatal and handles daemon's death)
      *
      * @param integer $level    What function the log record is from
      * @param string  $str      The log record
@@ -475,13 +716,20 @@ class System_Daemon
         $function = false, $line = false)
     {
         // if verbosity level is not matched, don't do anything
-        if ($level > self::$logVerbosity) {
+        
+        if (!isset(self::$_options["logVerbosity"])) {
+            // somebody is calling log before launching daemon..
+            // fair enough, but we have to init some log options
+            self::optionsInit(true);
+        }
+        
+        if ($level > self::$_options["logVerbosity"]) {
             return true;
         }
         
         // Make use of a PEAR_Log() instance
-        if (self::$usePEARLogInstance !== false) {
-            self::$usePEARLogInstance->log($str, $level);
+        if (self::$_options["usePEARLogInstance"] !== false) {
+            self::$_options["usePEARLogInstance"]->log($str, $level);
             return true;
         }
         
@@ -500,7 +748,7 @@ class System_Daemon
         // Determine what process the log is originating from and forge a logline
         //$str_ident = "@".substr(self::_daemonWhatIAm(), 0, 1)."-".posix_getpid();
         $str_date  = "[".date("M d H:i:s")."]"; 
-        $str_level = str_pad(self::$_logLevels[$level]."", 8, " ", STR_PAD_LEFT);
+        $str_level = str_pad(self::$logLevels[$level]."", 8, " ", STR_PAD_LEFT);
         $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
         
         $non_debug     = ($level < self::LOG_DEBUG);
@@ -518,26 +766,28 @@ class System_Daemon
         } 
         
         // 'Touch' logfile 
-        if (!file_exists(self::$logLocation)) {
-            file_put_contents(self::$logLocation, "");
+        if (!file_exists(self::$_options["logLocation"])) {
+            file_put_contents(self::$_options["logLocation"], "");
         }
         
         // Not writable even after touch? Allowed to echo again!!
-        if (!is_writable(self::$logLocation) && $non_debug && !$log_echoed) { 
+        if (!is_writable(self::$_options["logLocation"]) 
+            && $non_debug && !$log_echoed) { 
             echo $log_line."\n";
             $log_echoed    = true;
             $log_succeeded = false;
         } 
         
         // Append to logfile
-        if (!file_put_contents(self::$logLocation, $log_line."\n", FILE_APPEND)) {
+        if (!file_put_contents(self::$_options["logLocation"], 
+            $log_line."\n", FILE_APPEND)) {
             $log_succeeded = false;
         }
         
         // These are pretty serious errors
         if ($level < self::LOG_WARNING) {
             // Throw an exception
-            if (self::$usePEAR) {
+            if (self::$_options["usePEAR"]) {
                 throw new System_Daemon_Exception($log_line);
             }
             // An emergency logentry is reason for the deamon to 
@@ -567,7 +817,7 @@ class System_Daemon
         // Must be public or else will throw a 
         // fatal error: Call to private method 
          
-        self::log(self::LOG_DEBUG, self::$appName.
+        self::log(self::LOG_DEBUG, self::$_options["appName"].
             " daemon received signal: ".$signo, 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             
@@ -582,12 +832,12 @@ class System_Daemon
             break;
         case SIGHUP:
             // handle restart tasks
-            self::log(self::LOG_INFO, self::$appName.
+            self::log(self::LOG_INFO, self::$_options["appName"].
                 " daemon received signal: restart", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             break;
         case SIGCHLD:
-            self::log(self::LOG_INFO, self::$appName.
+            self::log(self::LOG_INFO, self::$_options["appName"].
                 " daemon received signal: hold", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             while (pcntl_wait($status, WNOHANG OR WUNTRACED) > 0) {
@@ -631,13 +881,15 @@ class System_Daemon
     static public function osInitDWrite( $overwrite=false )
     {
         // init vars (needed for init.d script)
-        self::_daemonInit();
+        if (self::optionsInit() === false) {
+            return false;
+        }
         
         $properties                   = array();
-        $properties["appName"]        = self::$appName;
-        $properties["appDescription"] = self::$appDescription;
-        $properties["authorName"]     = self::$authorName;
-        $properties["authorEmail"]    = self::$authorEmail;
+        $properties["appName"]        = self::$_options["appName"];
+        $properties["appDescription"] = self::$_options["appDescription"];
+        $properties["authorName"]     = self::$_options["authorName"];
+        $properties["authorEmail"]    = self::$_options["authorEmail"];
             
         try {
             // copy properties to OS object
@@ -650,153 +902,10 @@ class System_Daemon
             self::log(self::LOG_WARNING, "Unable to create startup file: ".
                 $e->getMessage());
         }
-    }//end osInitDWrite()
+    }//end osInitDWrite()    
+
     
     
-    
-    /**
-     * Initializes, sanitizes & defaults unset variables
-     *
-     * @return boolean
-     */
-    static private function _daemonInit() 
-    {
-        // if already initialized, skip
-        if (self::$daemonIsInitialized) {
-            return true;
-        }
-        
-        self::$safe_mode = ((boolean)@ini_get("safe_mode") === false) ? false : true;
-        
-        // system settings
-        self::$processId      = 0;
-        self::$processIsChild = false;
-        if (!self::$safe_mode) {
-            foreach (self::$iniSettings as $setting=>$value) {
-                ini_set($setting, $value);
-            }
-        }
-        set_time_limit(0);        
-        ob_implicit_flush();
-        
-        // verify appName
-        if (!isset(self::$appName) || !self::$appName) {
-            self::log(self::LOG_EMERG, "No appName set", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;
-        }
-        if (!self::strIsUnix(self::$appName)) {
-            // suggest a better appName
-            $safe_name = self::strToUnix(self::$appName);
-            self::log(self::LOG_EMERG, "'".self::$appName.
-                "' is not a valid daemon name, ".
-                "try using something like '".$safe_name."' instead", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;
-        }
-        
-        // default appPidLocation
-        if (!self::$appPidLocation) {
-            self::$appPidLocation = "/var/run/".self::$appName.".pid";
-        }
-        // verify appPidLocation
-        if (!is_writable($dir = dirname(self::$appPidLocation))) {
-            self::log(self::LOG_EMERG, "".self::$appName.
-                " daemon cannot write to ".
-                "pidfile directory: ".$dir, 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;
-        }
-
-        // default logLocation
-        if (!self::$logLocation) {
-            self::$logLocation = "/var/log/".self::$appName.".log";
-        }
-        // verify logLocation
-        if (!is_writable($dir = dirname(self::$logLocation))) {
-            self::log(self::LOG_EMERG, "".self::$appName.
-                " daemon cannot write ".
-                "to log directory: ".$dir,
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;
-        }
-        
-        // verify logVerbosity
-        if (self::$logVerbosity < self::LOG_EMERG 
-            || self::$logVerbosity > self::LOG_DEBUG) {
-            self::log(self::LOG_EMERG, "logVerbosity needs to be ". 
-                "between ".self::LOG_EMERG." and ".
-                self::LOG_DEBUG." ".
-                "logVerbosity: ".self::$logVerbosity."", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;
-        }
-        
-        // verify appRunAsUID
-        if (!is_numeric(self::$appRunAsUID)) {
-            self::log(self::LOG_EMERG, "".self::$appName.
-                " daemon has invalid ".
-                "appRunAsUID: ".self::$appRunAsUID.". ",
-                "It should be an integer", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;
-        }
-        $passwd = posix_getpwuid(self::$appRunAsUID);
-        if (!is_array($passwd) || !count($passwd) || 
-            !isset($passwd["name"]) || !$passwd["name"]) {
-            self::log(self::LOG_EMERG, "".self::$appName.
-                " daemon has invalid ".
-                "appRunAsUID: ".self::$appRunAsUID.". ".
-                "No matching user on the system. ", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;            
-        }
-
-        // verify appRunAsGID
-        if (!is_numeric(self::$appRunAsGID)) {
-            self::log(self::LOG_EMERG, "".self::$appName.
-                " daemon has invalid ".
-                "appRunAsGID: ".self::$appRunAsGID.". ",
-                "It should be an integer",  
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;
-        }
-        $group = posix_getgrgid(self::$appRunAsGID);
-        if (!is_array($group) || !count($group) || 
-            !isset($group["name"]) || !$group["name"]) {
-            self::log(self::LOG_EMERG, "".self::$appName.
-                " daemon has invalid ".
-                "appRunAsGID: ".self::$appRunAsGID.". ".
-                "No matching group on the system. ", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;            
-        }
-        
-        // default appDir
-        if (!self::$appDir) {
-            self::$appDir = dirname($_SERVER["SCRIPT_FILENAME"]);
-        }
-        // verify appDir
-        if (!is_dir(self::$appDir)) {
-            self::log(self::LOG_EMERG, "".self::$appName.
-                " daemon has invalid appDir: ".
-                self::$appDir."", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;
-        }
-        
-        // verify appExecutable
-        if (!self::$appExecutable) {
-            self::$appExecutable = basename($_SERVER["SCRIPT_FILENAME"]);
-        }
-
-        
-        // combine appdir + exe here to make SURE we got our data right 
-        
-        self::$daemonIsInitialized = true;
-        return true;
-    }//end _daemonInit()
-
     /**
      * Put the running script in background
      *
@@ -805,9 +914,9 @@ class System_Daemon
     static private function _daemonBecome() 
     {
 
-        self::log(self::LOG_INFO, "starting ".self::$appName.
+        self::log(self::LOG_INFO, "starting ".self::$_options["appName"].
             " daemon, output in: ". 
-            self::$logLocation, 
+            self::$_options["logLocation"], 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         
         // important for daemons
@@ -823,7 +932,7 @@ class System_Daemon
         
         // allowed?
         if (self::daemonIsRunning()) {
-            self::log(self::LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$_options["appName"].
                 " daemon is still running. ".
                 "exiting", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -831,76 +940,65 @@ class System_Daemon
 
         // fork process!
         if (!self::_daemonFork()) {
-            self::log(self::LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$_options["appName"].
                 " daemon was unable to fork", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // assume specified identity (uid & gid)
-        if (!posix_setuid(self::$appRunAsUID) || 
-            !posix_setgid(self::$appRunAsGID)) {
+        if (!posix_setuid(self::$_options["appRunAsUID"]) || 
+            !posix_setgid(self::$_options["appRunAsGID"])) {
             $lvl = self::LOG_CRIT;
             $swt = "off";
-            if (self::$appDieOnIdentityCrisis) {
+            if (self::$_options["appDieOnIdentityCrisis"]) {
                 $lvl = self::LOG_EMERG;
                 $swt = "on";
             }
             
-            self::log($lvl, "".self::$appName." daemon was unable assume ".
-                "identity (uid=".self::$appRunAsUID.", gid=".
-                self::$appRunAsGID.") ".
+            self::log($lvl, "".self::$_options["appName"].
+                " daemon was unable assume ".
+                "identity (uid=".self::$_options["appRunAsUID"].", gid=".
+                self::$_options["appRunAsGID"].") ".
                 "and appDieOnIdentityCrisis was ". $swt, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // additional PID succeeded check
         if (!is_numeric(self::$processId) || self::$processId < 1) {
-            self::log(self::LOG_EMERG, "".self::$appName.
+            self::log(self::LOG_EMERG, "".self::$_options["appName"].
                 " daemon didn't have a valid ".
                 "pid: '".self::$processId."'", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
          
-        if (!file_put_contents(self::$appPidLocation, self::$processId)) {
-            self::log(self::LOG_EMERG, "".self::$appName.
+        if (!file_put_contents(self::$_options["appPidLocation"], 
+            self::$processId)) {
+            self::log(self::LOG_EMERG, "".self::$_options["appName"].
                 " daemon was unable ".
-                "to write to pidfile: ".self::$appPidLocation."", 
+                "to write to pidfile: ".self::$_options["appPidLocation"]."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
+        
+        // System settings
+        self::$safe_mode = ((boolean)@ini_get("safe_mode") === false) ? false : true;
+        self::$processId      = 0;
+        self::$processIsChild = false;
+        if (!self::$safe_mode) {            
+            foreach (self::$_options as $name=>$value ){
+                if (substr($name, 0 ,3) == "sys" ) {
+                    ini_set($name, $value);
+                }
+            }
+        }
+        set_time_limit(0);        
+        ob_implicit_flush();        
+        
 
         // change dir & umask
-        @chdir(self::$appDir);
+        @chdir(self::$_options["appDir"]);
         @umask(0);
     }//end _daemonBecome()
-
-    /**
-     * Check if a previous process with same pidfile was already running
-     *
-     * @return boolean
-     */
-    static protected function daemonIsRunning() 
-    {
-        if(!file_exists(self::$appPidLocation)) return false;
-        $pid = @file_get_contents(self::$appPidLocation);
-
-        if ($pid !== false) {
-            // ping app
-            if (!posix_kill(intval($pid), 0)) {
-                // not responding so unlink pidfile
-                @unlink(self::$appPidLocation);
-                self::log(self::LOG_WARNING, "".self::$appName.
-                    " daemon orphaned pidfile ".
-                    "found and removed: ".self::$appPidLocation, 
-                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }//end daemonIsRunning()
-
+    
     /**
      * Fork process and kill parent process, the heart of the 'daemonization'
      *
@@ -908,19 +1006,19 @@ class System_Daemon
      */
     static private function _daemonFork()
     {
-        self::log(self::LOG_DEBUG, "forking ".self::$appName.
+        self::log(self::LOG_DEBUG, "forking ".self::$_options["appName"].
             " daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         $pid = pcntl_fork();
         if ( $pid == -1 ) {
             // error
-            self::log(self::LOG_WARNING, "".self::$appName.
+            self::log(self::LOG_WARNING, "".self::$_options["appName"].
                 " daemon could not be forked", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         } else if ($pid) {
             // parent
-            self::log(self::LOG_DEBUG, "ending ".self::$appName.
+            self::log(self::LOG_DEBUG, "ending ".self::$_options["appName"].
                 " parent process", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             // die without attracting attention
@@ -954,20 +1052,101 @@ class System_Daemon
     {
         if (!self::daemonIsDying()) {
             self::$daemonIsDying       = true;
-            self::$daemonIsInitialized = false;
+            self::$optionsAreInitialized = false;
             if (!self::daemonIsInBackground() || 
-                !file_exists(self::$appPidLocation)) {
-                self::log(self::LOG_INFO, "Not stopping ".self::$appName.
+                !file_exists(self::$_options["appPidLocation"])) {
+                self::log(self::LOG_INFO, "Not stopping ".
+                    self::$_options["appName"].
                     ", daemon was not running",
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             } else {
-                @unlink(self::$appPidLocation);
+                @unlink(self::$_options["appPidLocation"]);
             }
             exit();
         }
     }//end _daemonDie()
+    
 
     
+    /**
+     * Checks if all the required options are set.
+     * Initializes, sanitizes & defaults unset variables
+     * 
+     * @param boolean $premature Whether to do a premature option init
+     *
+     * @return mixed integer or boolean
+     * @see optionGet()
+     * @see optionValidate()
+     * @see optionSet()
+     * @see optionDefaultSet()
+     * @see optionsSet()
+     * @see $optionDefinitions
+     * @see $optionsAreInitialized
+     * @see $_options
+     */
+    static protected function optionsInit($premature=false) 
+    {
+        // If already initialized, skip
+        if (!$premature && self::$optionsAreInitialized) {
+            return true;
+        }
+        
+        $options_met = 0;
+        
+        foreach (self::$optionDefinitions as $name=>$definition) {
+            // Skip non-required options
+            if (!isset($definition["required"]) 
+                || $definition["required"] !== true )  {
+                continue;
+            }
+            
+            // Required options remain
+            if (!isset(self::$_options[$name])) {                
+                if (!self::optionDefaultSet($name) && !$premature) {
+                    self::log(self::LOG_WARNING, "Required option: ".$name. 
+                        " not set. No default possible either.");
+                    return false;
+                }                
+            }
+            
+            $options_met++;
+        }
+                
+        if (!$premature) {
+            self::$optionsAreInitialized = true;
+        }
+        
+        return $options_met;
+        
+    }//end optionsInit()    
+    
+    /**
+     * Check if a previous process with same pidfile was already running
+     *
+     * @return boolean
+     */
+    static protected function daemonIsRunning() 
+    {
+        if(!file_exists(self::$_options["appPidLocation"])) return false;
+        $pid = @file_get_contents(self::$_options["appPidLocation"]);
+
+        if ($pid !== false) {
+            // ping app
+            if (!posix_kill(intval($pid), 0)) {
+                // not responding so unlink pidfile
+                @unlink(self::$_options["appPidLocation"]);
+                self::log(self::LOG_WARNING, "".self::$_options["appName"].
+                    " daemon orphaned pidfile ".
+                    "found and removed: ".self::$_options["appPidLocation"], 
+                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }//end daemonIsRunning()
     
     /**
      * Check if a string has a unix proof format (stripped spaces, 
@@ -994,6 +1173,7 @@ class System_Daemon
     {
         return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
     }//end strToUnix()
+    
 
 }//end class
 ?>

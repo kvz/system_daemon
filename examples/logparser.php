@@ -61,16 +61,19 @@ error_reporting(E_ALL);
 require_once "System/Daemon.php";
 
 // Setup
-System_Daemon::$appName        = "logparser";
-System_Daemon::$appDir         = dirname(__FILE__);
-System_Daemon::$appDescription = "Parses vsftpd logfiles and stores them in MySQL";
-System_Daemon::$authorName     = "Kevin van Zonneveld";
-System_Daemon::$authorEmail    = "kevin@vanzonneveld.net";
-System_Daemon::$iniSettings    = array(
-    "max_execution_time" => "0",
-    "max_input_time" => "0",
-    "memory_limit" => "1024M"
+$options = array(
+    "appName" => "logparser",
+    "appDir" => dirname(__FILE__),
+    "appDescription" => "Parses vsftpd logfiles and stores them in MySQL",
+    "authorName" => "Kevin van Zonneveld",
+    "authorEmail" => "kevin@vanzonneveld.net",
+    "sysMaxExecutionTime" => "0",
+    "sysMaxInputTime" => "0",
+    "sysMemoryLimit" => "1024M"
+
 );
+
+System_Daemon::optionsSet($options);
 
 System_Daemon::setSigHandler(SIGCONT, array("System_Daemon", "daemonHandleSig"));
 
@@ -120,7 +123,7 @@ while (!System_Daemon::daemonIsDying() && $runningOkay && $cnt <=3) {
     // Depending on runmode it will either end up:
     //  - In the /var/log/logparser.log
     //  - On screen (in case we're not a daemon yet)  
-    System_Daemon::log(System_Daemon::LOG_INFO, System_Daemon::$appName.
+    System_Daemon::log(System_Daemon::LOG_INFO, System_Daemon::optionGet("appName").
         " running in ".$mode." ".$cnt."/3");
     
     // In the actuall logparser program, You could replace 'true'
