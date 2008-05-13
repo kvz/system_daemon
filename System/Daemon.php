@@ -499,9 +499,12 @@ class System_Daemon
         foreach ($raw_types as $raw_type) {
             $raw_subtypes = explode("/", $raw_type);
             $type_a = array_shift($raw_subtypes);
+            if (!count($raw_subtypes)) {
+                $raw_subtypes = array("normal");
+            } 
             $allowed_types[$type_a] = $raw_subtypes;
         }
-        
+                
         // Loop over main & subtypes to detect matching format
         if (!$reason) {
             $type_valid = false;
@@ -512,15 +515,22 @@ class System_Daemon
                     // Range is used to contain an integer or strlen 
                     // between min-max
                     $parts = explode("-", $type_b);
-                    $from = $to = false;
+                    $from  = $to = false;
                     if (count($parts) == 2 ){
                         $from = $parts[0];
-                        $to = $parts[1];  
+                        $to   = $parts[1];  
                     }
             
                     switch ($type_a) {
+                    case "boolean":
+                        $type_valid = is_bool($value);
+                        break;
                     case "string":
                         switch ($type_b) {
+                        case "email":
+                            $exp = "^[a-z\'0-9]+([._-][a-z\'0-9]+)*@([a-z0-9]+([._-][a-z0-9]+))+$";
+                            $type_valid = eregi($exp, $value);
+                            break;
                         case "unix":
                             $type_valid = self::strIsUnix($value);
                             break;
@@ -533,9 +543,11 @@ class System_Daemon
                         case "creatable_filepath":
                             $type_valid = is_dir(dirname($value)) && is_writable(dirname($value));
                             break;
-                        default:
+                        case "normal": 
+                            // String?
                             if (!is_resource($value) && !is_array($value) 
                                 && !is_object($value)) {
+                                // Range?
                                 if ($from === false && $to === false) {
                                     $type_valid = true;
                                 } else {
@@ -546,13 +558,18 @@ class System_Daemon
                                 }
                             }
                             break;
+                        default:
+                            self::log(self::LOG_CRIT, "Type ".
+                                $type_a."/".$type_b." not defined");
+                            break;
                         }
                         break;
                     case "number":
                         switch ($type_b) {
-                        default:
-                            // range
+                        case "normal":
+                            // Numeric?
                             if (is_numeric($value)) {
+                                // Range ?
                                 if ($from === false && $to === false) {
                                     $type_valid = true;
                                 } else {
@@ -562,6 +579,10 @@ class System_Daemon
                                     }
                                 }
                             }
+                            break;                            
+                        default:
+                            self::log(self::LOG_CRIT, "Type ".
+                                $type_a."/".$type_b." not defined");
                             break;
                         }
                         break;
@@ -602,6 +623,7 @@ class System_Daemon
         // not validated?
         if (!self::optionValidate($name, $value, $reason)) {
             // default not used or failed as well!
+            self::log(self::LOG_NOTICE, "Option ".$name." invalid: ".$reason);
             return false;
         }
         
@@ -633,10 +655,7 @@ class System_Daemon
             return false;
         }
         
-        
         self::$_options[$name] = self::$optionDefinitions[$name]["default"];
-        
-        
         return true;
     }//end optionDefaultSet()    
     
@@ -1059,9 +1078,10 @@ class System_Daemon
                     self::$_options["appName"].
                     ", daemon was not running",
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            } else {
-                @unlink(self::$_options["appPidLocation"]);
+                return false;
             }
+            
+            @unlink(self::$_options["appPidLocation"]);
             exit();
         }
     }//end _daemonDie()
@@ -1104,9 +1124,9 @@ class System_Daemon
             if (!isset(self::$_options[$name])) {                
                 if (!self::optionDefaultSet($name) && !$premature) {
                     self::log(self::LOG_WARNING, "Required option: ".$name. 
-                        " not set. No default possible either.");
+                        " not set. No default value available either.");
                     return false;
-                }                
+                } 
             }
             
             $options_met++;
@@ -1131,9 +1151,9 @@ class System_Daemon
         $pid = @file_get_contents(self::$_options["appPidLocation"]);
 
         if ($pid !== false) {
-            // ping app
+            // Ping app
             if (!posix_kill(intval($pid), 0)) {
-                // not responding so unlink pidfile
+                // Not responding so unlink pidfile
                 @unlink(self::$_options["appPidLocation"]);
                 self::log(self::LOG_WARNING, "".self::$_options["appName"].
                     " daemon orphaned pidfile ".
