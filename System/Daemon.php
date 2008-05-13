@@ -652,7 +652,7 @@ class System_Daemon
      * @see $optionAreInitialized
      * @see $_options
      */
-    static public function optionSetDefault($name)
+    static protected function optionSetDefault($name)
     {
         if (!isset(self::$optionDefinitions[$name])) {
             return false;
@@ -1062,20 +1062,20 @@ class System_Daemon
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         $pid = pcntl_fork();
         if ( $pid == -1 ) {
-            // error
+            // Error
             self::log(self::LOG_WARNING, "".self::$_options["appName"].
                 " daemon could not be forked", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         } else if ($pid) {
-            // parent
+            // Parent
             self::log(self::LOG_DEBUG, "ending ".self::$_options["appName"].
                 " parent process", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            // die without attracting attention
+            // Die without attracting attention
             exit();
         } else {
-            // child
+            // Child
             self::$processIsChild = true;
             self::$daemonIsDying  = false;
             self::$processId      = posix_getpid();
