@@ -265,7 +265,7 @@ class System_Daemon
         "sysMaxInputTime" => array(
             "type" => "integer",
             "default" => 0,
-            "punch" => "Maximum amount of time each script may spend parsing request data",
+            "punch" => "Maximum time to spend parsing request data",
             "detail" => "0 is infinite"
         ),
         "sysMemoryLimit" => array(
@@ -360,7 +360,7 @@ class System_Daemon
             include dirname(__FILE__).'/'.$path;
         } else {
             // Everything else.
-            include $path;
+            @include $path;
         }
 
     }//end autoload()
@@ -508,7 +508,7 @@ class System_Daemon
                     // between min-max
                     $parts = explode("-", $type_b);
                     $from  = $to = false;
-                    if (count($parts) == 2 ){
+                    if (count($parts) == 2 ) {
                         $from = $parts[0];
                         $to   = $parts[1];  
                     }
@@ -517,10 +517,14 @@ class System_Daemon
                     case "boolean":
                         $type_valid = is_bool($value);
                         break;
+                    case "object":
+                        $type_valid = is_object($value) || is_resource($value);
+                        break;
                     case "string":
                         switch ($type_b) {
                         case "email":
-                            $exp = "^[a-z\'0-9]+([._-][a-z\'0-9]+)*@([a-z0-9]+([._-][a-z0-9]+))+$";
+                            $exp  = "^[a-z0-9]+([._-][a-z0-9]+)*@([a-z0-9]+";
+                            $exp .= "([._-][a-z0-9]+))+$";
                             if (eregi($exp, $value)) {
                                 $type_valid = true;
                             }
@@ -541,7 +545,8 @@ class System_Daemon
                             }
                             break;
                         case "creatable_filepath":
-                            if (is_dir(dirname($value)) && is_writable(dirname($value))) {
+                            if (is_dir(dirname($value)) 
+                                && is_writable(dirname($value))) {
                                 $type_valid = true;
                             }
                             break;
@@ -554,7 +559,8 @@ class System_Daemon
                                     $type_valid = true;
                                 } else {
                                     // Enfore range as well
-                                    if (strlen($value) >= $from && strlen($value) <= $to) {
+                                    if (strlen($value) >= $from 
+                                        && strlen($value) <= $to) {
                                         $type_valid = true;
                                     }
                                 }
@@ -612,8 +618,8 @@ class System_Daemon
     /**
      * Sets any option found in $optionDefinitions
      * 
-     * @param string  $name         Name of the Option
-     * @param mixed   $value        Value of the Option
+     * @param string $name  Name of the Option
+     * @param mixed  $value Value of the Option
      *
      * @return boolean
      * @see optionGet()
@@ -1123,21 +1129,59 @@ class System_Daemon
      * @return string
      */
     static private function _optionReplaceVariables($matches){
+        // Init
+        $allowedVars = array(
+            "SERVER.SCRIPT_NAME", 
+            "OPTIONS.*"
+        );
         
-        $fullmatch = array_shift($matches);
-        $fullvar   = array_shift($matches);
-        $parts     = explode(".", $fullvar);
+        $filterVars = array(
+            "SERVER.SCRIPT_NAME"=>array("realpath")
+        );
+        
+        $fullmatch  = array_shift($matches);
+        $fullvar    = array_shift($matches);
+        $parts      = explode(".", $fullvar);
         
         list($source, $var) = $parts;
+        $var_use    = false;
+        $var_key    = $source.".".$var; 
         
+        // Allowed
+        if (!in_array($var_key, $allowedVars) && !in_array($source.".*", $allowedVars)) {
+            return "FORBIDDEN_VAR_".$var_key;
+        }
+        
+        // Mapping of textual sources to real sources
         if ($source == "SERVER") {
-            return $_SERVER[$var];
-        }
-        if ($source == "OPTIONS") {
-            return self::$_options[$var];
+            $source_use = &$_SERVER;
+        } elseif ($source == "OPTIONS") {
+            $source_use = &self::$_options; 
+        } else {
+            $source_use = false;
         }
         
-        return "FORBIDDEN_VAR_".$source.".".$var;        
+        // Exists?
+        if ($source_use === false) {
+            return "UNUSABLE_VARSOURCE_".$source;
+        }
+        if (!isset($source_use[$var])) { 
+            return "NONEXISTING_VAR_".$var_key;     
+        }
+        
+        $var_use = $source_use[$var];
+        
+        // Filtering
+        if (isset($filterVars[$var_key]) && is_array($filterVars[$var_key])) {
+            foreach ($filterVars[$var_key] as $filter_function) {
+                if (!function_exists($filter_function)) {
+                    return "NONEXISTING_FILTER_".$filter_function;
+                }
+                $var_use = call_user_func($filter_function, $var_use);
+            }
+        }        
+        
+        return $var_use;        
     }
     
     /**
