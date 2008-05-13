@@ -1,6 +1,24 @@
+2008-05-13 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r106] Improved Tests
+        [r105] Incomplete - # 4: less public variables
+        [r105] http://trac.phpjs.org/projects/system_daemon/ticket/4
+
+2008-05-12 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r101] Incomplete - # 4: less public variables
+        [r101] http://trac.phpjs.org/projects/system_daemon/ticket/4
+        [r100] Incomplete - # 7: Change to non-abstract class and Use a private constructor
+        [r100] http://trac.phpjs.org/projects/system_daemon/ticket/7
+        [r100] less public variables
+
 2008-05-11 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
-        [r93] Added version mapping
+        [r98] Incomplete - # 3: simplify if/else where possible
+        [r98] http://trac.phpjs.org/projects/system_daemon/ticket/3
+        [r96] Incomplete - # 8: class constants for error codes
+        [r96] http://trac.phpjs.org/projects/system_daemon/ticket/8
+        [r94] Added version mapping
         [r92] Improved Package Tool
         [r91] Incomplete - # 6: Log should be an optional dependency
         [r91] http://trac.phpjs.org/projects/system_daemon/ticket/6

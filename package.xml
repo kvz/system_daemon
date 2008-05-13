@@ -15,15 +15,21 @@ spawning standalone daemons, and for example includes:
       reboot as well.
    2. Methods for logging purposes
    3. Simple syntax
- </description>
+   4. Support for PEAR&apos;s Log package
+   5. Can run with or without PEAR (PEAR adds more elegance &amp;amp; functionality)
+   6. Default signal handlers, but optionally reroute signals to your own 
+      handlers. 
+   7. Log levels comply with PEAR_LOG_ levels but are called SYSTEM_DAEMON_LOG_ 
+      for (in)dependency reasons
+   8. Set options like max RAM usage</description>
  <lead>
   <name>Kevin van Zonneveld</name>
   <user>kevin</user>
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
- <date>2008-05-11</date>
- <time>16:34:50</time>
+ <date>2008-05-13</date>
+ <time>15:45:29</time>
  <version>
   <release>0.2</release>
   <api>0.2</api>
@@ -33,9 +39,27 @@ spawning standalone daemons, and for example includes:
   <api>alpha</api>
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
- <notes>2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ <notes>2008-05-13 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
-        [r93] Added version mapping
+        [r106] Improved Tests
+        [r105] Incomplete - # 4: less public variables
+        [r105] http://trac.phpjs.org/projects/system_daemon/ticket/4
+
+2008-05-12 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r101] Incomplete - # 4: less public variables
+        [r101] http://trac.phpjs.org/projects/system_daemon/ticket/4
+        [r100] Incomplete - # 7: Change to non-abstract class and Use a private constructor
+        [r100] http://trac.phpjs.org/projects/system_daemon/ticket/7
+        [r100] less public variables
+
+2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r98] Incomplete - # 3: simplify if/else where possible
+        [r98] http://trac.phpjs.org/projects/system_daemon/ticket/3
+        [r96] Incomplete - # 8: class constants for error codes
+        [r96] http://trac.phpjs.org/projects/system_daemon/ticket/8
+        [r94] Added version mapping
         [r92] Improved Package Tool
         [r91] Incomplete - # 6: Log should be an optional dependency
         [r91] http://trac.phpjs.org/projects/system_daemon/ticket/6
@@ -94,14 +118,17 @@ spawning standalone daemons, and for example includes:
     <file name="Daemon.php" role="php" />
    </dir> <!-- /System -->
    <dir name="tests">
-    <file name="DaemonTest.php" role="test" />
-    <file name="OSTest.php" role="test" />
+    <file name="inbackground.phpt" role="test" />
+    <file name="log.phpt" role="test" />
+    <file name="os-determine.phpt" role="test" />
+    <file name="tests-config.php" role="test" />
    </dir> <!-- /tests -->
    <dir name="tools">
     <file name="changelog_gen.php" role="php" />
     <file name="package_gen.php" role="php" />
    </dir> <!-- /tools -->
    <file name="package.php" role="php" />
+   <file name="test.php" role="php" />
   </dir> <!-- / -->
  </contents>
  <dependencies>
@@ -139,11 +166,29 @@ spawning standalone daemons, and for example includes:
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2008-05-11</date>
+   <date>2008-05-13</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
-   <notes>2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+   <notes>2008-05-13 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
-        [r93] Added version mapping
+        [r106] Improved Tests
+        [r105] Incomplete - # 4: less public variables
+        [r105] http://trac.phpjs.org/projects/system_daemon/ticket/4
+
+2008-05-12 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r101] Incomplete - # 4: less public variables
+        [r101] http://trac.phpjs.org/projects/system_daemon/ticket/4
+        [r100] Incomplete - # 7: Change to non-abstract class and Use a private constructor
+        [r100] http://trac.phpjs.org/projects/system_daemon/ticket/7
+        [r100] less public variables
+
+2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r98] Incomplete - # 3: simplify if/else where possible
+        [r98] http://trac.phpjs.org/projects/system_daemon/ticket/3
+        [r96] Incomplete - # 8: class constants for error codes
+        [r96] http://trac.phpjs.org/projects/system_daemon/ticket/8
+        [r94] Added version mapping
         [r92] Improved Package Tool
         [r91] Incomplete - # 6: Log should be an optional dependency
         [r91] http://trac.phpjs.org/projects/system_daemon/ticket/6
