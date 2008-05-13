@@ -143,7 +143,7 @@ class System_Daemon
      * @see optionGet()
      * @see optionValidate()
      * @see optionSet()
-     * @see optionDefaultSet()
+     * @see optionSetDefault()
      * @see optionsSet()
      * @see $optionDefinitions
      * @see $optionsAreInitialized
@@ -192,7 +192,7 @@ class System_Daemon
         ),
         "appDir" => array(
             "type" => "string/existing_dirpath",
-            "default" => "@dirname:SCRIPT_NAME",
+            "default" => "@dirname({SERVER.SCRIPT_NAME})",
             "punch" => "The home directory of the daemon",
             "example" => "/usr/local/logparser",
             "detail" => "Highly recommended to set this yourself",
@@ -200,7 +200,7 @@ class System_Daemon
         ),
         "appExecutable" => array(
             "type" => "string/existing_filepath",
-            "default" => "@basename:{SERVER[SCRIPT_NAME]}",
+            "default" => "@basename({SERVER.SCRIPT_NAME})",
             "punch" => "The executable daemon file",
             "example" => "logparser.php",
             "detail" => "Recommended to set this yourself; Required for init.d",
@@ -217,7 +217,7 @@ class System_Daemon
         ),
         "logLocation" => array(
             "type" => "string/creatable_filepath",
-            "default" => "/var/log/{OPTIONS[appName]}.log",
+            "default" => "/var/log/{OPTIONS.appName}.log",
             "punch" => "The log filepath",
             "example" => "/var/log/logparser_daemon.log",
             "detail" => "",
@@ -242,7 +242,7 @@ class System_Daemon
         ),
         "appPidLocation" => array(
             "type" => "string/creatable_filepath",
-            "default" => "/var/run/{OPTIONS[appName]}.pid",
+            "default" => "/var/run/{OPTIONS.appName}.pid",
             "punch" => "The pid filepath",
             "example" => "/var/run/logparser.pid",
             "detail" => "",
@@ -284,7 +284,7 @@ class System_Daemon
      * @see optionGet()
      * @see optionValidate()
      * @see optionSet()
-     * @see optionDefaultSet()
+     * @see optionSetDefault()
      * @see optionsSet()
      * @see $optionDefinitions
      * @see $_options
@@ -419,7 +419,11 @@ class System_Daemon
                 trigger_error($msg, E_USER_ERROR);
             } 
         }
-                
+        
+        // Debugging!
+        print_r(self::$_options);
+        die();
+        
         // Become daemon
         self::_daemonBecome();
         
@@ -449,7 +453,7 @@ class System_Daemon
      * @return boolean
      * @see optionValidate()
      * @see optionSet()
-     * @see optionDefaultSet()
+     * @see optionSetDefault()
      * @see optionsSet()
      * @see $optionDefinitions
      * @see $optionAreInitialized
@@ -470,7 +474,7 @@ class System_Daemon
      * @return boolean
      * @see optionGet()
      * @see optionSet()
-     * @see optionDefaultSet()
+     * @see optionSetDefault()
      * @see optionsSet()
      * @see $optionDefinitions
      * @see $optionAreInitialized
@@ -491,21 +495,12 @@ class System_Daemon
         }
         
         // Compile array of allowd main & subtypes
-        $allowed_types = array();
-        $raw_types = explode("|", $definition["type"]);
-        foreach ($raw_types as $raw_type) {
-            $raw_subtypes = explode("/", $raw_type);
-            $type_a = array_shift($raw_subtypes);
-            if (!count($raw_subtypes)) {
-                $raw_subtypes = array("normal");
-            } 
-            $allowed_types[$type_a] = $raw_subtypes;
-        }
-                
+        $allowedTypes = self::allowedTypes($definition["type"]);
+        
         // Loop over main & subtypes to detect matching format
         if (!$reason) {
             $type_valid = false;
-            foreach ($allowed_types as $type_a=>$sub_types) {
+            foreach ($allowedTypes as $type_a=>$sub_types) {
                 foreach ($sub_types as $type_b) {
                     
                     // Determine range based on subtype
@@ -623,7 +618,7 @@ class System_Daemon
      * @return boolean
      * @see optionGet()
      * @see optionValidate()
-     * @see optionDefaultSet()
+     * @see optionSetDefault()
      * @see optionsSet()
      * @see $optionDefinitions
      * @see $optionAreInitialized
@@ -656,19 +651,41 @@ class System_Daemon
      * @see $optionAreInitialized
      * @see $_options
      */
-    static public function optionDefaultSet($name)
+    static public function optionSetDefault($name)
     {
         if (!isset(self::$optionDefinitions[$name])) {
             return false;
+        }        
+        $definition = self::$optionDefinitions[$name];
+
+        if (!isset($definition["type"])) {
+            return false;
         }
-        
-        if (!isset(self::$optionDefinitions[$name]["default"])) {
+        if (!isset($definition["default"])) {
             return false;
         }
         
-        self::$_options[$name] = self::$optionDefinitions[$name]["default"];
+        // Compile array of allowd main & subtypes
+        $allowedTypes = self::allowedTypes($definition["type"]);        
+        
+        $type  = $definition["type"];
+        $value = $definition["default"];
+
+        if (isset($allowedTypes["string"]) && !is_bool($value)) {
+            // Replace variables
+            $value = preg_replace_callback(
+                '/\{([^\{\}]+)\}/is', array("self", "_optionReplaceVariables"), $value
+            );              
+            
+            // Replace functions
+            $value = preg_replace_callback(
+                '/\@([\w_]+)\(([^\)]+)\)/is', array("self", "_optionReplaceFunctions"), $value
+            );
+        }
+                        
+        self::$_options[$name] = $value;
         return true;
-    }//end optionDefaultSet()    
+    }//end optionSetDefault()    
     
     /**
      * Sets an array of options found in $optionDefinitions
@@ -679,7 +696,7 @@ class System_Daemon
      * @see optionGet()
      * @see optionValidate()
      * @see optionSet()
-     * @see optionDefaultSet()
+     * @see optionSetDefault()
      * @see $optionDefinitions
      * @see $optionAreInitialized
      * @see $_options
@@ -1098,6 +1115,56 @@ class System_Daemon
     }//end _daemonDie()
     
 
+    /**
+     * Callback function to replace variables in defaults
+     *
+     * @param array $matches          Matched functions
+     * 
+     * @return string
+     */
+    static private function _optionReplaceVariables($matches){
+        
+        $fullmatch = array_shift($matches);
+        $fullvar   = array_shift($matches);
+        $parts     = explode(".", $fullvar);
+        
+        list($source, $var) = $parts;
+        
+        if ($source == "SERVER") {
+            return $_SERVER[$var];
+        }
+        if ($source == "OPTIONS") {
+            return self::$_options[$var];
+        }
+        
+        return "FORBIDDEN_VAR_".$source.".".$var;        
+    }
+    
+    /**
+     * Callback function to replace function calls in defaults
+     *
+     * @param array $matches          Matched functions
+     * 
+     * @return string
+     */
+    static private function _optionReplaceFunctions($matches){
+        $allowedFunctions = array("basename", "dirname");
+        
+        $fullmatch = array_shift($matches);
+        $function  = array_shift($matches);
+        $arguments = $matches;
+        
+        if (!in_array($function, $allowedFunctions)) {
+            return "FORBIDDEN_FUNCTION_".$function;            
+        }
+        
+        if (!function_exists($function)) {
+            return "NONEXISTING_FUNCTION_".$function; 
+        }
+        
+        return call_user_func_array($function, $arguments);
+    }
+    
     
     /**
      * Checks if all the required options are set.
@@ -1109,7 +1176,7 @@ class System_Daemon
      * @see optionGet()
      * @see optionValidate()
      * @see optionSet()
-     * @see optionDefaultSet()
+     * @see optionSetDefault()
      * @see optionsSet()
      * @see $optionDefinitions
      * @see $optionsAreInitialized
@@ -1133,7 +1200,7 @@ class System_Daemon
             
             // Required options remain
             if (!isset(self::$_options[$name])) {                
-                if (!self::optionDefaultSet($name) && !$premature) {
+                if (!self::optionSetDefault($name) && !$premature) {
                     self::log(self::LOG_WARNING, "Required option: ".$name. 
                         " not set. No default value available either.");
                     return false;
@@ -1178,6 +1245,24 @@ class System_Daemon
             return false;
         }
     }//end daemonIsRunning()
+    
+    /**
+     * Compile array of allowed types
+     *
+     */
+    static protected function allowedTypes($str) {
+        $allowedTypes = array();
+        $raw_types = explode("|", $str);
+        foreach ($raw_types as $raw_type) {
+            $raw_subtypes = explode("/", $raw_type);
+            $type_a = array_shift($raw_subtypes);
+            if (!count($raw_subtypes)) {
+                $raw_subtypes = array("normal");
+            } 
+            $allowedTypes[$type_a] = $raw_subtypes;
+        }
+        return $allowedTypes;
+    }
     
     /**
      * Check if a string has a unix proof format (stripped spaces, 

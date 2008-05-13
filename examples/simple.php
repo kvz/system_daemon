@@ -31,7 +31,7 @@ require_once "System/Daemon.php";
 System_Daemon::optionSet("appName", "simple");
 System_Daemon::optionSet("authorEmail", "kevin@vanzonneveld.net");
 
-System_Daemon::optionSet("appDir", dirname(__FILE__));
+//System_Daemon::optionSet("appDir", dirname(__FILE__));
 System_Daemon::log(System_Daemon::LOG_INFO, "Daemon not yet started so ".
     "this will be written on-screen");
 
