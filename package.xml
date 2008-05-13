@@ -29,10 +29,10 @@ spawning standalone daemons, and for example includes:
   <active>yes</active>
  </lead>
  <date>2008-05-13</date>
- <time>15:45:29</time>
+ <time>15:47:01</time>
  <version>
-  <release>0.2</release>
-  <api>0.2</api>
+  <release>0.3</release>
+  <api>0.3</api>
  </version>
  <stability>
   <release>alpha</release>
@@ -41,6 +41,7 @@ spawning standalone daemons, and for example includes:
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
  <notes>2008-05-13 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
+        [r107] Package version 0.3
         [r106] Improved Tests
         [r105] Incomplete - # 4: less public variables
         [r105] http://trac.phpjs.org/projects/system_daemon/ticket/4
@@ -59,28 +60,7 @@ spawning standalone daemons, and for example includes:
         [r98] http://trac.phpjs.org/projects/system_daemon/ticket/3
         [r96] Incomplete - # 8: class constants for error codes
         [r96] http://trac.phpjs.org/projects/system_daemon/ticket/8
-        [r94] Added version mapping
-        [r92] Improved Package Tool
-        [r91] Incomplete - # 6: Log should be an optional dependency
-        [r91] http://trac.phpjs.org/projects/system_daemon/ticket/6
-        [r90] Incomplete - # 5: tests should be added to a tests dir and added to package.xml
-        [r90] http://trac.phpjs.org/projects/system_daemon/ticket/5
-
-2008-05-06 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
-
-        [r89] Minor improvements to code layout
-
-2008-04-29 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
-
-        [r88] Improved the packaging tools
-        [r87] Added optional support for acceptance of an instance of PEAR&apos;s Log package
-        [r84] Improved code layout
-        [r81] Improved SAFE_MODE check
-        [r80] Added a &apos;nopear&apos; example
-        [r78] Allowed for ini_sets to be defined outside of the class
-        [r78] Enabled a SAFE_MODE check for the ini_sets
-        [r77] Made log levels comply with PEAR_LOG_ levels.
-        [r76] You can now pass your own custom handlers to the various sig states.</notes>
+        [r94] Added version mapping</notes>
  <contents>
   <dir baseinstalldir="./" name="/">
    <dir name="docs">
@@ -159,8 +139,8 @@ spawning standalone daemons, and for example includes:
  <changelog>
   <release>
    <version>
-    <release>0.2</release>
-    <api>0.2</api>
+    <release>0.3</release>
+    <api>0.3</api>
    </version>
    <stability>
     <release>alpha</release>
@@ -170,6 +150,7 @@ spawning standalone daemons, and for example includes:
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
    <notes>2008-05-13 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
+        [r107] Package version 0.3
         [r106] Improved Tests
         [r105] Incomplete - # 4: less public variables
         [r105] http://trac.phpjs.org/projects/system_daemon/ticket/4
@@ -188,28 +169,7 @@ spawning standalone daemons, and for example includes:
         [r98] http://trac.phpjs.org/projects/system_daemon/ticket/3
         [r96] Incomplete - # 8: class constants for error codes
         [r96] http://trac.phpjs.org/projects/system_daemon/ticket/8
-        [r94] Added version mapping
-        [r92] Improved Package Tool
-        [r91] Incomplete - # 6: Log should be an optional dependency
-        [r91] http://trac.phpjs.org/projects/system_daemon/ticket/6
-        [r90] Incomplete - # 5: tests should be added to a tests dir and added to package.xml
-        [r90] http://trac.phpjs.org/projects/system_daemon/ticket/5
-
-2008-05-06 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
-
-        [r89] Minor improvements to code layout
-
-2008-04-29 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
-
-        [r88] Improved the packaging tools
-        [r87] Added optional support for acceptance of an instance of PEAR&apos;s Log package
-        [r84] Improved code layout
-        [r81] Improved SAFE_MODE check
-        [r80] Added a &apos;nopear&apos; example
-        [r78] Allowed for ini_sets to be defined outside of the class
-        [r78] Enabled a SAFE_MODE check for the ini_sets
-        [r77] Made log levels comply with PEAR_LOG_ levels.
-        [r76] You can now pass your own custom handlers to the various sig states.</notes>
+        [r94] Added version mapping</notes>
   </release>
  </changelog>
 </package>
