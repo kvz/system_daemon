@@ -92,7 +92,7 @@ class System_Daemon_OS extends System_Daemon
      * @throws System_Daemon_OS_Exception  
      * @return void
      */
-    static protected function log($level, $str, $file = false, $class = false, 
+    static public function log($level, $str, $file = false, $class = false, 
         $function = false, $line = false)
     {
         if (class_exists("System_Daemon")) {

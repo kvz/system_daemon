@@ -509,8 +509,9 @@ class System_Daemon
                     $parts = explode("-", $type_b);
                     $from  = $to = false;
                     if (count($parts) == 2 ) {
-                        $from = $parts[0];
-                        $to   = $parts[1];  
+                        $from   = $parts[0];
+                        $to     = $parts[1];
+                        $type_b = "range";
                     }
             
                     switch ($type_a) {
@@ -550,7 +551,8 @@ class System_Daemon
                                 $type_valid = true;
                             }
                             break;
-                        case "normal": 
+                        case "normal":
+                        default: 
                             // String?
                             if (!is_resource($value) && !is_array($value) 
                                 && !is_object($value)) {
@@ -566,14 +568,11 @@ class System_Daemon
                                 }
                             }
                             break;
-                        default:
-                            self::log(self::LOG_CRIT, "Type ".
-                                $type_a."/".$type_b." not defined");
-                            break;
                         }
                         break;
                     case "number":
                         switch ($type_b) {
+                        default:
                         case "normal":
                             // Numeric?
                             if (is_numeric($value)) {
@@ -588,10 +587,6 @@ class System_Daemon
                                 }
                             }
                             break;                            
-                        default:
-                            self::log(self::LOG_CRIT, "Type ".
-                                $type_a."/".$type_b." not defined");
-                            break;
                         }
                         break;
                     default:
@@ -679,14 +674,12 @@ class System_Daemon
 
         if (isset($allowedTypes["string"]) && !is_bool($value)) {
             // Replace variables
-            $value = preg_replace_callback(
-                '/\{([^\{\}]+)\}/is', array("self", "_optionReplaceVariables"), $value
-            );              
+            $value = preg_replace_callback('/\{([^\{\}]+)\}/is', 
+                array("self", "_optionReplaceVariables"), $value);
             
             // Replace functions
-            $value = preg_replace_callback(
-                '/\@([\w_]+)\(([^\)]+)\)/is', array("self", "_optionReplaceFunctions"), $value
-            );
+            $value = preg_replace_callback('/\@([\w_]+)\(([^\)]+)\)/is', 
+                array("self", "_optionReplaceFunctions"), $value);
         }
                         
         self::$_options[$name] = $value;
@@ -768,12 +761,17 @@ class System_Daemon
     static public function log($level, $str, $file = false, $class = false, 
         $function = false, $line = false)
     {
-        // if verbosity level is not matched, don't do anything
+        // If verbosity level is not matched, don't do anything
         
         if (!isset(self::$_options["logVerbosity"])) {
-            // somebody is calling log before launching daemon..
+            // Somebody is calling log before launching daemon..
             // fair enough, but we have to init some log options
             self::optionsInit(true);
+        }
+        
+        if (!isset(self::$_options["appName"])) {
+            // Not logging for anything without a name
+            return false;
         }
         
         if ($level > self::$_options["logVerbosity"]) {
@@ -839,7 +837,7 @@ class System_Daemon
         
         // These are pretty serious errors
         if ($level < self::LOG_WARNING) {
-            // Throw an exception
+            // So Throw an exception
             if (self::$_options["usePEAR"]) {
                 throw new System_Daemon_Exception($log_line);
             }
@@ -972,18 +970,18 @@ class System_Daemon
             self::$_options["logLocation"], 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         
-        // important for daemons
-        // see http://nl2.php.net/manual/en/function.pcntl-signal.php
+        // Important for daemons
+        // See http://nl2.php.net/manual/en/function.pcntl-signal.php
         declare(ticks = 1);
         
-        // setup signal handlers
-        // handlers for individual signals can be overrulled with
+        // Setup signal handlers
+        // Handlers for individual signals can be overrulled with
         // setSigHandler()
         foreach (self::$_sigHandlers as $signal=>$handler) {
             pcntl_signal($signal, $handler);
         }
         
-        // allowed?
+        // Allowed?
         if (self::daemonIsRunning()) {
             self::log(self::LOG_EMERG, "".self::$_options["appName"].
                 " daemon is still running. ".
@@ -991,14 +989,14 @@ class System_Daemon
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
-        // fork process!
+        // Fork process!
         if (!self::_daemonFork()) {
             self::log(self::LOG_EMERG, "".self::$_options["appName"].
                 " daemon was unable to fork", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
-        // assume specified identity (uid & gid)
+        // Assume specified identity (uid & gid)
         if (!posix_setuid(self::$_options["appRunAsUID"]) || 
             !posix_setgid(self::$_options["appRunAsGID"])) {
             $lvl = self::LOG_CRIT;
@@ -1016,7 +1014,7 @@ class System_Daemon
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
-        // additional PID succeeded check
+        // Additional PID succeeded check
         if (!is_numeric(self::$processId) || self::$processId < 1) {
             self::log(self::LOG_EMERG, "".self::$_options["appName"].
                 " daemon didn't have a valid ".
@@ -1037,8 +1035,8 @@ class System_Daemon
         self::$processId      = 0;
         self::$processIsChild = false;
         if (!self::$safe_mode) {            
-            foreach (self::$_options as $name=>$value ){
-                if (substr($name, 0 ,3) == "sys" ) {
+            foreach (self::$_options as $name=>$value) {
+                if (substr($name, 0, 3) == "sys" ) {
                     ini_set($name, $value);
                 }
             }
@@ -1047,7 +1045,7 @@ class System_Daemon
         ob_implicit_flush();        
         
 
-        // change dir & umask
+        // Change dir & umask
         @chdir(self::$_options["appDir"]);
         @umask(0);
     }//end _daemonBecome()
@@ -1124,31 +1122,31 @@ class System_Daemon
     /**
      * Callback function to replace variables in defaults
      *
-     * @param array $matches          Matched functions
+     * @param array $matches Matched functions
      * 
      * @return string
      */
-    static private function _optionReplaceVariables($matches){
+    static private function _optionReplaceVariables($matches)
+    {
         // Init
         $allowedVars = array(
             "SERVER.SCRIPT_NAME", 
             "OPTIONS.*"
         );
-        
-        $filterVars = array(
+        $filterVars  = array(
             "SERVER.SCRIPT_NAME"=>array("realpath")
         );
         
-        $fullmatch  = array_shift($matches);
-        $fullvar    = array_shift($matches);
-        $parts      = explode(".", $fullvar);
-        
+        $fullmatch          = array_shift($matches);
+        $fullvar            = array_shift($matches);
+        $parts              = explode(".", $fullvar);
         list($source, $var) = $parts;
-        $var_use    = false;
-        $var_key    = $source.".".$var; 
+        $var_use            = false;
+        $var_key            = $source.".".$var; 
         
         // Allowed
-        if (!in_array($var_key, $allowedVars) && !in_array($source.".*", $allowedVars)) {
+        if (!in_array($var_key, $allowedVars) 
+            && !in_array($source.".*", $allowedVars)) {
             return "FORBIDDEN_VAR_".$var_key;
         }
         
@@ -1187,11 +1185,12 @@ class System_Daemon
     /**
      * Callback function to replace function calls in defaults
      *
-     * @param array $matches          Matched functions
+     * @param array $matches Matched functions
      * 
      * @return string
      */
-    static private function _optionReplaceFunctions($matches){
+    static private function _optionReplaceFunctions($matches)
+    {
         $allowedFunctions = array("basename", "dirname");
         
         $fullmatch = array_shift($matches);
@@ -1238,7 +1237,7 @@ class System_Daemon
         foreach (self::$optionDefinitions as $name=>$definition) {
             // Skip non-required options
             if (!isset($definition["required"]) 
-                || $definition["required"] !== true )  {
+                || $definition["required"] !== true ) {
                 continue;
             }
             
@@ -1292,14 +1291,18 @@ class System_Daemon
     
     /**
      * Compile array of allowed types
-     *
+     * 
+     * @param string $str String that contains allowed type information
+     * 
+     * @return array      
      */
-    static protected function allowedTypes($str) {
+    static protected function allowedTypes($str) 
+    {
         $allowedTypes = array();
-        $raw_types = explode("|", $str);
+        $raw_types    = explode("|", $str);
         foreach ($raw_types as $raw_type) {
             $raw_subtypes = explode("/", $raw_type);
-            $type_a = array_shift($raw_subtypes);
+            $type_a       = array_shift($raw_subtypes);
             if (!count($raw_subtypes)) {
                 $raw_subtypes = array("normal");
             } 

@@ -2,7 +2,7 @@
 <?php
 /* vim: set noai expandtab tabstop=4 softtabstop=4 shiftwidth=4: */
 /**
- * Script to test package. Uses phpcs and phpunit
+ * Script to test package. Uses phpcs and phpt
  *  
  * PHP version 5
  * 
@@ -35,6 +35,7 @@ function exe($cmd, &$o)
 $workspace_dir     = realpath(dirname(__FILE__)."");
 $cmd_reqs          = array();
 $cmd_reqs["phpcs"] = "PHP_CodeSniffer";
+$cmd_reqs["phpt"]  = "PHPT, http://phpt.info/wiki";
 
 // check if commands are available
 foreach ($cmd_reqs as $cmd=>$package) {
@@ -46,9 +47,12 @@ foreach ($cmd_reqs as $cmd=>$package) {
 }
 
 $cmd = "phpcs --standard=PEAR ".$workspace_dir;
-if (!exe($cmd, $lines)) {
-    echo("errors\n");
-} 
+exe($cmd, $lines);
 echo implode("\n", $lines); 
+
+$cmd = "phpt -r ".$workspace_dir;
+exe($cmd, $lines);
+echo implode("\n", $lines); 
+
 
 ?>

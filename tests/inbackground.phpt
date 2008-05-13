@@ -1,0 +1,20 @@
+--TEST--
+--SKIPIF--
+<?php 
+if (substr(PHP_OS, 0, 3) == 'WIN') die("skip this test is for non-Windows platforms only");
+?>
+--FILE--
+<?php
+
+require_once 'tests-config.php';
+require_once 'System/Daemon.php';
+
+System_Daemon::optionSet("appName", "test");
+System_Daemon::optionSet("logVerbosity", System_Daemon::LOG_EMERG);
+
+$res = System_Daemon::daemonIsInBackground();
+var_dump($res);
+
+?>
+--EXPECT--
+bool(false)
