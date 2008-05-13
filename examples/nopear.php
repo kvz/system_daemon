@@ -28,20 +28,20 @@ error_reporting(E_ALL);
 require_once "System/Daemon.php";
 
 // No PEAR, run standalone
-System_Daemon::optionSet("usePEAR", false);
+System_Daemon::setOption("usePEAR", false);
 
 // Bare minimum setup
-System_Daemon::optionSet("appName", "nopear");
-System_Daemon::optionSet("appDir", dirname(__FILE__));
+System_Daemon::setOption("appName", "nopear");
+System_Daemon::setOption("appDir", dirname(__FILE__));
 System_Daemon::log(System_Daemon::LOG_INFO, "Daemon not yet started so this ".
     "will be written on-screen");
 
 // Spawn Deamon!
 System_Daemon::start();
 System_Daemon::log(System_Daemon::LOG_INFO, "Daemon: '".
-    System_Daemon::optionGet("appName").
+    System_Daemon::getOption("appName").
     "' spawned! This will be written to ".
-    System_Daemon::optionGet("logLocation"));
+    System_Daemon::getOption("logLocation"));
 
 // Your normal PHP code goes here. Only the code will run in the background
 // so you can close your terminal session, and the application will

@@ -128,28 +128,30 @@ class System_Daemon
         self::LOG_INFO => "info",
         self::LOG_DEBUG => "debug"        
     );
+
+
     
     /**
      * Wether all the options have been initialized
      *
      * @var boolean
      */
-    static protected $optionsAreInitialized = false;
+    static private $_optionsAreInitialized = false;
     
     /**
      * Definitions for all Options
      *
      * @var array
-     * @see optionGet()
-     * @see optionValidate()
-     * @see optionSet()
-     * @see optionSetDefault()
-     * @see optionsSet()
-     * @see $optionDefinitions
-     * @see $optionsAreInitialized
+     * @see _optionGet()
+     * @see _optionValidate()
+     * @see _optionSet()
+     * @see _optionSetDefault()
+     * @see _optionsSet()
+     * @see $_optionDefinitions
+     * @see $_optionsAreInitialized
      * @see $_options
      */
-    static protected $optionDefinitions = array(
+    static private $_optionDefinitions = array(
         "usePEAR" => array(
             "type" => "boolean",
             "default" => true,
@@ -275,18 +277,17 @@ class System_Daemon
             "detail" => "0 is infinite"
         ),        
     );
-
-    
+ 
     /**
      * Keep track of active state for all Options
      *
      * @var array
-     * @see optionGet()
-     * @see optionValidate()
-     * @see optionSet()
-     * @see optionSetDefault()
-     * @see optionsSet()
-     * @see $optionDefinitions
+     * @see _optionGet()
+     * @see _optionValidate()
+     * @see _optionSet()
+     * @see _optionSetDefault()
+     * @see _optionsSet()
+     * @see $_optionDefinitions
      * @see $_options
      */
     static private $_options = array();
@@ -370,7 +371,7 @@ class System_Daemon
      * 
      * @return boolean
      * @see stop()
-     * @see optionsInit()
+     * @see _optionsInit()
      * @see _daemonBecome()
      */
     static public function start()
@@ -378,7 +379,7 @@ class System_Daemon
         
         // Quickly initialize some defaults like usePEAR 
         // by adding the $premature flag
-        self::optionsInit(true);
+        self::_optionsInit(true);
         
         // To run as a part of PEAR
         if (self::$_options["usePEAR"]) {
@@ -411,7 +412,7 @@ class System_Daemon
         }
         
         // Initialize & check variables
-        if (self::optionsInit() === false) {
+        if (self::_optionsInit() === false) {
             $msg = "Crucial options are not set. Review log.";
             if (self::$_options["usePEAR"]) {
                 throw new System_Daemon_Exception($msg);
@@ -446,270 +447,47 @@ class System_Daemon
     }//end stop()
 
     /**
-     * Retrieves any option found in $optionDefinitions
-     * 
-     * @param string $name Name of the Option
-     *
-     * @return boolean
-     * @see optionValidate()
-     * @see optionSet()
-     * @see optionSetDefault()
-     * @see optionsSet()
-     * @see $optionDefinitions
-     * @see $optionAreInitialized
-     * @see $_options
-     */
-    static public function optionGet($name)
-    {
-        return self::$_options[$name];
-    }//end optionGet()    
-    
-    /**
-     * Validates any option found in $optionDefinitions
-     * 
-     * @param string $name    Name of the Option
-     * @param mixed  $value   Value of the Option
-     * @param string &$reason Why something does not validate
-     *
-     * @return boolean
-     * @see optionGet()
-     * @see optionSet()
-     * @see optionSetDefault()
-     * @see optionsSet()
-     * @see $optionDefinitions
-     * @see $optionAreInitialized
-     * @see $_options
-     */
-    static public function optionValidate($name, $value, &$reason="")
-    {
-        $reason = false;
-        
-        if (!$reason && !isset(self::$optionDefinitions[$name])) {
-            $reason = "Option ".$name." not found in definitions";
-        }
-        
-        $definition = self::$optionDefinitions[$name];
-        
-        if (!$reason && !isset($definition["type"])) {
-            $reason = "Option ".$name.":type not found in definitions";
-        }
-        
-        // Compile array of allowd main & subtypes
-        $allowedTypes = self::allowedTypes($definition["type"]);
-        
-        // Loop over main & subtypes to detect matching format
-        if (!$reason) {
-            $type_valid = false;
-            foreach ($allowedTypes as $type_a=>$sub_types) {
-                foreach ($sub_types as $type_b) {
-                    
-                    // Determine range based on subtype
-                    // Range is used to contain an integer or strlen 
-                    // between min-max
-                    $parts = explode("-", $type_b);
-                    $from  = $to = false;
-                    if (count($parts) == 2 ) {
-                        $from   = $parts[0];
-                        $to     = $parts[1];
-                        $type_b = "range";
-                    }
-            
-                    switch ($type_a) {
-                    case "boolean":
-                        $type_valid = is_bool($value);
-                        break;
-                    case "object":
-                        $type_valid = is_object($value) || is_resource($value);
-                        break;
-                    case "string":
-                        switch ($type_b) {
-                        case "email":
-                            $exp  = "^[a-z0-9]+([._-][a-z0-9]+)*@([a-z0-9]+";
-                            $exp .= "([._-][a-z0-9]+))+$";
-                            if (eregi($exp, $value)) {
-                                $type_valid = true;
-                            }
-                            break;
-                        case "unix":
-                            if (self::strIsUnix($value)) {
-                                $type_valid = true;
-                            }
-                            break;
-                        case "existing_dirpath":
-                            if (is_dir($value)) {
-                                $type_valid = true;
-                            }
-                            break;
-                        case "existing_filepath":
-                            if (is_file($value)) {
-                                $type_valid = true;
-                            }
-                            break;
-                        case "creatable_filepath":
-                            if (is_dir(dirname($value)) 
-                                && is_writable(dirname($value))) {
-                                $type_valid = true;
-                            }
-                            break;
-                        case "normal":
-                        default: 
-                            // String?
-                            if (!is_resource($value) && !is_array($value) 
-                                && !is_object($value)) {
-                                // Range?
-                                if ($from === false && $to === false) {
-                                    $type_valid = true;
-                                } else {
-                                    // Enfore range as well
-                                    if (strlen($value) >= $from 
-                                        && strlen($value) <= $to) {
-                                        $type_valid = true;
-                                    }
-                                }
-                            }
-                            break;
-                        }
-                        break;
-                    case "number":
-                        switch ($type_b) {
-                        default:
-                        case "normal":
-                            // Numeric?
-                            if (is_numeric($value)) {
-                                // Range ?
-                                if ($from === false && $to === false) {
-                                    $type_valid = true;
-                                } else {
-                                    // Enfore range as well
-                                    if ($value >= $from && $value <= $to) {
-                                        $type_valid = true;
-                                    }
-                                }
-                            }
-                            break;                            
-                        }
-                        break;
-                    default:
-                        self::log(self::LOG_CRIT, "Type ".
-                            $type_a." not defined");
-                        break;
-                    }                
-                }
-            }
-        }
-        
-        if (!$type_valid) {
-            $reason = "Option ".$name." does not match type: ".
-                $definition["type"]."";
-        }
-        
-        if ($reason !== false) {
-            return false;
-        }
-        
-        return true;
-    }//end optionValidate()    
-    
-    /**
-     * Sets any option found in $optionDefinitions
+     * Sets any option found in $_optionDefinitions
+     * Public interface to talk with with private option methods
      * 
      * @param string $name  Name of the Option
      * @param mixed  $value Value of the Option
      *
      * @return boolean
-     * @see optionGet()
-     * @see optionValidate()
-     * @see optionSetDefault()
-     * @see optionsSet()
-     * @see $optionDefinitions
-     * @see $optionAreInitialized
-     * @see $_options
+     * @see _optionSet()
      */
-    static public function optionSet($name, $value)
+    static public function setOption($name, $value)
     {
-        // not validated?
-        if (!self::optionValidate($name, $value, $reason)) {
-            // default not used or failed as well!
-            self::log(self::LOG_NOTICE, "Option ".$name." invalid: ".$reason);
-            return false;
-        }
-        
-        self::$_options[$name] = $value;
-    }//end optionSet()
-
+        return self::_optionSet($name, $value);
+    }//end setOption()    
     
     /**
-     * Sets any option found in $optionDefinitions to its default value
-     * 
-     * @param string $name Name of the Option
-     *
-     * @return boolean
-     * @see optionGet()
-     * @see optionValidate()
-     * @see optionSet()
-     * @see optionsSet()
-     * @see $optionDefinitions
-     * @see $optionAreInitialized
-     * @see $_options
-     */
-    static protected function optionSetDefault($name)
-    {
-        if (!isset(self::$optionDefinitions[$name])) {
-            return false;
-        }        
-        $definition = self::$optionDefinitions[$name];
-
-        if (!isset($definition["type"])) {
-            return false;
-        }
-        if (!isset($definition["default"])) {
-            return false;
-        }
-        
-        // Compile array of allowd main & subtypes
-        $allowedTypes = self::allowedTypes($definition["type"]);        
-        
-        $type  = $definition["type"];
-        $value = $definition["default"];
-
-        if (isset($allowedTypes["string"]) && !is_bool($value)) {
-            // Replace variables
-            $value = preg_replace_callback('/\{([^\{\}]+)\}/is', 
-                array("self", "_optionReplaceVariables"), $value);
-            
-            // Replace functions
-            $value = preg_replace_callback('/\@([\w_]+)\(([^\)]+)\)/is', 
-                array("self", "_optionReplaceFunctions"), $value);
-        }
-                        
-        self::$_options[$name] = $value;
-        return true;
-    }//end optionSetDefault()    
-    
-    /**
-     * Sets an array of options found in $optionDefinitions
+     * Sets an array of options found in $_optionDefinitions
+     * Public interface to talk with with private option methods
      * 
      * @param array $use_options Array with Options
      *
      * @return boolean
-     * @see optionGet()
-     * @see optionValidate()
-     * @see optionSet()
-     * @see optionSetDefault()
-     * @see $optionDefinitions
-     * @see $optionAreInitialized
-     * @see $_options
+     * @see _optionsSet()
      */
-    static public function optionsSet($use_options)
+    static public function setOptions($array)
     {
-        foreach ($use_options as $name=>$value) {
-            if (!self::optionSet($name, $value)) {
-                return false;
-            }
-        }
-        return true;
-    }//end optionsSet()
+        return self::_optionsSet($array);
+    }//end setOptions()    
     
+    /**
+     * Gets any option found in $_optionDefinitions
+     * Public interface to talk with with private option methods
+     * 
+     * @param string $name  Name of the Option
+     *
+     * @return mixed
+     * @see _optionGet()
+     */
+    static public function getOption($name, $value)
+    {
+        return self::_optionGet($name, $value);
+    }//end getOption()    
     
     /**
      * Overrule or add signal handlers.
@@ -766,7 +544,7 @@ class System_Daemon
         if (!isset(self::$_options["logVerbosity"])) {
             // Somebody is calling log before launching daemon..
             // fair enough, but we have to init some log options
-            self::optionsInit(true);
+            self::_optionsInit(true);
         }
         
         if (!isset(self::$_options["appName"])) {
@@ -901,6 +679,8 @@ class System_Daemon
         }
     }//end daemonHandleSig()
 
+    
+    
     /**
      * Wether the class is already running in the background
      * 
@@ -932,7 +712,7 @@ class System_Daemon
     static public function osInitDWrite( $overwrite=false )
     {
         // init vars (needed for init.d script)
-        if (self::optionsInit() === false) {
+        if (self::_optionsInit() === false) {
             return false;
         }
         
@@ -955,6 +735,82 @@ class System_Daemon
         }
     }//end osInitDWrite()    
 
+    /**
+     * Check if a previous process with same pidfile was already running
+     *
+     * @return boolean
+     */
+    static protected function daemonIsRunning() 
+    {
+        if(!file_exists(self::$_options["appPidLocation"])) return false;
+        $pid = @file_get_contents(self::$_options["appPidLocation"]);
+
+        if ($pid !== false) {
+            // Ping app
+            if (!posix_kill(intval($pid), 0)) {
+                // Not responding so unlink pidfile
+                @unlink(self::$_options["appPidLocation"]);
+                self::log(self::LOG_WARNING, "".self::$_options["appName"].
+                    " daemon orphaned pidfile ".
+                    "found and removed: ".self::$_options["appPidLocation"], 
+                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }//end daemonIsRunning()
+    
+    /**
+     * Compile array of allowed types
+     * 
+     * @param string $str String that contains allowed type information
+     * 
+     * @return array      
+     */
+    static protected function allowedTypes($str) 
+    {
+        $allowedTypes = array();
+        $raw_types    = explode("|", $str);
+        foreach ($raw_types as $raw_type) {
+            $raw_subtypes = explode("/", $raw_type);
+            $type_a       = array_shift($raw_subtypes);
+            if (!count($raw_subtypes)) {
+                $raw_subtypes = array("normal");
+            } 
+            $allowedTypes[$type_a] = $raw_subtypes;
+        }
+        return $allowedTypes;
+    }
+    
+    /**
+     * Check if a string has a unix proof format (stripped spaces, 
+     * special chars, etc)
+     *
+     * @param string $str What string to test for unix compliance
+     * 
+     * @return boolean
+     */   
+    static protected function strIsUnix( $str )
+    {
+        return preg_match('/^[a-z0-9_]+$/', $str);
+    }//end strIsUnix()
+
+    /**
+     * Convert a string to a unix proof format (strip spaces, 
+     * special chars, etc)
+     * 
+     * @param string $str What string to make unix compliant
+     * 
+     * @return string
+     */
+    static protected function strToUnix( $str )
+    {
+        return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
+    }//end strToUnix()
+    
     
     
     /**
@@ -1103,7 +959,7 @@ class System_Daemon
     {
         if (!self::daemonIsDying()) {
             self::$daemonIsDying       = true;
-            self::$optionsAreInitialized = false;
+            self::$_optionsAreInitialized = false;
             if (!self::daemonIsInBackground() || 
                 !file_exists(self::$_options["appPidLocation"])) {
                 self::log(self::LOG_INFO, "Not stopping ".
@@ -1119,6 +975,272 @@ class System_Daemon
     }//end _daemonDie()
     
 
+    
+    /**
+     * Retrieves any option found in $_optionDefinitions
+     * 
+     * @param string $name Name of the Option
+     *
+     * @return boolean
+     * @see _optionValidate()
+     * @see _optionSet()
+     * @see _optionSetDefault()
+     * @see _optionsSet()
+     * @see $_optionDefinitions
+     * @see $_optionsAreInitialized
+     * @see $_options
+     */
+    static private function _optionGet($name)
+    {
+        return self::$_options[$name];
+    }//end _optionGet()    
+    
+    /**
+     * Validates any option found in $_optionDefinitions
+     * 
+     * @param string $name    Name of the Option
+     * @param mixed  $value   Value of the Option
+     * @param string &$reason Why something does not validate
+     *
+     * @return boolean
+     * @see _optionGet()
+     * @see _optionSet()
+     * @see _optionSetDefault()
+     * @see _optionsSet()
+     * @see $_optionDefinitions
+     * @see $_optionsAreInitialized
+     * @see $_options
+     */
+    static private function _optionValidate($name, $value, &$reason="")
+    {
+        $reason = false;
+        
+        if (!$reason && !isset(self::$_optionDefinitions[$name])) {
+            $reason = "Option ".$name." not found in definitions";
+        }
+        
+        $definition = self::$_optionDefinitions[$name];
+        
+        if (!$reason && !isset($definition["type"])) {
+            $reason = "Option ".$name.":type not found in definitions";
+        }
+        
+        // Compile array of allowd main & subtypes
+        $allowedTypes = self::allowedTypes($definition["type"]);
+        
+        // Loop over main & subtypes to detect matching format
+        if (!$reason) {
+            $type_valid = false;
+            foreach ($allowedTypes as $type_a=>$sub_types) {
+                foreach ($sub_types as $type_b) {
+                    
+                    // Determine range based on subtype
+                    // Range is used to contain an integer or strlen 
+                    // between min-max
+                    $parts = explode("-", $type_b);
+                    $from  = $to = false;
+                    if (count($parts) == 2 ) {
+                        $from   = $parts[0];
+                        $to     = $parts[1];
+                        $type_b = "range";
+                    }
+            
+                    switch ($type_a) {
+                    case "boolean":
+                        $type_valid = is_bool($value);
+                        break;
+                    case "object":
+                        $type_valid = is_object($value) || is_resource($value);
+                        break;
+                    case "string":
+                        switch ($type_b) {
+                        case "email":
+                            $exp  = "^[a-z0-9]+([._-][a-z0-9]+)*@([a-z0-9]+";
+                            $exp .= "([._-][a-z0-9]+))+$";
+                            if (eregi($exp, $value)) {
+                                $type_valid = true;
+                            }
+                            break;
+                        case "unix":
+                            if (self::strIsUnix($value)) {
+                                $type_valid = true;
+                            }
+                            break;
+                        case "existing_dirpath":
+                            if (is_dir($value)) {
+                                $type_valid = true;
+                            }
+                            break;
+                        case "existing_filepath":
+                            if (is_file($value)) {
+                                $type_valid = true;
+                            }
+                            break;
+                        case "creatable_filepath":
+                            if (is_dir(dirname($value)) 
+                                && is_writable(dirname($value))) {
+                                $type_valid = true;
+                            }
+                            break;
+                        case "normal":
+                        default: 
+                            // String?
+                            if (!is_resource($value) && !is_array($value) 
+                                && !is_object($value)) {
+                                // Range?
+                                if ($from === false && $to === false) {
+                                    $type_valid = true;
+                                } else {
+                                    // Enfore range as well
+                                    if (strlen($value) >= $from 
+                                        && strlen($value) <= $to) {
+                                        $type_valid = true;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                        break;
+                    case "number":
+                        switch ($type_b) {
+                        default:
+                        case "normal":
+                            // Numeric?
+                            if (is_numeric($value)) {
+                                // Range ?
+                                if ($from === false && $to === false) {
+                                    $type_valid = true;
+                                } else {
+                                    // Enfore range as well
+                                    if ($value >= $from && $value <= $to) {
+                                        $type_valid = true;
+                                    }
+                                }
+                            }
+                            break;                            
+                        }
+                        break;
+                    default:
+                        self::log(self::LOG_CRIT, "Type ".
+                            $type_a." not defined");
+                        break;
+                    }                
+                }
+            }
+        }
+        
+        if (!$type_valid) {
+            $reason = "Option ".$name." does not match type: ".
+                $definition["type"]."";
+        }
+        
+        if ($reason !== false) {
+            return false;
+        }
+        
+        return true;
+    }//end _optionValidate()    
+    
+    /**
+     * Sets any option found in $_optionDefinitions
+     * 
+     * @param string $name  Name of the Option
+     * @param mixed  $value Value of the Option
+     *
+     * @return boolean
+     * @see _optionGet()
+     * @see _optionValidate()
+     * @see _optionSetDefault()
+     * @see _optionsSet()
+     * @see $_optionDefinitions
+     * @see $_optionsAreInitialized
+     * @see $_options
+     */
+    static private function _optionSet($name, $value)
+    {
+        // not validated?
+        if (!self::_optionValidate($name, $value, $reason)) {
+            // default not used or failed as well!
+            self::log(self::LOG_NOTICE, "Option ".$name." invalid: ".$reason);
+            return false;
+        }
+        
+        self::$_options[$name] = $value;
+    }//end _optionSet()
+
+    
+    /**
+     * Sets any option found in $_optionDefinitions to its default value
+     * 
+     * @param string $name Name of the Option
+     *
+     * @return boolean
+     * @see _optionGet()
+     * @see _optionValidate()
+     * @see _optionSet()
+     * @see _optionsSet()
+     * @see $_optionDefinitions
+     * @see $_optionsAreInitialized
+     * @see $_options
+     */
+    static private function _optionSetDefault($name)
+    {
+        if (!isset(self::$_optionDefinitions[$name])) {
+            return false;
+        }        
+        $definition = self::$_optionDefinitions[$name];
+
+        if (!isset($definition["type"])) {
+            return false;
+        }
+        if (!isset($definition["default"])) {
+            return false;
+        }
+        
+        // Compile array of allowd main & subtypes
+        $allowedTypes = self::allowedTypes($definition["type"]);        
+        
+        $type  = $definition["type"];
+        $value = $definition["default"];
+
+        if (isset($allowedTypes["string"]) && !is_bool($value)) {
+            // Replace variables
+            $value = preg_replace_callback('/\{([^\{\}]+)\}/is', 
+                array("self", "_optionReplaceVariables"), $value);
+            
+            // Replace functions
+            $value = preg_replace_callback('/\@([\w_]+)\(([^\)]+)\)/is', 
+                array("self", "_optionReplaceFunctions"), $value);
+        }
+                        
+        self::$_options[$name] = $value;
+        return true;
+    }//end _optionSetDefault()    
+    
+    /**
+     * Sets an array of options found in $_optionDefinitions
+     * 
+     * @param array $use_options Array with Options
+     *
+     * @return boolean
+     * @see _optionGet()
+     * @see _optionValidate()
+     * @see _optionSet()
+     * @see _optionSetDefault()
+     * @see $_optionDefinitions
+     * @see $_optionsAreInitialized
+     * @see $_options
+     */
+    static private function _optionsSet($use_options)
+    {
+        foreach ($use_options as $name=>$value) {
+            if (!self::_optionSet($name, $value)) {
+                return false;
+            }
+        }
+        return true;
+    }//end _optionsSet()
+    
     /**
      * Callback function to replace variables in defaults
      *
@@ -1216,25 +1338,25 @@ class System_Daemon
      * @param boolean $premature Whether to do a premature option init
      *
      * @return mixed integer or boolean
-     * @see optionGet()
-     * @see optionValidate()
-     * @see optionSet()
-     * @see optionSetDefault()
-     * @see optionsSet()
-     * @see $optionDefinitions
-     * @see $optionsAreInitialized
+     * @see _optionGet()
+     * @see _optionValidate()
+     * @see _optionSet()
+     * @see _optionSetDefault()
+     * @see _optionsSet()
+     * @see $_optionDefinitions
+     * @see $_optionsAreInitialized
      * @see $_options
      */
-    static protected function optionsInit($premature=false) 
+    static private function _optionsInit($premature=false) 
     {
         // If already initialized, skip
-        if (!$premature && self::$optionsAreInitialized) {
+        if (!$premature && self::$_optionsAreInitialized) {
             return true;
         }
         
         $options_met = 0;
         
-        foreach (self::$optionDefinitions as $name=>$definition) {
+        foreach (self::$_optionDefinitions as $name=>$definition) {
             // Skip non-required options
             if (!isset($definition["required"]) 
                 || $definition["required"] !== true ) {
@@ -1243,7 +1365,7 @@ class System_Daemon
             
             // Required options remain
             if (!isset(self::$_options[$name])) {                
-                if (!self::optionSetDefault($name) && !$premature) {
+                if (!self::_optionSetDefault($name) && !$premature) {
                     self::log(self::LOG_WARNING, "Required option: ".$name. 
                         " not set. No default value available either.");
                     return false;
@@ -1254,89 +1376,12 @@ class System_Daemon
         }
                 
         if (!$premature) {
-            self::$optionsAreInitialized = true;
+            self::$_optionsAreInitialized = true;
         }
         
         return $options_met;
         
-    }//end optionsInit()    
+    }//end _optionsInit()    
     
-    /**
-     * Check if a previous process with same pidfile was already running
-     *
-     * @return boolean
-     */
-    static protected function daemonIsRunning() 
-    {
-        if(!file_exists(self::$_options["appPidLocation"])) return false;
-        $pid = @file_get_contents(self::$_options["appPidLocation"]);
-
-        if ($pid !== false) {
-            // Ping app
-            if (!posix_kill(intval($pid), 0)) {
-                // Not responding so unlink pidfile
-                @unlink(self::$_options["appPidLocation"]);
-                self::log(self::LOG_WARNING, "".self::$_options["appName"].
-                    " daemon orphaned pidfile ".
-                    "found and removed: ".self::$_options["appPidLocation"], 
-                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }//end daemonIsRunning()
-    
-    /**
-     * Compile array of allowed types
-     * 
-     * @param string $str String that contains allowed type information
-     * 
-     * @return array      
-     */
-    static protected function allowedTypes($str) 
-    {
-        $allowedTypes = array();
-        $raw_types    = explode("|", $str);
-        foreach ($raw_types as $raw_type) {
-            $raw_subtypes = explode("/", $raw_type);
-            $type_a       = array_shift($raw_subtypes);
-            if (!count($raw_subtypes)) {
-                $raw_subtypes = array("normal");
-            } 
-            $allowedTypes[$type_a] = $raw_subtypes;
-        }
-        return $allowedTypes;
-    }
-    
-    /**
-     * Check if a string has a unix proof format (stripped spaces, 
-     * special chars, etc)
-     *
-     * @param string $str What string to test for unix compliance
-     * 
-     * @return boolean
-     */   
-    static protected function strIsUnix( $str )
-    {
-        return preg_match('/^[a-z0-9_]+$/', $str);
-    }//end strIsUnix()
-
-    /**
-     * Convert a string to a unix proof format (strip spaces, 
-     * special chars, etc)
-     * 
-     * @param string $str What string to make unix compliant
-     * 
-     * @return string
-     */
-    static protected function strToUnix( $str )
-    {
-        return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
-    }//end strToUnix()
-    
-
 }//end class
 ?>

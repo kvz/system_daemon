@@ -31,9 +31,9 @@ require_once "System/Daemon.php";
 $my_log_instance = &Log::factory('file', '/tmp/pearlog.log', 'pearlog');
 
 // Bare minimum setup
-System_Daemon::optionSet("appName", "pearlog");
-System_Daemon::optionSet("appDir", dirname(__FILE__));
-System_Daemon::optionSet("usePEARLogInstance", $my_log_instance);
+System_Daemon::setOption("appName", "pearlog");
+System_Daemon::setOption("appDir", dirname(__FILE__));
+System_Daemon::setOption("usePEARLogInstance", $my_log_instance);
 System_Daemon::log(System_Daemon::LOG_INFO, "Daemon not yet started. ".
     "Every logline will end up in whatever usePEARLogInstance->log() says");
 

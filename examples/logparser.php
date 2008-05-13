@@ -73,7 +73,7 @@ $options = array(
 
 );
 
-System_Daemon::optionsSet($options);
+System_Daemon::setOptions($options);
 
 System_Daemon::setSigHandler(SIGCONT, array("System_Daemon", "daemonHandleSig"));
 
