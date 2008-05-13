@@ -368,16 +368,17 @@ class System_Daemon
     /**
      * Spawn daemon process.
      * 
-     * @param boolean $usePEAR Wether or not to run as a part of pear.
-     * 
      * @return boolean
      * @see stop()
      * @see optionsInit()
      * @see _daemonBecome()
      */
-    static public function start($usePEAR = true)
-    {
-        self::optionSet("usePEAR", $usePEAR);
+    static public function start()
+    {        
+        
+        // Quickly initialize some defaults like usePEAR 
+        // by adding the $premature flag
+        self::optionsInit(true);
         
         // To run as a part of PEAR
         if (self::$_options["usePEAR"]) {
@@ -418,11 +419,7 @@ class System_Daemon
                 trigger_error($msg, E_USER_ERROR);
             } 
         }
-        
-        // Debugging!
-        print_r(self::$_options);
-        die();
-        
+                
         // Become daemon
         self::_daemonBecome();
         
@@ -529,19 +526,29 @@ class System_Daemon
                         switch ($type_b) {
                         case "email":
                             $exp = "^[a-z\'0-9]+([._-][a-z\'0-9]+)*@([a-z0-9]+([._-][a-z0-9]+))+$";
-                            $type_valid = eregi($exp, $value);
+                            if (eregi($exp, $value)) {
+                                $type_valid = true;
+                            }
                             break;
                         case "unix":
-                            $type_valid = self::strIsUnix($value);
+                            if (self::strIsUnix($value)) {
+                                $type_valid = true;
+                            }
                             break;
                         case "existing_dirpath":
-                            $type_valid = is_dir($value);
+                            if (is_dir($value)) {
+                                $type_valid = true;
+                            }
                             break;
                         case "existing_filepath":
-                            $type_valid = is_file($value);
+                            if (is_file($value)) {
+                                $type_valid = true;
+                            }
                             break;
                         case "creatable_filepath":
-                            $type_valid = is_dir(dirname($value)) && is_writable(dirname($value));
+                            if (is_dir(dirname($value)) && is_writable(dirname($value))) {
+                                $type_valid = true;
+                            }
                             break;
                         case "normal": 
                             // String?
@@ -585,6 +592,10 @@ class System_Daemon
                                 $type_a."/".$type_b." not defined");
                             break;
                         }
+                        break;
+                    default:
+                        self::log(self::LOG_CRIT, "Type ".
+                            $type_a." not defined");
                         break;
                     }                
                 }
