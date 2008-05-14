@@ -25,7 +25,7 @@
  */
 function exe($cmd, &$o) 
 {
-    $x = exec($cmd, $o, $r);
+    $x = @exec($cmd, $o, $r);
     if ($r) {
         return false;
     }    
@@ -39,7 +39,7 @@ $cmd_reqs["phpt"]  = "PHPT, http://phpt.info/wiki";
 
 // check if commands are available
 foreach ($cmd_reqs as $cmd=>$package) {
-    if (exe("which ".$cmd, $lines) === false) {
+    if (@exe("which ".$cmd, $lines) === false) {
         echo $cmd." is not available. ";
         echo "Please first install the ".$package;            
         die("\n");
@@ -47,11 +47,11 @@ foreach ($cmd_reqs as $cmd=>$package) {
 }
 
 $cmd = "phpcs --standard=PEAR ".$workspace_dir;
-exe($cmd, $lines);
+@exe($cmd, $lines);
 echo implode("\n", $lines); 
 
 $cmd = "phpt -r ".$workspace_dir;
-exe($cmd, $lines);
+@exe($cmd, $lines);
 echo implode("\n", $lines); 
 
 

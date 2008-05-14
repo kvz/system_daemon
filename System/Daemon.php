@@ -470,23 +470,23 @@ class System_Daemon
      * @return boolean
      * @see _optionsSet()
      */
-    static public function setOptions($array)
+    static public function setOptions($use_options)
     {
-        return self::_optionsSet($array);
+        return self::_optionsSet($use_options);
     }//end setOptions()    
     
     /**
      * Gets any option found in $_optionDefinitions
      * Public interface to talk with with private option methods
      * 
-     * @param string $name  Name of the Option
+     * @param string $name Name of the Option
      *
      * @return mixed
      * @see _optionGet()
      */
-    static public function getOption($name, $value)
+    static public function getOption($name)
     {
-        return self::_optionGet($name, $value);
+        return self::_optionGet($name);
     }//end getOption()    
     
     /**
