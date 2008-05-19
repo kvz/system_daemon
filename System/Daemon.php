@@ -259,13 +259,13 @@ class System_Daemon
         ),
 
         "sysMaxExecutionTime" => array(
-            "type" => "integer",
+            "type" => "number",
             "default" => 0,
             "punch" => "Maximum execution time of each script in seconds",
             "detail" => "0 is infinite"
         ),
         "sysMaxInputTime" => array(
-            "type" => "integer",
+            "type" => "number",
             "default" => 0,
             "punch" => "Maximum time to spend parsing request data",
             "detail" => "0 is infinite"
@@ -420,11 +420,7 @@ class System_Daemon
                 trigger_error($msg, E_USER_ERROR);
             } 
         }
-        
-        // Debugging!
-        print_r(self::$_options);
-        die();
-        
+                
         // Become daemon
         self::_daemonBecome();
         
