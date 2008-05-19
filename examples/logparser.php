@@ -123,7 +123,7 @@ while (!System_Daemon::daemonIsDying() && $runningOkay && $cnt <=3) {
     // Depending on runmode it will either end up:
     //  - In the /var/log/logparser.log
     //  - On screen (in case we're not a daemon yet)  
-    System_Daemon::log(System_Daemon::LOG_INFO, System_Daemon::optionGet("appName").
+    System_Daemon::log(System_Daemon::LOG_INFO, System_Daemon::getOption("appName").
         " running in ".$mode." ".$cnt."/3");
     
     // In the actuall logparser program, You could replace 'true'
