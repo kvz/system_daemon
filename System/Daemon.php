@@ -575,6 +575,9 @@ class System_Daemon
         $str_date  = "[".date("M d H:i:s")."]"; 
         $str_level = str_pad(self::$logLevels[$level]."", 8, " ", STR_PAD_LEFT);
         $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
+        if ($level < self::LOG_NOTICE) {
+            $log_line .= " [l:".$line."]"; 
+        }
         
         $non_debug     = ($level < self::LOG_DEBUG);
         $log_succeeded = true;
@@ -708,28 +711,23 @@ class System_Daemon
     static public function osInitDWrite( $overwrite=false )
     {
         
-        // init vars (needed for init.d script)
+        // Init vars (needed for init.d script)
         if (self::_optionsInit() === false) {
             return false;
         }
         
-        $properties                   = array();
-        $properties["appName"]        = self::$_options["appName"];
-        $properties["appDescription"] = self::$_options["appDescription"];
-        $properties["authorName"]     = self::$_options["authorName"];
-        $properties["authorEmail"]    = self::$_options["authorEmail"];
-            
-        try {
-            // copy properties to OS object
-            System_Daemon_OS::setProperties($properties);
-            
-            // try to write init.d 
-            $ret = System_Daemon_OS::initDWrite($overwrite);
-        } catch (System_Daemon_OS_Exception $e) {
-            // Catch-all for System_Daemon_OS errors...
-            self::log(self::LOG_WARNING, "Unable to create startup file: ".
-                $e->getMessage());
+        // Copy properties to OS object
+        if( !System_Daemon_OS::setProperties(self::$_options)) {
+            self::log(self::LOG_WARNING, "Unable to set all required ".
+                "properties for init.d file");
+            return false;
         }
+        
+        // Try to write init.d 
+        if (!System_Daemon_OS::initDWrite($overwrite)) {
+            //self::log(self::LOG_WARNING, "Unable to create startup file.");
+            return false; 
+        }        
     }//end osInitDWrite()    
 
     /**
