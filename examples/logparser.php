@@ -70,7 +70,6 @@ $options = array(
     "sysMaxExecutionTime" => "0",
     "sysMaxInputTime" => "0",
     "sysMemoryLimit" => "1024M"
-
 );
 
 System_Daemon::setOptions($options);

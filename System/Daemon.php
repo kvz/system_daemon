@@ -707,6 +707,7 @@ class System_Daemon
      */
     static public function osInitDWrite( $overwrite=false )
     {
+        
         // init vars (needed for init.d script)
         if (self::_optionsInit() === false) {
             return false;
@@ -1229,12 +1230,13 @@ class System_Daemon
      */
     static private function _optionsSet($use_options)
     {
+        $success = true;
         foreach ($use_options as $name=>$value) {
             if (!self::_optionSet($name, $value)) {
-                return false;
+                $success = false;
             }
         }
-        return true;
+        return $success;
     }//end _optionsSet()
     
     /**
