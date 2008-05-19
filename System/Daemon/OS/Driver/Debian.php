@@ -15,7 +15,7 @@
  */
 
 /**
- * An exception thrown by System_Daemon_OS when it encounters an unrecoverable error.
+ * A System_Daemon_OS driver for Debian based Operating Systems (including Ubuntu)
  *
  * @category  System
  * @package   System_Daemon
@@ -26,7 +26,7 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * * 
  */
-class System_Daemon_OS_Exception extends PEAR_Exception
+class System_Daemon_OS_Driver_Debian extends System_Daemon_OS
 {
 
 }//end class

@@ -467,7 +467,7 @@ class System_Daemon
      * @see _optionsSet()
      */
     static public function setOptions($use_options)
-    {
+    {        
         return self::_optionsSet($use_options);
     }//end setOptions()    
     
