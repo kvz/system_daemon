@@ -38,7 +38,7 @@ class System_Daemon_OS extends System_Daemon
      *
      * @var array
      */    
-    public static $osVersionFiles = array(
+    static public $osVersionFiles = array(
         "Mandrake"=>"/etc/mandrake-release",
         "SuSE"=>"/etc/SuSE-release",
         "RedHat"=>"/etc/redhat-release",
@@ -63,7 +63,7 @@ class System_Daemon_OS extends System_Daemon
      *
      * @var array
      */
-    private static $_intFunctionCache = array();
+    static private $_intFunctionCache = array();
     
     
     
@@ -126,7 +126,7 @@ class System_Daemon_OS extends System_Daemon
      * 
      * @return array
      */       
-    public function setProperties($properties = false) 
+    static public function setProperties($properties = false) 
     {
         if (!is_array($properties) || !count($properties)) {
             self::log(parent::LOG_WARNING, "No properties to ".
@@ -166,7 +166,7 @@ class System_Daemon_OS extends System_Daemon
      *
      * @return array
      */
-    public static function determine()
+    static public function determine()
     {
         // this will not change during 1 run, so just cache the result
         if (!isset(self::$_intFunctionCache[__FUNCTION__])) {
@@ -204,7 +204,7 @@ class System_Daemon_OS extends System_Daemon
      * @see initDLocation()
      * @see initDForge()
      */
-    public static function initDWrite($overwrite = false)
+    static public function initDWrite($overwrite = false)
     {
         // up to date filesystem information
         clearstatcache();
@@ -274,7 +274,7 @@ class System_Daemon_OS extends System_Daemon
      * @see $_intFunctionCache
      * @see determine()
      */
-    public static function initDLocation()
+    static public function initDLocation()
     {
         // this will not change during 1 run, so just cache the result
         if (!isset(self::$_intFunctionCache[__FUNCTION__])) {
@@ -314,7 +314,7 @@ class System_Daemon_OS extends System_Daemon
      * @throws System_Daemon_Exception
      * @return mixed boolean on failure, string on success
      */
-    public static function initDForge( )
+    static public function initDForge( )
     {
         // initialize & check variables
         $skeleton_filepath = false;
