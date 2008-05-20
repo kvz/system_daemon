@@ -952,7 +952,7 @@ class System_Daemon
             self::log(self::LOG_EMERG, "Unable to setup Options object. ".
                 "You must provide valid option definitions");
             return false;
-        }
+        } 
         
         return true;
     }
