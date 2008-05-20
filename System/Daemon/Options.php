@@ -80,6 +80,9 @@ class System_Daemon_Options
      */
     public function optionGet($name)
     {
+        if (!isset($this->_options[$name])) {
+            return null;
+        }
         return $this->_options[$name];
     }//end optionGet()    
     

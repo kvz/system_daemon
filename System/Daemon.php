@@ -341,6 +341,7 @@ class System_Daemon
 
     }//end autoload()
     
+    
     /**
      * Spawn daemon process.
      * 
@@ -422,6 +423,7 @@ class System_Daemon
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         self::_daemonDie();
     }//end stop()
+    
     
     /**
      * Overrule or add signal handlers.
@@ -518,6 +520,7 @@ class System_Daemon
         return self::$_optObj->optionsGet();
     }//end setOptions()      
     
+    
     /**
      * Almost every deamon requires a log file, this function can
      * facilitate that. Also handles class-generated errors, chooses 
@@ -545,7 +548,8 @@ class System_Daemon
         $function = false, $line = false)
     {
         // If verbosity level is not matched, don't do anything        
-        if (!self::getOption("logVerbosity")) {
+        if (self::getOption("logVerbosity") === null 
+            || self::getOption("logVerbosity") === false) {
             // Somebody is calling log before launching daemon..
             // fair enough, but we have to init some log options
             self::_optionsInit(true);
@@ -735,14 +739,12 @@ class System_Daemon
         return self::$_daemonIsDying;
     }//end daemonIsDying() 
 
-    
-    
     /**
      * Check if a previous process with same pidfile was already running
      *
      * @return boolean
      */
-    static protected function daemonIsRunning() 
+    static public function daemonIsRunning() 
     {
         if(!file_exists(self::getOption("appPidLocation"))) return false;
         $pid = @file_get_contents(self::getOption("appPidLocation"));

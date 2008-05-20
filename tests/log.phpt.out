@@ -1,0 +1,10 @@
+Array
+(
+    [appName] => test
+)
+Array
+(
+    [appName] => test
+    [logVerbosity] => 0
+)
+bool(true)
