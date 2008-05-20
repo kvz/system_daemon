@@ -46,11 +46,11 @@ foreach ($cmd_reqs as $cmd=>$package) {
     }
 }
 
-$cmd = "phpcs --standard=PEAR ".$workspace_dir;
+$cmd = "phpcs --standard=PEAR ".$workspace_dir."/System";
 @exe($cmd, $lines);
 echo implode("\n", $lines); 
 
-$cmd = "phpt -r ".$workspace_dir;
+$cmd = "phpt -r ".$workspace_dir."";
 @exe($cmd, $lines);
 echo implode("\n", $lines); 
 

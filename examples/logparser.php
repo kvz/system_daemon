@@ -61,6 +61,8 @@ error_reporting(E_ALL);
 require_once "System/Daemon.php";
 
 // Setup
+
+
 $options = array(
     "appName" => "logparser",
     "appDir" => dirname(__FILE__),
@@ -74,6 +76,7 @@ $options = array(
 
 System_Daemon::setOptions($options);
 
+// Overrule the signal handler with any function
 System_Daemon::setSigHandler(SIGCONT, array("System_Daemon", "daemonHandleSig"));
 
 

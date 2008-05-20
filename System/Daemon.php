@@ -45,11 +45,10 @@ class System_Daemon
      * System is unusable
      */
     const LOG_EMERG = 0;
-
+    
     /**
      * Immediate action required
-     */
-    
+     */ 
     const LOG_ALERT = 1;
     
     /**
@@ -89,21 +88,21 @@ class System_Daemon
      *
      * @var integer
      */
-    static protected $processId = 0;
+    static private $_processId = 0;
 
     /**
      * Wether the our daemon is being killed
      *
      * @var boolean
      */
-    static protected $daemonIsDying = false;    
+    static private $_daemonIsDying = false;    
     
     /**
      * Wether the current process is a forked child
      *
      * @var boolean
      */
-    static protected $processIsChild = false;
+    static private $_processIsChild = false;
     
     /**
      * Wether SAFE_MODE is on or off. This is important for ini_set
@@ -111,14 +110,14 @@ class System_Daemon
      *
      * @var boolean
      */
-    static protected $safe_mode = false;
+    static private $_safeMode = false;
     
     /**
      * Available log levels
      *
      * @var array
      */
-    static protected $logLevels = array(
+    static private $_logLevels = array(
         self::LOG_EMERG => "emerg",
         self::LOG_ALERT => "alert",
         self::LOG_CRIT => "crit",
@@ -128,28 +127,18 @@ class System_Daemon
         self::LOG_INFO => "info",
         self::LOG_DEBUG => "debug"        
     );
-
-
     
     /**
-     * Wether all the options have been initialized
-     *
-     * @var boolean
+     * Holds Option Object
+     * 
+     * @var mixed object or boolean
      */
-    static private $_optionsAreInitialized = false;
+    static private $_optObj = false;
     
     /**
      * Definitions for all Options
      *
      * @var array
-     * @see _optionGet()
-     * @see _optionValidate()
-     * @see _optionSet()
-     * @see _optionSetDefault()
-     * @see _optionsSet()
-     * @see $_optionDefinitions
-     * @see $_optionsAreInitialized
-     * @see $_options
      */
     static private $_optionDefinitions = array(
         "usePEAR" => array(
@@ -277,20 +266,6 @@ class System_Daemon
             "detail" => "0 is infinite"
         ),        
     );
- 
-    /**
-     * Keep track of active state for all Options
-     *
-     * @var array
-     * @see _optionGet()
-     * @see _optionValidate()
-     * @see _optionSet()
-     * @see _optionSetDefault()
-     * @see _optionsSet()
-     * @see $_optionDefinitions
-     * @see $_options
-     */
-    static private $_options = array();
     
     /**
      * Available signal handlers
@@ -382,7 +357,7 @@ class System_Daemon
         self::_optionsInit(true);
         
         // To run as a part of PEAR
-        if (self::$_options["usePEAR"]) {
+        if (self::getOption("usePEAR")) {
             include_once "PEAR.php";
             include_once "PEAR/Exception.php";
             
@@ -394,7 +369,7 @@ class System_Daemon
         // Check the PHP configuration
         if (!defined("SIGHUP")) {
             $msg = "PHP is compiled without --enable-pcntl directive";
-            if (self::$_options["usePEAR"]) {
+            if (self::getOption("usePEAR")) {
                 throw new System_Daemon_Exception($msg);
             } else {
                 trigger_error($msg, E_USER_ERROR);
@@ -404,7 +379,7 @@ class System_Daemon
         // Check for CLI
         if ((php_sapi_name() != 'cli')) {
             $msg = "You can only create daemon from the command line";
-            if (self::$_options["usePEAR"]) {
+            if (self::getOption("usePEAR")) {
                 throw new System_Daemon_Exception($msg);
             } else {
                 trigger_error($msg, E_USER_ERROR);
@@ -412,9 +387,15 @@ class System_Daemon
         }
         
         // Initialize & check variables
-        if (self::_optionsInit() === false) {
-            $msg = "Crucial options are not set. Review log.";
-            if (self::$_options["usePEAR"]) {
+        if (self::_optionsInit(false) === false) {
+            if (is_object(self::$_optObj) && is_array(self::$_optObj->errors)) {
+                foreach (self::$_optObj->errors as $error) {
+                    self::log(self::LOG_NOTICE, $error);
+                }
+            }
+            
+            $msg = "Crucial options are not set. Review log:";
+            if (self::getOption("usePEAR")) {
                 throw new System_Daemon_Exception($msg);
             } else {
                 trigger_error($msg, E_USER_ERROR);
@@ -437,53 +418,10 @@ class System_Daemon
     static public function stop()
     {
         self::log(self::LOG_INFO, "stopping ".
-            self::$_options["appName"]." daemon", 
+            self::getOption("appName")." daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         self::_daemonDie();
     }//end stop()
-
-    /**
-     * Sets any option found in $_optionDefinitions
-     * Public interface to talk with with private option methods
-     * 
-     * @param string $name  Name of the Option
-     * @param mixed  $value Value of the Option
-     *
-     * @return boolean
-     * @see _optionSet()
-     */
-    static public function setOption($name, $value)
-    {
-        return self::_optionSet($name, $value);
-    }//end setOption()    
-    
-    /**
-     * Sets an array of options found in $_optionDefinitions
-     * Public interface to talk with with private option methods
-     * 
-     * @param array $use_options Array with Options
-     *
-     * @return boolean
-     * @see _optionsSet()
-     */
-    static public function setOptions($use_options)
-    {        
-        return self::_optionsSet($use_options);
-    }//end setOptions()    
-    
-    /**
-     * Gets any option found in $_optionDefinitions
-     * Public interface to talk with with private option methods
-     * 
-     * @param string $name Name of the Option
-     *
-     * @return mixed
-     * @see _optionGet()
-     */
-    static public function getOption($name)
-    {
-        return self::_optionGet($name);
-    }//end getOption()    
     
     /**
      * Overrule or add signal handlers.
@@ -497,28 +435,99 @@ class System_Daemon
     static public function setSigHandler($signal, $handler)
     {
         if (!isset(self::$_sigHandlers[$signal])) {
-            // the signal should be defined already
+            // The signal should be defined already
             self::log(self::LOG_NOTICE, "You can only overrule a ".
                 "handler that has been defined already.", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
         
-        // overwrite on existance
+        // Overwrite on existance
         self::$_sigHandlers[$signal] = $handler;
         return true;
     }//end setSigHandler()
+
+    /**
+     * Sets any option found in $_optionDefinitions
+     * Public interface to talk with with private option methods
+     * 
+     * @param string $name  Name of the Option
+     * @param mixed  $value Value of the Option
+     *
+     * @return boolean
+     */
+    static public function setOption($name, $value)
+    {
+        if (!self::_optionObjSetup()) {
+            return false;
+        }
+                        
+        $success = self::$_optObj->optionSet($name, $value);
+        
+        $x = self::$_optObj->optionsGet();
+        print_r($x);
+        
+        return $success;
+    }//end setOption()    
+    
+    /**
+     * Sets an array of options found in $_optionDefinitions
+     * Public interface to talk with with private option methods
+     * 
+     * @param array $use_options Array with Options
+     *
+     * @return boolean
+     */
+    static public function setOptions($use_options)
+    {
+        if (!self::_optionObjSetup()) {
+            return false;
+        }
+        
+        return self::$_optObj->optionsSet($use_options);
+    }//end setOptions()    
+    
+    /**
+     * Gets any option found in $_optionDefinitions
+     * Public interface to talk with with private option methods
+     * 
+     * @param string $name Name of the Option
+     *
+     * @return mixed
+     */
+    static public function getOption($name)
+    {
+        if (!self::_optionObjSetup()) {
+            return false;
+        }
+                
+        return self::$_optObj->optionGet($name);
+    }//end getOption()    
+
+    /**
+     * Gets an array of options found
+     * 
+     * @return array
+     */
+    static public function getOptions()
+    {
+        if (!self::_optionObjSetup()) {
+            return false;
+        }
+        
+        return self::$_optObj->optionsGet();
+    }//end setOptions()      
     
     /**
      * Almost every deamon requires a log file, this function can
      * facilitate that. Also handles class-generated errors, chooses 
      * either PEAR handling or PEAR-independant handling, depending on:
-     * self::$_options["usePEAR"].
+     * self::getOption("usePEAR").
      * Also supports PEAR_Log if you referenc to a valid instance of it
-     * in self::$_options["usePEARLogInstance"].
+     * in self::getOption("usePEARLogInstance").
      * 
      * It logs a string according to error levels specified in array: 
-     * self::$logLevels (0 is fatal and handles daemon's death)
+     * self::$_logLevels (0 is fatal and handles daemon's death)
      *
      * @param integer $level    What function the log record is from
      * @param string  $str      The log record
@@ -535,26 +544,25 @@ class System_Daemon
     static public function log($level, $str, $file = false, $class = false, 
         $function = false, $line = false)
     {
-        // If verbosity level is not matched, don't do anything
-        
-        if (!isset(self::$_options["logVerbosity"])) {
+        // If verbosity level is not matched, don't do anything        
+        if (!self::getOption("logVerbosity")) {
             // Somebody is calling log before launching daemon..
             // fair enough, but we have to init some log options
             self::_optionsInit(true);
         }
         
-        if (!isset(self::$_options["appName"])) {
+        if (!self::getOption("appName")) {
             // Not logging for anything without a name
             return false;
         }
         
-        if ($level > self::$_options["logVerbosity"]) {
+        if ($level > self::getOption("logVerbosity")) {
             return true;
         }
         
         // Make use of a PEAR_Log() instance
-        if (self::$_options["usePEARLogInstance"] !== false) {
-            self::$_options["usePEARLogInstance"]->log($str, $level);
+        if (self::getOption("usePEARLogInstance") !== false) {
+            self::getOption("usePEARLogInstance")->log($str, $level);
             return true;
         }
         
@@ -573,7 +581,7 @@ class System_Daemon
         // Determine what process the log is originating from and forge a logline
         //$str_ident = "@".substr(self::_daemonWhatIAm(), 0, 1)."-".posix_getpid();
         $str_date  = "[".date("M d H:i:s")."]"; 
-        $str_level = str_pad(self::$logLevels[$level]."", 8, " ", STR_PAD_LEFT);
+        $str_level = str_pad(self::$_logLevels[$level]."", 8, " ", STR_PAD_LEFT);
         $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
         if ($level < self::LOG_NOTICE) {
             $log_line .= " [l:".$line."]"; 
@@ -594,12 +602,12 @@ class System_Daemon
         } 
         
         // 'Touch' logfile 
-        if (!file_exists(self::$_options["logLocation"])) {
-            file_put_contents(self::$_options["logLocation"], "");
+        if (!file_exists(self::getOption("logLocation"))) {
+            file_put_contents(self::getOption("logLocation"), "");
         }
         
         // Not writable even after touch? Allowed to echo again!!
-        if (!is_writable(self::$_options["logLocation"]) 
+        if (!is_writable(self::getOption("logLocation")) 
             && $non_debug && !$log_echoed) { 
             echo $log_line."\n";
             $log_echoed    = true;
@@ -607,7 +615,7 @@ class System_Daemon
         } 
         
         // Append to logfile
-        if (!file_put_contents(self::$_options["logLocation"], 
+        if (!file_put_contents(self::getOption("logLocation"), 
             $log_line."\n", FILE_APPEND)) {
             $log_succeeded = false;
         }
@@ -615,7 +623,7 @@ class System_Daemon
         // These are pretty serious errors
         if ($level < self::LOG_WARNING) {
             // So Throw an exception
-            if (self::$_options["usePEAR"]) {
+            if (self::getOption("usePEAR")) {
                 throw new System_Daemon_Exception($log_line);
             }
             // An emergency logentry is reason for the deamon to 
@@ -628,6 +636,34 @@ class System_Daemon
         return $log_succeeded;
         
     }//end log()    
+
+    /**
+     * Uses OS class to writes an: 'init.d' script on the filesystem
+     *  
+     * @param boolean $overwrite May the existing init.d file be overwritten?
+     * 
+     * @return boolean
+     */
+    static public function osInitDWrite( $overwrite=false )
+    {
+        // Init vars (needed for init.d script)
+        if (self::_optionsInit(false) === false) {
+            return false;
+        }
+        
+        // Copy properties to OS object
+        if (!System_Daemon_OS::setProperties(self::$_options)) {
+            self::log(self::LOG_WARNING, "Unable to set all required ".
+                "properties for init.d file");
+            return false;
+        }
+        
+        // Try to write init.d 
+        if (!System_Daemon_OS::initDWrite($overwrite)) {
+            //self::log(self::LOG_WARNING, "Unable to create startup file.");
+            return false; 
+        }        
+    }//end osInitDWrite()       
     
     /**
      * Default signal handler.
@@ -645,7 +681,7 @@ class System_Daemon
         // Must be public or else will throw a 
         // fatal error: Call to private method 
          
-        self::log(self::LOG_DEBUG, self::$_options["appName"].
+        self::log(self::LOG_DEBUG, self::getOption("appName").
             " daemon received signal: ".$signo, 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             
@@ -660,12 +696,12 @@ class System_Daemon
             break;
         case SIGHUP:
             // handle restart tasks
-            self::log(self::LOG_INFO, self::$_options["appName"].
+            self::log(self::LOG_INFO, self::getOption("appName").
                 " daemon received signal: restart", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             break;
         case SIGCHLD:
-            self::log(self::LOG_INFO, self::$_options["appName"].
+            self::log(self::LOG_INFO, self::getOption("appName").
                 " daemon received signal: hold", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             while (pcntl_wait($status, WNOHANG OR WUNTRACED) > 0) {
@@ -678,8 +714,6 @@ class System_Daemon
         }
     }//end daemonHandleSig()
 
-    
-    
     /**
      * Wether the class is already running in the background
      * 
@@ -687,7 +721,7 @@ class System_Daemon
      */
     static public function daemonIsInBackground()
     {
-        return self::$processIsChild;
+        return self::$_processIsChild;
     }//end daemonIsInBackground()
     
     /**
@@ -698,38 +732,11 @@ class System_Daemon
      */
     static public function daemonIsDying()
     {
-        return self::$daemonIsDying;
-    }//end daemonIsDying()
-    
-    /**
-     * Uses OS class to writes an: 'init.d' script on the filesystem
-     *  
-     * @param boolean $overwrite May the existing init.d file be overwritten?
-     * 
-     * @return boolean
-     */
-    static public function osInitDWrite( $overwrite=false )
-    {
-        
-        // Init vars (needed for init.d script)
-        if (self::_optionsInit() === false) {
-            return false;
-        }
-        
-        // Copy properties to OS object
-        if( !System_Daemon_OS::setProperties(self::$_options)) {
-            self::log(self::LOG_WARNING, "Unable to set all required ".
-                "properties for init.d file");
-            return false;
-        }
-        
-        // Try to write init.d 
-        if (!System_Daemon_OS::initDWrite($overwrite)) {
-            //self::log(self::LOG_WARNING, "Unable to create startup file.");
-            return false; 
-        }        
-    }//end osInitDWrite()    
+        return self::$_daemonIsDying;
+    }//end daemonIsDying() 
 
+    
+    
     /**
      * Check if a previous process with same pidfile was already running
      *
@@ -737,17 +744,17 @@ class System_Daemon
      */
     static protected function daemonIsRunning() 
     {
-        if(!file_exists(self::$_options["appPidLocation"])) return false;
-        $pid = @file_get_contents(self::$_options["appPidLocation"]);
+        if(!file_exists(self::getOption("appPidLocation"))) return false;
+        $pid = @file_get_contents(self::getOption("appPidLocation"));
 
         if ($pid !== false) {
             // Ping app
             if (!posix_kill(intval($pid), 0)) {
                 // Not responding so unlink pidfile
-                @unlink(self::$_options["appPidLocation"]);
-                self::log(self::LOG_WARNING, "".self::$_options["appName"].
+                @unlink(self::getOption("appPidLocation"));
+                self::log(self::LOG_WARNING, "".self::getOption("appName").
                     " daemon orphaned pidfile ".
-                    "found and removed: ".self::$_options["appPidLocation"], 
+                    "found and removed: ".self::getOption("appPidLocation"), 
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
                 return false;
             } else {
@@ -757,55 +764,7 @@ class System_Daemon
             return false;
         }
     }//end daemonIsRunning()
-    
-    /**
-     * Compile array of allowed types
-     * 
-     * @param string $str String that contains allowed type information
-     * 
-     * @return array      
-     */
-    static protected function allowedTypes($str) 
-    {
-        $allowedTypes = array();
-        $raw_types    = explode("|", $str);
-        foreach ($raw_types as $raw_type) {
-            $raw_subtypes = explode("/", $raw_type);
-            $type_a       = array_shift($raw_subtypes);
-            if (!count($raw_subtypes)) {
-                $raw_subtypes = array("normal");
-            } 
-            $allowedTypes[$type_a] = $raw_subtypes;
-        }
-        return $allowedTypes;
-    }
-    
-    /**
-     * Check if a string has a unix proof format (stripped spaces, 
-     * special chars, etc)
-     *
-     * @param string $str What string to test for unix compliance
-     * 
-     * @return boolean
-     */   
-    static protected function strIsUnix( $str )
-    {
-        return preg_match('/^[a-z0-9_]+$/', $str);
-    }//end strIsUnix()
 
-    /**
-     * Convert a string to a unix proof format (strip spaces, 
-     * special chars, etc)
-     * 
-     * @param string $str What string to make unix compliant
-     * 
-     * @return string
-     */
-    static protected function strToUnix( $str )
-    {
-        return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
-    }//end strToUnix()
-    
     
     
     /**
@@ -816,9 +775,9 @@ class System_Daemon
     static private function _daemonBecome() 
     {
 
-        self::log(self::LOG_INFO, "starting ".self::$_options["appName"].
+        self::log(self::LOG_INFO, "starting ".self::getOption("appName").
             " daemon, output in: ". 
-            self::$_options["logLocation"], 
+            self::getOption("logLocation"), 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         
         // Important for daemons
@@ -834,61 +793,66 @@ class System_Daemon
         
         // Allowed?
         if (self::daemonIsRunning()) {
-            self::log(self::LOG_EMERG, "".self::$_options["appName"].
+            self::log(self::LOG_EMERG, "".self::getOption("appName").
                 " daemon is still running. ".
                 "exiting", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
-
+        
+        // Reset Process Information
+        self::$_safeMode       = ((boolean)@ini_get("safe_mode") === false) ? false : true;
+        self::$_processId      = 0;
+        self::$_processIsChild = false;
+        
         // Fork process!
         if (!self::_daemonFork()) {
-            self::log(self::LOG_EMERG, "".self::$_options["appName"].
+            self::log(self::LOG_EMERG, "".self::getOption("appName").
                 " daemon was unable to fork", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // Assume specified identity (uid & gid)
-        if (!posix_setuid(self::$_options["appRunAsUID"]) || 
-            !posix_setgid(self::$_options["appRunAsGID"])) {
+        if (!posix_setuid(self::getOption("appRunAsUID")) || 
+            !posix_setgid(self::getOption("appRunAsGID"))) {
             $lvl = self::LOG_CRIT;
             $swt = "off";
-            if (self::$_options["appDieOnIdentityCrisis"]) {
+            if (self::getOption("appDieOnIdentityCrisis")) {
                 $lvl = self::LOG_EMERG;
                 $swt = "on";
             }
             
-            self::log($lvl, "".self::$_options["appName"].
+            self::log($lvl, "".self::getOption("appName").
                 " daemon was unable assume ".
-                "identity (uid=".self::$_options["appRunAsUID"].", gid=".
-                self::$_options["appRunAsGID"].") ".
+                "identity (uid=".self::getOption("appRunAsUID").", gid=".
+                self::getOption("appRunAsGID").") ".
                 "and appDieOnIdentityCrisis was ". $swt, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // Additional PID succeeded check
-        if (!is_numeric(self::$processId) || self::$processId < 1) {
-            self::log(self::LOG_EMERG, "".self::$_options["appName"].
+        if (!is_numeric(self::$_processId) || self::$_processId < 1) {
+            self::log(self::LOG_EMERG, "".self::getOption("appName").
                 " daemon didn't have a valid ".
-                "pid: '".self::$processId."'", 
+                "pid: '".self::$_processId."'", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
          
-        if (!file_put_contents(self::$_options["appPidLocation"], 
-            self::$processId)) {
-            self::log(self::LOG_EMERG, "".self::$_options["appName"].
+        if (!file_put_contents(self::getOption("appPidLocation"), 
+            self::$_processId)) {
+            self::log(self::LOG_EMERG, "".self::getOption("appName").
                 " daemon was unable ".
-                "to write to pidfile: ".self::$_options["appPidLocation"]."", 
+                "to write to pidfile: ".self::getOption("appPidLocation")."", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
         
         // System settings
-        self::$safe_mode = ((boolean)@ini_get("safe_mode") === false) ? false : true;
-        self::$processId      = 0;
-        self::$processIsChild = false;
-        if (!self::$safe_mode) {            
-            foreach (self::$_options as $name=>$value) {
-                if (substr($name, 0, 3) == "sys" ) {
-                    ini_set($name, $value);
+        if (!self::$_safeMode) {       
+            $options = self::getOptions();
+            if (is_array($options)) {
+                foreach ($options as $name=>$value) {
+                    if (substr($name, 0, 3) == "sys" ) {
+                        ini_set($name, $value);
+                    }
                 }
             }
         }
@@ -897,7 +861,7 @@ class System_Daemon
         
 
         // Change dir & umask
-        @chdir(self::$_options["appDir"]);
+        @chdir(self::getOption("appDir"));
         @umask(0);
     }//end _daemonBecome()
     
@@ -908,28 +872,28 @@ class System_Daemon
      */
     static private function _daemonFork()
     {
-        self::log(self::LOG_DEBUG, "forking ".self::$_options["appName"].
+        self::log(self::LOG_DEBUG, "forking ".self::getOption("appName").
             " daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         $pid = pcntl_fork();
         if ( $pid == -1 ) {
             // Error
-            self::log(self::LOG_WARNING, "".self::$_options["appName"].
+            self::log(self::LOG_WARNING, "".self::getOption("appName").
                 " daemon could not be forked", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         } else if ($pid) {
             // Parent
-            self::log(self::LOG_DEBUG, "ending ".self::$_options["appName"].
+            self::log(self::LOG_DEBUG, "ending ".self::getOption("appName").
                 " parent process", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             // Die without attracting attention
             exit();
         } else {
             // Child
-            self::$processIsChild = true;
-            self::$daemonIsDying  = false;
-            self::$processId      = posix_getpid();
+            self::$_processIsChild = true;
+            self::$_daemonIsDying  = false;
+            self::$_processId      = posix_getpid();
             return true;
         }
     }//end _daemonFork()
@@ -953,431 +917,61 @@ class System_Daemon
     static private function _daemonDie()
     {
         if (!self::daemonIsDying()) {
-            self::$daemonIsDying       = true;
-            self::$_optionsAreInitialized = false;
+            self::$_daemonIsDying = true;
             if (!self::daemonIsInBackground() || 
-                !file_exists(self::$_options["appPidLocation"])) {
+                !file_exists(self::getOption("appPidLocation"))) {
                 self::log(self::LOG_INFO, "Not stopping ".
-                    self::$_options["appName"].
+                    self::getOption("appName").
                     ", daemon was not running",
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
                 return false;
             }
             
-            @unlink(self::$_options["appPidLocation"]);
+            @unlink(self::getOption("appPidLocation"));
             exit();
         }
     }//end _daemonDie()
     
-
     
     /**
-     * Retrieves any option found in $_optionDefinitions
-     * 
-     * @param string $name Name of the Option
+     * Sets up Option Object instance
      *
      * @return boolean
-     * @see _optionValidate()
-     * @see _optionSet()
-     * @see _optionSetDefault()
-     * @see _optionsSet()
-     * @see $_optionDefinitions
-     * @see $_optionsAreInitialized
-     * @see $_options
      */
-    static private function _optionGet($name)
+    static private function _optionObjSetup() 
     {
-        return self::$_options[$name];
-    }//end _optionGet()    
-    
-    /**
-     * Validates any option found in $_optionDefinitions
-     * 
-     * @param string $name    Name of the Option
-     * @param mixed  $value   Value of the Option
-     * @param string &$reason Why something does not validate
-     *
-     * @return boolean
-     * @see _optionGet()
-     * @see _optionSet()
-     * @see _optionSetDefault()
-     * @see _optionsSet()
-     * @see $_optionDefinitions
-     * @see $_optionsAreInitialized
-     * @see $_options
-     */
-    static private function _optionValidate($name, $value, &$reason="")
-    {
-        $reason = false;
-        
-        if (!$reason && !isset(self::$_optionDefinitions[$name])) {
-            $reason = "Option ".$name." not found in definitions";
+        // Create Option Object if nescessary
+        if (self::$_optObj === false) {
+            self::$_optObj = new System_Daemon_Options(self::$_optionDefinitions);
         }
         
-        $definition = self::$_optionDefinitions[$name];
-        
-        if (!$reason && !isset($definition["type"])) {
-            $reason = "Option ".$name.":type not found in definitions";
-        }
-        
-        // Compile array of allowd main & subtypes
-        $allowedTypes = self::allowedTypes($definition["type"]);
-        
-        // Loop over main & subtypes to detect matching format
-        if (!$reason) {
-            $type_valid = false;
-            foreach ($allowedTypes as $type_a=>$sub_types) {
-                foreach ($sub_types as $type_b) {
-                    
-                    // Determine range based on subtype
-                    // Range is used to contain an integer or strlen 
-                    // between min-max
-                    $parts = explode("-", $type_b);
-                    $from  = $to = false;
-                    if (count($parts) == 2 ) {
-                        $from   = $parts[0];
-                        $to     = $parts[1];
-                        $type_b = "range";
-                    }
-            
-                    switch ($type_a) {
-                    case "boolean":
-                        $type_valid = is_bool($value);
-                        break;
-                    case "object":
-                        $type_valid = is_object($value) || is_resource($value);
-                        break;
-                    case "string":
-                        switch ($type_b) {
-                        case "email":
-                            $exp  = "^[a-z0-9]+([._-][a-z0-9]+)*@([a-z0-9]+";
-                            $exp .= "([._-][a-z0-9]+))+$";
-                            if (eregi($exp, $value)) {
-                                $type_valid = true;
-                            }
-                            break;
-                        case "unix":
-                            if (self::strIsUnix($value)) {
-                                $type_valid = true;
-                            }
-                            break;
-                        case "existing_dirpath":
-                            if (is_dir($value)) {
-                                $type_valid = true;
-                            }
-                            break;
-                        case "existing_filepath":
-                            if (is_file($value)) {
-                                $type_valid = true;
-                            }
-                            break;
-                        case "creatable_filepath":
-                            if (is_dir(dirname($value)) 
-                                && is_writable(dirname($value))) {
-                                $type_valid = true;
-                            }
-                            break;
-                        case "normal":
-                        default: 
-                            // String?
-                            if (!is_resource($value) && !is_array($value) 
-                                && !is_object($value)) {
-                                // Range?
-                                if ($from === false && $to === false) {
-                                    $type_valid = true;
-                                } else {
-                                    // Enfore range as well
-                                    if (strlen($value) >= $from 
-                                        && strlen($value) <= $to) {
-                                        $type_valid = true;
-                                    }
-                                }
-                            }
-                            break;
-                        }
-                        break;
-                    case "number":
-                        switch ($type_b) {
-                        default:
-                        case "normal":
-                            // Numeric?
-                            if (is_numeric($value)) {
-                                // Range ?
-                                if ($from === false && $to === false) {
-                                    $type_valid = true;
-                                } else {
-                                    // Enfore range as well
-                                    if ($value >= $from && $value <= $to) {
-                                        $type_valid = true;
-                                    }
-                                }
-                            }
-                            break;                            
-                        }
-                        break;
-                    default:
-                        self::log(self::LOG_CRIT, "Type ".
-                            $type_a." not defined");
-                        break;
-                    }                
-                }
-            }
-        }
-        
-        if (!$type_valid) {
-            $reason = "Option ".$name." does not match type: ".
-                $definition["type"]."";
-        }
-        
-        if ($reason !== false) {
+        // Still false? This was an error!
+        if (self::$_optObj === false) {
+            self::log(self::LOG_EMERG, "Unable to setup Options object. ".
+                "You must provide valid option definitions");
             return false;
         }
         
         return true;
-    }//end _optionValidate()    
-    
-    /**
-     * Sets any option found in $_optionDefinitions
-     * 
-     * @param string $name  Name of the Option
-     * @param mixed  $value Value of the Option
-     *
-     * @return boolean
-     * @see _optionGet()
-     * @see _optionValidate()
-     * @see _optionSetDefault()
-     * @see _optionsSet()
-     * @see $_optionDefinitions
-     * @see $_optionsAreInitialized
-     * @see $_options
-     */
-    static private function _optionSet($name, $value)
-    {
-        // not validated?
-        if (!self::_optionValidate($name, $value, $reason)) {
-            // default not used or failed as well!
-            self::log(self::LOG_NOTICE, "Option ".$name." invalid: ".$reason);
-            return false;
-        }
-        
-        self::$_options[$name] = $value;
-    }//end _optionSet()
-
-    
-    /**
-     * Sets any option found in $_optionDefinitions to its default value
-     * 
-     * @param string $name Name of the Option
-     *
-     * @return boolean
-     * @see _optionGet()
-     * @see _optionValidate()
-     * @see _optionSet()
-     * @see _optionsSet()
-     * @see $_optionDefinitions
-     * @see $_optionsAreInitialized
-     * @see $_options
-     */
-    static private function _optionSetDefault($name)
-    {
-        if (!isset(self::$_optionDefinitions[$name])) {
-            return false;
-        }        
-        $definition = self::$_optionDefinitions[$name];
-
-        if (!isset($definition["type"])) {
-            return false;
-        }
-        if (!isset($definition["default"])) {
-            return false;
-        }
-        
-        // Compile array of allowd main & subtypes
-        $allowedTypes = self::allowedTypes($definition["type"]);        
-        
-        $type  = $definition["type"];
-        $value = $definition["default"];
-
-        if (isset($allowedTypes["string"]) && !is_bool($value)) {
-            // Replace variables
-            $value = preg_replace_callback('/\{([^\{\}]+)\}/is', 
-                array("self", "_optionReplaceVariables"), $value);
-            
-            // Replace functions
-            $value = preg_replace_callback('/\@([\w_]+)\(([^\)]+)\)/is', 
-                array("self", "_optionReplaceFunctions"), $value);
-        }
-                        
-        self::$_options[$name] = $value;
-        return true;
-    }//end _optionSetDefault()    
-    
-    /**
-     * Sets an array of options found in $_optionDefinitions
-     * 
-     * @param array $use_options Array with Options
-     *
-     * @return boolean
-     * @see _optionGet()
-     * @see _optionValidate()
-     * @see _optionSet()
-     * @see _optionSetDefault()
-     * @see $_optionDefinitions
-     * @see $_optionsAreInitialized
-     * @see $_options
-     */
-    static private function _optionsSet($use_options)
-    {
-        $success = true;
-        foreach ($use_options as $name=>$value) {
-            if (!self::_optionSet($name, $value)) {
-                $success = false;
-            }
-        }
-        return $success;
-    }//end _optionsSet()
-    
-    /**
-     * Callback function to replace variables in defaults
-     *
-     * @param array $matches Matched functions
-     * 
-     * @return string
-     */
-    static private function _optionReplaceVariables($matches)
-    {
-        // Init
-        $allowedVars = array(
-            "SERVER.SCRIPT_NAME", 
-            "OPTIONS.*"
-        );
-        $filterVars  = array(
-            "SERVER.SCRIPT_NAME"=>array("realpath")
-        );
-        
-        $fullmatch          = array_shift($matches);
-        $fullvar            = array_shift($matches);
-        $parts              = explode(".", $fullvar);
-        list($source, $var) = $parts;
-        $var_use            = false;
-        $var_key            = $source.".".$var; 
-        
-        // Allowed
-        if (!in_array($var_key, $allowedVars) 
-            && !in_array($source.".*", $allowedVars)) {
-            return "FORBIDDEN_VAR_".$var_key;
-        }
-        
-        // Mapping of textual sources to real sources
-        if ($source == "SERVER") {
-            $source_use = &$_SERVER;
-        } elseif ($source == "OPTIONS") {
-            $source_use = &self::$_options; 
-        } else {
-            $source_use = false;
-        }
-        
-        // Exists?
-        if ($source_use === false) {
-            return "UNUSABLE_VARSOURCE_".$source;
-        }
-        if (!isset($source_use[$var])) { 
-            return "NONEXISTING_VAR_".$var_key;     
-        }
-        
-        $var_use = $source_use[$var];
-        
-        // Filtering
-        if (isset($filterVars[$var_key]) && is_array($filterVars[$var_key])) {
-            foreach ($filterVars[$var_key] as $filter_function) {
-                if (!function_exists($filter_function)) {
-                    return "NONEXISTING_FILTER_".$filter_function;
-                }
-                $var_use = call_user_func($filter_function, $var_use);
-            }
-        }        
-        
-        return $var_use;        
     }
-    
-    /**
-     * Callback function to replace function calls in defaults
-     *
-     * @param array $matches Matched functions
-     * 
-     * @return string
-     */
-    static private function _optionReplaceFunctions($matches)
-    {
-        $allowedFunctions = array("basename", "dirname");
-        
-        $fullmatch = array_shift($matches);
-        $function  = array_shift($matches);
-        $arguments = $matches;
-        
-        if (!in_array($function, $allowedFunctions)) {
-            return "FORBIDDEN_FUNCTION_".$function;            
-        }
-        
-        if (!function_exists($function)) {
-            return "NONEXISTING_FUNCTION_".$function; 
-        }
-        
-        return call_user_func_array($function, $arguments);
-    }
-    
     
     /**
      * Checks if all the required options are set.
      * Initializes, sanitizes & defaults unset variables
      * 
      * @param boolean $premature Whether to do a premature option init
-     *
+     * 
      * @return mixed integer or boolean
-     * @see _optionGet()
-     * @see _optionValidate()
-     * @see _optionSet()
-     * @see _optionSetDefault()
-     * @see _optionsSet()
-     * @see $_optionDefinitions
-     * @see $_optionsAreInitialized
-     * @see $_options
      */
     static private function _optionsInit($premature=false) 
     {
-        // If already initialized, skip
-        if (!$premature && self::$_optionsAreInitialized) {
-            return true;
+        if (!self::_optionObjSetup()) {
+            return false;
         }
         
-        $options_met = 0;
+        return self::$_optObj->optionsInit($premature);        
+    }//end _optionsInit()   
         
-        foreach (self::$_optionDefinitions as $name=>$definition) {
-            // Skip non-required options
-            if (!isset($definition["required"]) 
-                || $definition["required"] !== true ) {
-                continue;
-            }
-            
-            // Required options remain
-            if (!isset(self::$_options[$name])) {                
-                if (!self::_optionSetDefault($name) && !$premature) {
-                    self::log(self::LOG_WARNING, "Required option: ".$name. 
-                        " not set. No default value available either.");
-                    return false;
-                } 
-            }
-            
-            $options_met++;
-        }
-                
-        if (!$premature) {
-            self::$_optionsAreInitialized = true;
-        }
-        
-        return $options_met;
-        
-    }//end _optionsInit()    
     
 }//end class
 ?>
