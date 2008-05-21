@@ -347,6 +347,7 @@ class System_Daemon
      * 
      * @return boolean
      * @see stop()
+     * @see autoload()
      * @see _optionsInit()
      * @see _daemonBecome()
      */
@@ -359,11 +360,21 @@ class System_Daemon
         
         // To run as a part of PEAR
         if (self::getOption("usePEAR")) {
-            include_once "PEAR.php";
-            include_once "PEAR/Exception.php";
+            // SPL's autoload will make sure classes are automatically loaded
+            if (class_exists('PEAR', true) === false) {
+                $msg = "PEAR not found. Install PEAR or run with option: ".
+                    "usePEAR = false";
+                trigger_error($msg, E_USER_ERROR);                
+            }
             
+            if (class_exists('PEAR_Exception', true) === false) {
+                $msg = "PEAR_Exception not found?!";
+                trigger_error($msg, E_USER_ERROR);                
+            }
+                        
             if (class_exists('System_Daemon_Exception', true) === false) {
-                throw new Exception('Class System_Daemon_Exception not found');
+                // PEAR_Exception is OK. PEAR was found already.
+                throw new PEAR_Exception('Class System_Daemon_Exception not found');
             }            
         }
         
@@ -463,13 +474,8 @@ class System_Daemon
         if (!self::_optionObjSetup()) {
             return false;
         }
-                        
-        $success = self::$_optObj->optionSet($name, $value);
-        
-        $x = self::$_optObj->optionsGet();
-        print_r($x);
-        
-        return $success;
+                
+        return self::$_optObj->optionSet($name, $value);
     }//end setOption()    
     
     /**
@@ -802,7 +808,8 @@ class System_Daemon
         }
         
         // Reset Process Information
-        self::$_safeMode       = ((boolean)@ini_get("safe_mode") === false) ? false : true;
+        self::$_safeMode       = ((boolean)@ini_get("safe_mode") === false) ? 
+            false : true;
         self::$_processId      = 0;
         self::$_processIsChild = false;
         
@@ -973,7 +980,6 @@ class System_Daemon
         
         return self::$_optObj->optionsInit($premature);        
     }//end _optionsInit()   
-        
-    
+
 }//end class
 ?>
