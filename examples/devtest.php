@@ -31,7 +31,9 @@ require_once "System/Daemon.php";
 $os_funcs = &new System_Daemon_OS();
 $os = $os_funcs->getSpecific();
 
-$os->getDetails();
+$details = $os->getDetails();
+
+print_r($details);
 
 
 die();

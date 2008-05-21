@@ -60,8 +60,15 @@ class System_Daemon_OS_Common
     
     
     public function __construct(){
-        $parts = explode("_", get_class($this));
-        $this->_osDetails["shorthand"] = end($parts);
+        // Get ancestors
+        $ancs = $this->_getAncestors($this);
+        foreach ($ancs as $i=>$anc) {
+            $ancs[$i] = $this->_getShortHand($anc);
+        }
+        
+        // Set OS Details
+        $this->_osDetails["shorthand"] = $this->_getShortHand(get_class($this));
+        $this->_osDetails["ancestors"] = $ancs;
     }
     
     
@@ -73,13 +80,13 @@ class System_Daemon_OS_Common
     
     public function getDetails()
     {
-        print_r($this->_osDetails);
+        return $this->_osDetails;
     }//end getDetails
     
     public function getAutoRunPath() 
     {
         
-    }//end initDLocation
+    }//end getAutoRunPath
     
     public function getAutoRunScript()
     {
@@ -141,7 +148,7 @@ class System_Daemon_OS_Common
         return $success;
         
     } // end setProperties
-        
+    
     
     /**
      * Writes an: 'init.d' script on the filesystem
@@ -346,9 +353,26 @@ class System_Daemon_OS_Common
     
     
     
+    private function _getShortHand($class) {
+        $parts = explode("_", $class);
+        return end($parts);
+    }
     
     
-        
+    /**
+     * Get an array of parent classes
+     *
+     * @param string $class
+     * 
+     * @return array
+     */
+    private function _getAncestors($class) {
+        $classes     = array();
+        while($class = get_parent_class($class)) { 
+            $classes[] = $class; 
+        }
+        return $classes;
+    }  
     
     
     

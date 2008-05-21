@@ -147,6 +147,7 @@ class System_Daemon_OS
         return count($this->_getAncestors($class));        
     }
     
+    
     /**
      * Get an array of parent classes
      *
@@ -154,11 +155,13 @@ class System_Daemon_OS
      * 
      * @return array
      */
-    private function _getAncestors ($class) {
-        $classes = array($class);
-        while($class = get_parent_class($class)) { $classes[] = $class; }
+    private function _getAncestors($class) {
+        $classes     = array();
+        while($class = get_parent_class($class)) { 
+            $classes[] = $class; 
+        }
         return $classes;
-    }        
+    }    
     
 }//end class
 ?>
