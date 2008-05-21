@@ -136,6 +136,13 @@ class System_Daemon
     static private $_optObj = false;
     
     /**
+     * Holds OS Object
+     * 
+     * @var mixed object or boolean
+     */
+    static private $_osObj = false;
+    
+    /**
      * Definitions for all Options
      *
      * @var array
@@ -658,21 +665,39 @@ class System_Daemon
      */
     static public function writeAutoStart( $overwrite=false )
     {
-        // Init vars (needed for init.d script)
+        // Init Options (needed for properties of init.d script)
         if (self::_optionsInit(false) === false) {
             return false;
         }
         
+        // Init OS Object
+        if (!self::_osObjSetup()) {
+            return false;
+        }
+        
         // Copy properties to OS object
-        if (!System_Daemon_OS::setProperties(self::$_options)) {
+        $options = self::getOptions();
+        if (!self::$_osObj->setProperties($options)) {
+            // Show Errors
+            if (is_array(self::$_osObj->errors)) {
+                foreach (self::$_osObj->errors as $error) {
+                    self::log(self::LOG_NOTICE, $error);
+                }
+            }
             self::log(self::LOG_WARNING, "Unable to set all required ".
                 "properties for init.d file");
             return false;
         }
         
         // Try to write init.d 
-        if (!System_Daemon_OS::initDWrite($overwrite)) {
-            //self::log(self::LOG_WARNING, "Unable to create startup file.");
+        if (!self::$_osObj->writeAutoStart($overwrite)) {
+            // Show Errors
+            if (is_array(self::$_osObj->errors)) {
+                foreach (self::$_osObj->errors as $error) {
+                    self::log(self::LOG_NOTICE, $error);
+                }
+            }
+            self::log(self::LOG_WARNING, "Unable to create startup file.");
             return false; 
         }        
     }//end writeAutoStart()       
@@ -943,6 +968,28 @@ class System_Daemon
         }
     }//end _die()
     
+    
+    /**
+     * Sets up Option Object instance
+     *
+     * @return boolean
+     */
+    static private function _osObjSetup() 
+    {
+        // Create Option Object if nescessary
+        if (self::$_osObj === false) {
+            self::$_osObj = new System_Daemon_OS();
+        }
+        
+        // Still false? This was an error!
+        if (self::$_osObj === false) {
+            self::log(self::LOG_EMERG, "Unable to setup OS object. ");
+            return false;
+        } 
+        
+        return true;
+    }
+        
     
     /**
      * Sets up Option Object instance

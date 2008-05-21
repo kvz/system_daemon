@@ -26,9 +26,16 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * 
  */
-class System_Daemon_OS extends System_Daemon
+class System_Daemon_OS
 {
 
+    /**
+     * Holds errors
+     *
+     * @var array
+     */
+    public $errors = array();
+    
     /**
      * Operating systems and versions are based on the existence and
      * the information found in these files.
@@ -38,7 +45,7 @@ class System_Daemon_OS extends System_Daemon
      *
      * @var array
      */    
-    static public $osVersionFiles = array(
+    public $osVersionFiles = array(
         "Mandrake"=>"/etc/mandrake-release",
         "SuSE"=>"/etc/SuSE-release",
         "RedHat"=>"/etc/redhat-release",
@@ -53,17 +60,17 @@ class System_Daemon_OS extends System_Daemon
      *
      * @var array
      */
-    static protected $daemonProperties = array();
+    protected $daemonProperties = array();
     
     /**
      * Cache that holds values of some functions 
      * for performance gain. Easier then doing 
-     * if (!isset(self::$XXX)) { self::$XXX = self::XXX(); }
+     * if (!isset($this->XXX)) { $this->XXX = $this->XXX(); }
      * every time, in my opinion. 
      *
      * @var array
      */
-    static private $_intFunctionCache = array();
+    private $_intFunctionCache = array();
     
     
     
@@ -78,46 +85,6 @@ class System_Daemon_OS extends System_Daemon
     }    
     
     
-    
-    /**
-     * Decide what facility to log to.
-     *  
-     * @param integer $level    What function the log record is from
-     * @param string  $str      The log record
-     * @param string  $file     What code file the log record is from
-     * @param string  $class    What class the log record is from
-     * @param string  $function What function the log record is from
-     * @param integer $line     What code line the log record is from
-     *
-     * @throws System_Daemon_OS_Exception  
-     * @return void
-     */
-    static public function log($level, $str, $file = false, $class = false, 
-        $function = false, $line = false)
-    {
-        if (class_exists("System_Daemon")) {
-            // preferably let parent System_Daemon class handle
-            // any errors. throws exceptions as well, but gives
-            // a single & independent point of log flow control.
-            parent::log($level, $str, $file, $class, $function, $line);
-        } elseif ($level < parent::LOG_NOTICE) {
-            // Only make exceptions in case of errors
-            if (class_exists("System_Daemon_OS_Exception", true) === false) {
-                // Own exception
-                throw new System_Daemon_OS_Exception($log_line);
-            } elseif (class_exists("PEAR_Exception", true) === false) {
-                // PEAR exception if not standalone
-                throw new PEAR_Exception($log_line);
-            } elseif (class_exists("Exception", true) === false) {
-                // General exception
-                throw new Exception($log_line);
-            } else {
-                // This should never happen when running in 'PEAR-mode'
-                trigger_error("Panic: No valid log facility available!\n", 
-                    E_USER_ERROR);
-            }                     
-        }
-    }//end log()   
         
     /**
      * Sets daemon specific properties
@@ -126,12 +93,11 @@ class System_Daemon_OS extends System_Daemon
      * 
      * @return array
      */       
-    static public function setProperties($properties = false) 
+    public function setProperties($properties = false) 
     {
         if (!is_array($properties) || !count($properties)) {
-            self::log(parent::LOG_WARNING, "No properties to ".
-                "forge init.d script", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            $this->errors[] = "No properties to ".
+                "forge init.d script";
             return false; 
         }
                 
@@ -143,11 +109,10 @@ class System_Daemon_OS extends System_Daemon
         $success = true;
         foreach ($required_props as $required_prop) {
             if (!isset($properties[$required_prop])) {
-                self::log(parent::LOG_WARNING, "Cannot forge an ".
+                $this->errors[] = "Cannot forge an ".
                     "init.d script without a valid ".
-                    "daemon property: ".$required_prop." ", 
-                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-                $success = false;
+                    "daemon property: ".$required_prop;
+                $success        = false;
                 continue;
             }
             
@@ -157,7 +122,7 @@ class System_Daemon_OS extends System_Daemon
         }
         
         // Override
-        self::$daemonProperties = $properties;
+        $this->daemonProperties = $properties;
         return $success;
         
     } // end setProperties
@@ -167,10 +132,10 @@ class System_Daemon_OS extends System_Daemon
      *
      * @return array
      */
-    static public function determine()
+    public function determine()
     {
         // This will not change during 1 run, so just cache the result
-        if (!isset(self::$_intFunctionCache[__FUNCTION__])) {
+        if (!isset($this->_intFunctionCache[__FUNCTION__])) {
             if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
                 $main   = "Windows";
                 $distro = PHP_OS;
@@ -179,7 +144,7 @@ class System_Daemon_OS extends System_Daemon
                 $distro = "Mac OSX";
             } else if (stristr(PHP_OS, "Linux")) {
                 $main = php_uname('s');
-                foreach (self::$osVersionFiles as $distro=>$osv_file) {
+                foreach ($this->osVersionFiles as $distro=>$osv_file) {
                     if (file_exists($osv_file)) {
                         $version = trim(file_get_contents($osv_file));
                         break;
@@ -189,11 +154,11 @@ class System_Daemon_OS extends System_Daemon
                 return false;
             }
 
-            self::$_intFunctionCache[__FUNCTION__] = compact("main", "distro", 
+            $this->_intFunctionCache[__FUNCTION__] = compact("main", "distro", 
                 "version");
         }
 
-        return self::$_intFunctionCache[__FUNCTION__];
+        return $this->_intFunctionCache[__FUNCTION__];
     }//end determine()  
     
     /**
@@ -205,13 +170,13 @@ class System_Daemon_OS extends System_Daemon
      * @see initDLocation()
      * @see initDForge()
      */
-    static public function initDWrite($overwrite = false)
+    public function writeAutoStart($overwrite = false)
     {
         // Up to date filesystem information
         clearstatcache();
         
         // Collect init.d path
-        $initd_location = self::initDLocation();
+        $initd_location = $this->initDLocation();
         if (!$initd_location) {
             // Explaining errors should have been generated by 
             // System_Daemon_OS::initDLocation() 
@@ -220,7 +185,7 @@ class System_Daemon_OS extends System_Daemon
         }
         
         // Collect init.d body
-        $initd_body = self::initDForge();
+        $initd_body = $this->initDForge();
         if (!$initd_body) {
             // Explaining errors should have been generated by osInitDForge() 
             // already
@@ -229,43 +194,38 @@ class System_Daemon_OS extends System_Daemon
         
         // As many safety checks as possible
         if (!$overwrite && file_exists(($initd_location))) {
-            self::log(parent::LOG_WARNING, "init.d script already exists", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            $this->errors[] = "init.d script already exists";
             return false;
         } 
         if (!is_dir($dir = dirname($initd_location))) {
-            self::log(parent::LOG_WARNING, "init.d directory: '".
+            $this->errors[] =  "init.d directory: '".
                 $dir."' does not ".
-                "exist. Can this be a correct path?", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                "exist. Can this be a correct path?";
             return false;
         }
         if (!is_writable($dir = dirname($initd_location))) {
-            self::log(parent::LOG_WARNING, "init.d directory: '".
+            $this->errors[] =  "init.d directory: '".
                 $dir."' cannot be ".
-                "written to. Check the permissions", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                "written to. Check the permissions";
             return false;
         }
         
         if (!file_put_contents($initd_location, $initd_body)) {
-            self::log(parent::LOG_WARNING, "init.d file: '".
+            $this->errors[] =  "init.d file: '".
                 $initd_location."' cannot be ".
-                "written to. Check the permissions", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                "written to. Check the permissions";
             return false;
         }
         
         if (!chmod($initd_location, 0777)) {
-            self::log(parent::LOG_WARNING, "init.d file: '".
+            $this->errors[] =  "init.d file: '".
                 $initd_location."' cannot be ".
-                "chmodded. Check the permissions", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                "chmodded. Check the permissions";
             return false;
         } 
         
         return $initd_location;
-    }//end System_Daemon_OS::initDWrite() 
+    }//end writeAutoStart() 
     
     /**
      * Returns an: 'init.d' script path as a string. For now only Debian & Ubuntu
@@ -275,17 +235,17 @@ class System_Daemon_OS extends System_Daemon
      * @see $_intFunctionCache
      * @see determine()
      */
-    static public function initDLocation()
+    public function initDLocation()
     {
         // This will not change during 1 run, so just cache the result
-        if (!isset(self::$_intFunctionCache[__FUNCTION__])) {
+        if (!isset($this->_intFunctionCache[__FUNCTION__])) {
             $initd_location = false;
 
             // Daemon properties
-            $properties = self::$daemonProperties;
+            $properties = $this->daemonProperties;
                         
             // Collect OS information
-            list($main, $distro, $version) = array_values(self::determine());
+            list($main, $distro, $version) = array_values($this->determine());
             
             // Where to collect the skeleton (template) for our init.d script
             switch (strtolower($distro)){
@@ -296,17 +256,15 @@ class System_Daemon_OS extends System_Daemon
                 break;
             default:
                 // Not supported yet
-                self::log(parent::LOG_WARNING, "skeleton retrieval for OS: ".
-                    $distro.
-                    " currently not supported ", 
-                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                $this->errors[] = "skeleton retrieval for OS: ".
+                    $distro." currently not supported ";
                 return false;
             }
             
-            self::$_intFunctionCache[__FUNCTION__] = $initd_location;
+            $this->_intFunctionCache[__FUNCTION__] = $initd_location;
         }
         
-        return self::$_intFunctionCache[__FUNCTION__];
+        return $this->_intFunctionCache[__FUNCTION__];
     }//end initDLocation()
     
     /**
@@ -315,37 +273,33 @@ class System_Daemon_OS extends System_Daemon
      * @throws System_Daemon_Exception
      * @return mixed boolean on failure, string on success
      */
-    static public function initDForge( )
+    public function initDForge()
     {
         // Initialize & check variables
         $skeleton_filepath = false;
         
         // Daemon properties
-        $properties = self::$daemonProperties;
+        $properties = $this->daemonProperties;
                 
         // Check path
         $daemon_filepath = $properties["appDir"]."/".$properties["appExecutable"];
         if (!file_exists($daemon_filepath)) {
-            self::log(parent::LOG_WARNING, 
-                "unable to forge startup script for non existing ".
+            $this->errors[] = "unable to forge startup script for non existing ".
                 "daemon_filepath: ".$daemon_filepath.", try setting a valid ".
-                "appDir or appExecutable", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                "appDir or appExecutable";
             return false;
         }
         
         // Daemon file needs to be executable 
         if (!is_executable($daemon_filepath)) {
-            self::log(parent::LOG_WARNING, 
-                "unable to forge startup script. ".
+            $this->errors[] = "unable to forge startup script. ".
                 "daemon_filepath: ".$daemon_filepath.", needs to be executable ".
-                "first", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                "first";
             return false;
         }
         
         // Collect OS information
-        list($main, $distro, $version) = array_values(self::determine());
+        list($main, $distro, $version) = array_values($this->determine());
 
         // Where to collect the skeleton (template) for our init.d script
         switch (strtolower($distro)){
@@ -356,20 +310,16 @@ class System_Daemon_OS extends System_Daemon
             break;
         default:
             // not supported yet
-            self::log(parent::LOG_WARNING, 
-                "skeleton retrieval for OS: ".$distro.
-                " currently not supported ", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            $this->errors[] = "skeleton retrieval for OS: ".$distro.
+                " currently not supported ";
             return false;
             break;
         }
 
         // Open skeleton
         if (!$skeleton_filepath || !file_exists($skeleton_filepath)) {
-            self::log(parent::LOG_WARNING, 
-                "skeleton file for OS: ".$distro." not found at: ".
-                $skeleton_filepath, 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            $this->errors[] =  "skeleton file for OS: ".$distro." not found at: ".
+                $skeleton_filepath;
             return false;
         }
         
@@ -395,10 +345,8 @@ class System_Daemon_OS extends System_Daemon
                 break;
             default:
                 // Not supported yet
-                self::log(parent::LOG_WARNING, 
-                    "skeleton modification for OS: ".$distro.
-                    " currently not supported ", 
-                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                $this->errors[] = "skeleton modification for OS: ".$distro.
+                    " currently not supported ";
                 return false;
                 break;
             }

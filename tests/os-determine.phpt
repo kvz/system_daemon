@@ -11,7 +11,8 @@ require_once 'tests-config.php';
 require_once 'System/Daemon.php';
 require_once 'System/Daemon/OS.php';
 
-$res = System_Daemon_OS::determine();
+$osObj = new System_Daemon_OS(); 
+$res = $osObj->determine();
 
 echo count($res);
 

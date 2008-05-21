@@ -86,7 +86,6 @@ class System_Daemon_Options
         return $this->_options[$name];
     }//end getOption()    
     
-    
     /**
      * Gets an array of options found in $_definitions
      *
@@ -461,9 +460,8 @@ class System_Daemon_Options
         
         return call_user_func_array($function, $arguments);
     }//end _replaceFuncs()
- 
 
-    
+
     
     /**
      * Compile array of allowed types

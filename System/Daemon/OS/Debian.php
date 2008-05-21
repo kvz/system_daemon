@@ -26,7 +26,7 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * * 
  */
-class System_Daemon_OS_Driver_Debian extends System_Daemon_OS
+class System_Daemon_OS_Debian extends System_Daemon_OS
 {
 
 }//end class
