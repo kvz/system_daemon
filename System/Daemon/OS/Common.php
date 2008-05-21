@@ -55,6 +55,11 @@ class System_Daemon_OS_Common
      */
     private $_intFunctionCache = array();
     
+    /**
+     * Hold OS information
+     *
+     * @var array
+     */
     private $_osDetails = array();
         
     
@@ -69,6 +74,9 @@ class System_Daemon_OS_Common
         // Set OS Details
         $this->_osDetails["shorthand"] = $this->_getShortHand(get_class($this));
         $this->_osDetails["ancestors"] = $ancs;
+        
+        // Up to date filesystem information
+        clearstatcache();
     }
     
     
@@ -92,62 +100,7 @@ class System_Daemon_OS_Common
     {
         
     }//end getAutoRunScript()
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
-    /**
-     * Sets daemon specific properties
-     *  
-     * @param array $properties Contains the daemon properties
-     * 
-     * @return array
-     */       
-    public function setAutoRunProperties($properties = false) 
-    {
-        if (!is_array($properties) || !count($properties)) {
-            $this->errors[] = "No properties to ".
-                "forge init.d script";
-            return false; 
-        }
-                
-        // Tests
-        $required_props = array("appName", "appDescription", "appDir", 
-            "authorName", "authorEmail");
-        
-        // Check if all required properties are available
-        $success = true;
-        foreach ($required_props as $required_prop) {
-            if (!isset($properties[$required_prop])) {
-                $this->errors[] = "Cannot forge an ".
-                    "init.d script without a valid ".
-                    "daemon property: ".$required_prop;
-                $success        = false;
-                continue;
-            }
-            
-            // Addslashes
-            $properties[$required_prop] = 
-                addslashes($properties[$required_prop]);
-        }
-        
-        // Override
-        $this->daemonProperties = $properties;
-        return $success;
-        
-    } // end setProperties
     
     
     /**
@@ -161,8 +114,6 @@ class System_Daemon_OS_Common
      */
     public function writeAutoRun($overwrite = false)
     {
-        // Up to date filesystem information
-        clearstatcache();
         
         // Collect init.d path
         $initd_location = $this->initDLocation();
@@ -215,68 +166,48 @@ class System_Daemon_OS_Common
         
         return $initd_location;
     }//end writeAutoRun() 
-    
-    /**
-     * Returns an: 'init.d' script path as a string. For now only Debian & Ubuntu
-     * Results are cached because they will not change during one run.
-     *
-     * @return mixed boolean on failure, string on success
-     * @see $_intFunctionCache
-     * @see determine()
-     */
-    public function initDLocation()
-    {
-        // This will not change during 1 run, so just cache the result
-        if (!isset($this->_intFunctionCache[__FUNCTION__])) {
-            $initd_location = false;
 
-            // Daemon properties
-            $properties = $this->daemonProperties;
-                        
-            // Collect OS information
-            list($main, $distro, $version) = array_values($this->determine());
-            
-            // Where to collect the skeleton (template) for our init.d script
-            switch (strtolower($distro)){
-            case "debian":
-            case "ubuntu":
-                // Here it is for debian systems
-                $initd_location = "/etc/init.d/".$properties["appName"];
-                break;
-            default:
-                // Not supported yet
-                $this->errors[] = "skeleton retrieval for OS: ".
-                    $distro." currently not supported ";
-                return false;
-            }
-            
-            $this->_intFunctionCache[__FUNCTION__] = $initd_location;
+    
+
+    /**
+     * Sets daemon specific properties
+     *  
+     * @param array $properties Contains the daemon properties
+     * 
+     * @return array
+     */       
+    private function _testAutoRunProperties($properties = false) 
+    {
+        if (!is_array($properties) || !count($properties)) {
+            $this->errors[] = "No properties to ".
+                "forge init.d script";
+            return false; 
+        }
+                
+        // Tests
+        $required_props = array("appName", "appExecutable", 
+            "appDescription", "appDir", 
+            "authorName", "authorEmail");
+        
+        // Check if all required properties are available
+        $success = true;
+        foreach ($required_props as $required_prop) {
+            if (!isset($properties[$required_prop])) {
+                $this->errors[] = "Cannot forge an ".
+                    "init.d script without a valid ".
+                    "daemon property: ".$required_prop;
+                $success        = false;
+                continue;
+            }            
         }
         
-        return $this->_intFunctionCache[__FUNCTION__];
-    }//end initDLocation()
-    
-    /**
-     * Returns an: 'init.d' script as a string. for now only Debian & Ubuntu
-     * 
-     * @throws System_Daemon_Exception
-     * @return mixed boolean on failure, string on success
-     */
-    public function initDForge()
-    {
-        // Initialize & check variables
-        $skeleton_filepath = false;
-        
-        // Daemon properties
-        $properties = $this->daemonProperties;
-                
         // Check path
         $daemon_filepath = $properties["appDir"]."/".$properties["appExecutable"];
         if (!file_exists($daemon_filepath)) {
             $this->errors[] = "unable to forge startup script for non existing ".
                 "daemon_filepath: ".$daemon_filepath.", try setting a valid ".
                 "appDir or appExecutable";
-            return false;
+            $success = false;
         }
         
         // Daemon file needs to be executable 
@@ -284,80 +215,17 @@ class System_Daemon_OS_Common
             $this->errors[] = "unable to forge startup script. ".
                 "daemon_filepath: ".$daemon_filepath.", needs to be executable ".
                 "first";
-            return false;
+            $success = false;
         }
         
-        // Collect OS information
-        list($main, $distro, $version) = array_values($this->determine());
-
-        // Where to collect the skeleton (template) for our init.d script
-        switch (strtolower($distro)){
-        case "debian":
-        case "ubuntu":
-            // here it is for debian based systems
-            $skeleton_filepath = "/etc/init.d/skeleton";
-            break;
-        default:
-            // not supported yet
-            $this->errors[] = "skeleton retrieval for OS: ".$distro.
-                " currently not supported ";
-            return false;
-            break;
-        }
-
-        // Open skeleton
-        if (!$skeleton_filepath || !file_exists($skeleton_filepath)) {
-            $this->errors[] =  "skeleton file for OS: ".$distro." not found at: ".
-                $skeleton_filepath;
-            return false;
-        }
+        return $success;
         
-        if ($skeleton = file_get_contents($skeleton_filepath)) {
-            // Skeleton opened, set replace vars
-            switch (strtolower($distro)){
-            case "debian":
-            case "ubuntu":                
-                $replace = array(
-                    "Foo Bar" => $properties["authorName"],
-                    "foobar@baz.org" => $properties["authorEmail"],
-                    "daemonexecutablename" => $properties["appName"],
-                    "Example" => $properties["appName"],
-                    "skeleton" => $properties["appName"],
-                    "/usr/sbin/\$NAME" => $daemon_filepath,
-                    "Description of the service"=> $properties["appDescription"],
-                    " --name \$NAME" => "",
-                    "--options args" => "",
-                    "# Please remove the \"Author\" ".
-                        "lines above and replace them" => "",
-                    "# with your own name if you copy and modify this script." => ""
-                );
-                break;
-            default:
-                // Not supported yet
-                $this->errors[] = "skeleton modification for OS: ".$distro.
-                    " currently not supported ";
-                return false;
-                break;
-            }
-
-            // Replace skeleton placeholders with actual daemon information
-            $skeleton = str_replace(array_keys($replace), 
-                array_values($replace), 
-                $skeleton);
-
-            // Return the forged init.d script as a string
-            return $skeleton;
-        }
-    }//end initDForge()
-    
-    
-    
+    } // end setProperties    
     
     private function _getShortHand($class) {
         $parts = explode("_", $class);
         return end($parts);
     }
-    
     
     /**
      * Get an array of parent classes
@@ -373,8 +241,6 @@ class System_Daemon_OS_Common
         }
         return $classes;
     }  
-    
-    
     
 }//end class
 ?>

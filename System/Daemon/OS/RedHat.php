@@ -28,7 +28,12 @@
  */
 class System_Daemon_OS_RedHat extends System_Daemon_OS_Linux
 {
-    public $osVersionFile = "/etc/redhat-release";
+    /**
+     * On Linux, a distro-specific version file is often telling us enough
+     *
+     * @var string
+     */
+    protected $osVersionFile = "/etc/redhat-release";
     
 }//end class
 ?>

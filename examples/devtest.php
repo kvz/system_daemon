@@ -31,7 +31,21 @@ require_once "System/Daemon.php";
 $os_funcs = &new System_Daemon_OS();
 $os = $os_funcs->getSpecific();
 
+
+
 $details = $os->getDetails();
+
+
+$options["appName"] = "kevman";
+$options["appDir"] = "kevman";
+$options["appDescription"] = "kevman";
+$options["authorName"] = "kevman";
+$options["authorEmail"] = "kevman";
+if (!$os->setAutoRunProperties($options)) {
+    print_r($os->errors);
+}
+
+
 
 print_r($details);
 

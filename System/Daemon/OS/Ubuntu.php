@@ -28,6 +28,11 @@
  */
 class System_Daemon_OS_Ubuntu extends System_Daemon_OS_Debian
 {
-    public $osVersionFile = "/etc/lsb-release";
+    /**
+     * On Linux, a distro-specific version file is often telling us enough
+     *
+     * @var string
+     */
+    protected $osVersionFile = "/etc/lsb-release";
 }//end class
 ?>

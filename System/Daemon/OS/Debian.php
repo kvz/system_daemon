@@ -28,7 +28,41 @@
  */
 class System_Daemon_OS_Debian extends System_Daemon_OS_Linux
 {
-    public $osVersionFile = "/etc/debian_version";
+    /**
+     * On Linux, a distro-specific version file is often telling us enough
+     *
+     * @var string
+     */
+    protected $osVersionFile = "/etc/debian_version";
+
+    /**
+     * Template path
+     *
+     * @var string
+     */
+    protected $autoRunTemplatePath = "/etc/init.d/skeleton";    
+    
+    /**
+     * Replace the following keys with values to convert a template into
+     * a read autorun script
+     *
+     * @var array
+     */    
+    protected $autoRunTemplateReplace = array(
+        "Foo Bar" => "{PROPERTIES.authorName}",
+        "foobar@baz.org" => "{PROPERTIES.authorEmail}",
+        "daemonexecutablename" => "{PROPERTIES.appName}",
+        "Example" => "{PROPERTIES.appName}",
+        "skeleton" => "{PROPERTIES.appName}",
+        "/usr/sbin/\$NAME" => "{PROPERTIES.appDir}/{PROPERTIES.appExecutable}",
+        "Description of the service"=> "{PROPERTIES.appDescription}",
+        " --name \$NAME" => "",
+        "--options args" => "",
+        "# Please remove the \"Author\" lines above and replace them" => "",
+        "# with your own name if you copy and modify this script." => ""
+    );
+    
+    
     
 }//end class
 ?>

@@ -28,8 +28,35 @@
  */
 class System_Daemon_OS_Linux extends System_Daemon_OS_Common
 {
+    /**
+     * On Linux, a distro-specific version file is often telling us enough
+     *
+     * @var string
+     */
+    protected $osVersionFile = "";
     
-    public $osVersionFile = "";
+    /**
+     * Path to init.d script
+     *
+     * @var string
+     */
+    protected $autoRunDir = "/etc/init.d";    
+    
+    /**
+     * Template path
+     *
+     * @var string
+     */
+    protected $autoRunTemplatePath = "";    
+        
+    /**
+     * Replace the following keys with values to convert a template into
+     * a read autorun script
+     *
+     * @var array
+     */
+    protected $autoRunTemplateReplace = array();
+    
     
     
     public function isInstalled() 
@@ -46,6 +73,53 @@ class System_Daemon_OS_Linux extends System_Daemon_OS_Common
         
         return true;
     }//end isInstalled
+
+    
+    public function getAutoRunPath($appName) 
+    {
+        if (!$this->autoRunPath) {
+            return false;
+        }
+        
+        return $this->autoRunPath."/".$appName;
+    }//end getAutoRunPath
+    
+    
+    public function getAutoRunTemplate() 
+    {
+        if (!$this->autoRunTemplatePath) {
+            return false;
+        }
+        
+        if (!file_exists($this->autoRunTemplatePath)) {
+            return false;
+        }
+        
+        return file_get_contents($this->autoRunTemplatePath);
+
+    }//end getAutoRunTemplate    
+    
+    public function getAutoRunScript()
+    {
+        $template = $this->getAutoRunTemplate();
+        
+        if (!$template) {
+            return false;
+        }
+        
+        if (!$this->autoRunTemplateReplace 
+            || !is_array($this->autoRunTemplateReplace)
+            || !count($this->autoRunTemplateReplace)) {
+            return false;
+        }
+
+        // REPLACE {} vars with real values!!!
+        
+        return str_replace(array_keys($this->autoRunTemplateReplace), 
+            array_values($this->autoRunTemplateReplace), 
+            $template);        
+        
+    }//end getAutoRunScript()    
     
 }//end class
 ?>
