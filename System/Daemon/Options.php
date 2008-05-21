@@ -330,7 +330,6 @@ class System_Daemon_Options
         return true;
     }//end _validate()    
 
-    
     /**
      * Sets any option found in $_definitions to its default value
      * 
@@ -495,7 +494,7 @@ class System_Daemon_Options
      * 
      * @return boolean
      */   
-    static protected function strIsUnix( $str )
+    protected function strIsUnix( $str )
     {
         return preg_match('/^[a-z0-9_]+$/', $str);
     }//end strIsUnix()
@@ -508,7 +507,7 @@ class System_Daemon_Options
      * 
      * @return string
      */
-    static protected function strToUnix( $str )
+    protected function strToUnix( $str )
     {
         return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
     }//end strToUnix()
