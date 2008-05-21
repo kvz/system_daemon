@@ -78,13 +78,13 @@ class System_Daemon_Options
      *
      * @return boolean
      */
-    public function optionGet($name)
+    public function getOption($name)
     {
         if (!isset($this->_options[$name])) {
             return null;
         }
         return $this->_options[$name];
-    }//end optionGet()    
+    }//end getOption()    
     
     
     /**
@@ -92,10 +92,10 @@ class System_Daemon_Options
      *
      * @return array
      */
-    public function optionsGet()
+    public function getOptions()
     {
         return $this->_options;
-    }//end optionsGet()    
+    }//end getOptions()    
     
     /**
      * Sets any option found in $_definitions
@@ -105,17 +105,17 @@ class System_Daemon_Options
      *
      * @return boolean
      */
-    public function optionSet($name, $value)
+    public function setOption($name, $value)
     {
         // Not validated?
-        if (!$this->_optionValidate($name, $value, $reason)) {
+        if (!$this->_validate($name, $value, $reason)) {
             // Default not used or failed as well!
             $this->errors[] = "Option ".$name." invalid: ".$reason;
             return false;
         }
         
         $this->_options[$name] = $value;
-    }//end optionSet()
+    }//end setOption()
         
     /**
      * Sets an array of options found in $_definitions
@@ -124,16 +124,16 @@ class System_Daemon_Options
      *
      * @return boolean
      */
-    public function optionsSet($use_options)
+    public function setOptions($use_options)
     {
         $success = true;
         foreach ($use_options as $name=>$value) {
-            if (!$this->optionSet($name, $value)) {
+            if (!$this->setOption($name, $value)) {
                 $success = false;
             }
         }
         return $success;
-    }//end optionsSet()
+    }//end setOptions()
     
     /**
      * Wether options are initialized
@@ -153,7 +153,7 @@ class System_Daemon_Options
      *
      * @return mixed integer or boolean
      */
-    public function optionsInit($premature=false) 
+    public function init($premature=false) 
     {
         // If already initialized, skip
         if (!$premature && $this->isInitialized()) {
@@ -171,7 +171,7 @@ class System_Daemon_Options
             
             // Required options remain
             if (!isset($this->_options[$name])) {                
-                if (!$this->_optionSetDefault($name) && !$premature) {
+                if (!$this->_setDefault($name) && !$premature) {
                     $this->errors[] = "Required option: ".$name. 
                         " not set. No default value available either.";
                     return false;
@@ -187,7 +187,7 @@ class System_Daemon_Options
         
         return $options_met;
         
-    }//end optionsInit()       
+    }//end init()       
     
     
     
@@ -200,7 +200,7 @@ class System_Daemon_Options
      *
      * @return boolean
      */
-    private function _optionValidate($name, $value, &$reason="")
+    private function _validate($name, $value, &$reason="")
     {
         $reason = false;
         
@@ -329,7 +329,7 @@ class System_Daemon_Options
         }
         
         return true;
-    }//end _optionValidate()    
+    }//end _validate()    
 
     
     /**
@@ -339,7 +339,7 @@ class System_Daemon_Options
      *
      * @return boolean
      */
-    private function _optionSetDefault($name)
+    private function _setDefault($name)
     {
         if (!isset($this->_definitions[$name])) {
             return false;
@@ -362,16 +362,16 @@ class System_Daemon_Options
         if (isset($allowedTypes["string"]) && !is_bool($value)) {
             // Replace variables
             $value = preg_replace_callback('/\{([^\{\}]+)\}/is', 
-                array("self", "_optionReplaceVariables"), $value);
+                array("self", "_replaceVars"), $value);
             
             // Replace functions
             $value = preg_replace_callback('/\@([\w_]+)\(([^\)]+)\)/is', 
-                array("self", "_optionReplaceFunctions"), $value);
+                array("self", "_replaceFuncs"), $value);
         }
                         
         $this->_options[$name] = $value;
         return true;
-    }//end _optionSetDefault()    
+    }//end _setDefault()    
     
     /**
      * Callback function to replace variables in defaults
@@ -380,7 +380,7 @@ class System_Daemon_Options
      * 
      * @return string
      */
-    private function _optionReplaceVariables($matches)
+    private function _replaceVars($matches)
     {
         // Init
         $allowedVars = array(
@@ -434,7 +434,7 @@ class System_Daemon_Options
         }        
         
         return $var_use;        
-    }
+    }//end _replaceVars()
     
     /**
      * Callback function to replace function calls in defaults
@@ -443,7 +443,7 @@ class System_Daemon_Options
      * 
      * @return string
      */
-    private function _optionReplaceFunctions($matches)
+    private function _replaceFuncs($matches)
     {
         $allowedFunctions = array("basename", "dirname");
         
@@ -460,7 +460,7 @@ class System_Daemon_Options
         }
         
         return call_user_func_array($function, $arguments);
-    }
+    }//end _replaceFuncs()
  
 
     

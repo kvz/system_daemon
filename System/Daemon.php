@@ -95,7 +95,7 @@ class System_Daemon
      *
      * @var boolean
      */
-    static private $_daemonIsDying = false;    
+    static private $_isDying = false;    
     
     /**
      * Wether the current process is a forked child
@@ -139,6 +139,8 @@ class System_Daemon
      * Definitions for all Options
      *
      * @var array
+     * @see setOption()
+     * @see getOption()
      */
     static private $_optionDefinitions = array(
         "usePEAR" => array(
@@ -275,14 +277,14 @@ class System_Daemon
      * @see setSigHandler()
      */
     static private $_sigHandlers = array(
-        SIGCONT => array("System_Daemon", "daemonHandleSig"),
-        SIGALRM => array("System_Daemon", "daemonHandleSig"),
-        SIGINT => array("System_Daemon", "daemonHandleSig"),
-        SIGABRT => array("System_Daemon", "daemonHandleSig"),
-        SIGTERM => array("System_Daemon", "daemonHandleSig"),
-        SIGHUP => array("System_Daemon", "daemonHandleSig"),
-        SIGUSR1 => array("System_Daemon", "daemonHandleSig"),
-        SIGCHLD => array("System_Daemon", "daemonHandleSig")
+        SIGCONT => array("System_Daemon", "defaultSigHandler"),
+        SIGALRM => array("System_Daemon", "defaultSigHandler"),
+        SIGINT => array("System_Daemon", "defaultSigHandler"),
+        SIGABRT => array("System_Daemon", "defaultSigHandler"),
+        SIGTERM => array("System_Daemon", "defaultSigHandler"),
+        SIGHUP => array("System_Daemon", "defaultSigHandler"),
+        SIGUSR1 => array("System_Daemon", "defaultSigHandler"),
+        SIGCHLD => array("System_Daemon", "defaultSigHandler")
     );
 
     /**
@@ -349,7 +351,7 @@ class System_Daemon
      * @see stop()
      * @see autoload()
      * @see _optionsInit()
-     * @see _daemonBecome()
+     * @see _summon()
      */
     static public function start()
     {        
@@ -415,7 +417,7 @@ class System_Daemon
         }
                 
         // Become daemon
-        self::_daemonBecome();
+        self::_summon();
         
         return true;
 
@@ -432,7 +434,7 @@ class System_Daemon
         self::log(self::LOG_INFO, "stopping ".
             self::getOption("appName")." daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-        self::_daemonDie();
+        self::_die();
     }//end stop()
     
     
@@ -475,7 +477,7 @@ class System_Daemon
             return false;
         }
                 
-        return self::$_optObj->optionSet($name, $value);
+        return self::$_optObj->setOption($name, $value);
     }//end setOption()    
     
     /**
@@ -492,7 +494,7 @@ class System_Daemon
             return false;
         }
         
-        return self::$_optObj->optionsSet($use_options);
+        return self::$_optObj->setOptions($use_options);
     }//end setOptions()    
     
     /**
@@ -509,7 +511,7 @@ class System_Daemon
             return false;
         }
                 
-        return self::$_optObj->optionGet($name);
+        return self::$_optObj->getOption($name);
     }//end getOption()    
 
     /**
@@ -523,7 +525,7 @@ class System_Daemon
             return false;
         }
         
-        return self::$_optObj->optionsGet();
+        return self::$_optObj->getOptions();
     }//end setOptions()      
     
     
@@ -589,7 +591,7 @@ class System_Daemon
         }
 
         // Determine what process the log is originating from and forge a logline
-        //$str_ident = "@".substr(self::_daemonWhatIAm(), 0, 1)."-".posix_getpid();
+        //$str_ident = "@".substr(self::_whatIAm(), 0, 1)."-".posix_getpid();
         $str_date  = "[".date("M d H:i:s")."]"; 
         $str_level = str_pad(self::$_logLevels[$level]."", 8, " ", STR_PAD_LEFT);
         $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
@@ -601,7 +603,7 @@ class System_Daemon
         $log_succeeded = true;
         $log_echoed    = false;
         
-        if (!self::daemonIsInBackground() && $non_debug && !$log_echoed) {
+        if (!self::isInBackground() && $non_debug && !$log_echoed) {
             // It's okay to echo if you're running as a foreground process.
             // Maybe the command to write an init.d file was issued.
             // In such a case it's important to echo failures to the 
@@ -639,7 +641,7 @@ class System_Daemon
             // An emergency logentry is reason for the deamon to 
             // die immediately 
             if ($level == self::LOG_EMERG) {
-                self::_daemonDie();
+                self::_die();
             }
         }
         
@@ -648,13 +650,13 @@ class System_Daemon
     }//end log()    
 
     /**
-     * Uses OS class to writes an: 'init.d' script on the filesystem
+     * Uses OS class to write an: 'init.d' script on the filesystem
      *  
      * @param boolean $overwrite May the existing init.d file be overwritten?
      * 
      * @return boolean
      */
-    static public function osInitDWrite( $overwrite=false )
+    static public function writeAutoStart( $overwrite=false )
     {
         // Init vars (needed for init.d script)
         if (self::_optionsInit(false) === false) {
@@ -673,7 +675,7 @@ class System_Daemon
             //self::log(self::LOG_WARNING, "Unable to create startup file.");
             return false; 
         }        
-    }//end osInitDWrite()       
+    }//end writeAutoStart()       
     
     /**
      * Default signal handler.
@@ -686,7 +688,7 @@ class System_Daemon
      * @see setSigHandler()
      * @see $_sigHandlers
      */
-    static public function daemonHandleSig( $signo )
+    static public function defaultSigHandler( $signo )
     {
         // Must be public or else will throw a 
         // fatal error: Call to private method 
@@ -698,8 +700,8 @@ class System_Daemon
         switch ($signo) {
         case SIGTERM:
             // handle shutdown tasks
-            if (self::daemonIsInBackground()) {
-                self::_daemonDie();
+            if (self::isInBackground()) {
+                self::_die();
             } else {
                 exit;
             }
@@ -722,17 +724,17 @@ class System_Daemon
             // handle all other signals
             break;
         }
-    }//end daemonHandleSig()
+    }//end defaultSigHandler()
 
     /**
      * Wether the class is already running in the background
      * 
      * @return boolean
      */
-    static public function daemonIsInBackground()
+    static public function isInBackground()
     {
         return self::$_processIsChild;
-    }//end daemonIsInBackground()
+    }//end isInBackground()
     
     /**
      * Wether the our daemon is being killed, you might 
@@ -740,17 +742,17 @@ class System_Daemon
      * 
      * @return boolean
      */
-    static public function daemonIsDying()
+    static public function isDying()
     {
-        return self::$_daemonIsDying;
-    }//end daemonIsDying() 
+        return self::$_isDying;
+    }//end isDying() 
 
     /**
      * Check if a previous process with same pidfile was already running
      *
      * @return boolean
      */
-    static public function daemonIsRunning() 
+    static public function isRunning() 
     {
         if(!file_exists(self::getOption("appPidLocation"))) return false;
         $pid = @file_get_contents(self::getOption("appPidLocation"));
@@ -771,7 +773,7 @@ class System_Daemon
         } else {
             return false;
         }
-    }//end daemonIsRunning()
+    }//end isRunning()
 
     
     
@@ -780,7 +782,7 @@ class System_Daemon
      *
      * @return void
      */
-    static private function _daemonBecome() 
+    static private function _summon() 
     {
 
         self::log(self::LOG_INFO, "starting ".self::getOption("appName").
@@ -800,7 +802,7 @@ class System_Daemon
         }
         
         // Allowed?
-        if (self::daemonIsRunning()) {
+        if (self::isRunning()) {
             self::log(self::LOG_EMERG, "".self::getOption("appName").
                 " daemon is still running. ".
                 "exiting", 
@@ -814,7 +816,7 @@ class System_Daemon
         self::$_processIsChild = false;
         
         // Fork process!
-        if (!self::_daemonFork()) {
+        if (!self::_fork()) {
             self::log(self::LOG_EMERG, "".self::getOption("appName").
                 " daemon was unable to fork", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -872,14 +874,14 @@ class System_Daemon
         // Change dir & umask
         @chdir(self::getOption("appDir"));
         @umask(0);
-    }//end _daemonBecome()
+    }//end _summon()
     
     /**
      * Fork process and kill parent process, the heart of the 'daemonization'
      *
      * @return boolean
      */
-    static private function _daemonFork()
+    static private function _fork()
     {
         self::log(self::LOG_DEBUG, "forking ".self::getOption("appName").
             " daemon", 
@@ -901,33 +903,33 @@ class System_Daemon
         } else {
             // Child
             self::$_processIsChild = true;
-            self::$_daemonIsDying  = false;
+            self::$_isDying  = false;
             self::$_processId      = posix_getpid();
             return true;
         }
-    }//end _daemonFork()
+    }//end _fork()
 
     /**
      * Return what the current process is: child or parent
      *
      * @return string
      */
-    static private function _daemonWhatIAm()
+    static private function _whatIAm()
     {
-        return (self::daemonIsInBackground()?"child":"parent");
-    }//end _daemonWhatIAm()
+        return (self::isInBackground()?"child":"parent");
+    }//end _whatIAm()
 
     /**
-     * Sytem_Daemon::_daemonDie()
+     * Sytem_Daemon::_die()
      * Kill the daemon
      *
      * @return void
      */
-    static private function _daemonDie()
+    static private function _die()
     {
-        if (!self::daemonIsDying()) {
-            self::$_daemonIsDying = true;
-            if (!self::daemonIsInBackground() || 
+        if (!self::isDying()) {
+            self::$_isDying = true;
+            if (!self::isInBackground() || 
                 !file_exists(self::getOption("appPidLocation"))) {
                 self::log(self::LOG_INFO, "Not stopping ".
                     self::getOption("appName").
@@ -939,7 +941,7 @@ class System_Daemon
             @unlink(self::getOption("appPidLocation"));
             exit();
         }
-    }//end _daemonDie()
+    }//end _die()
     
     
     /**
@@ -978,7 +980,7 @@ class System_Daemon
             return false;
         }
         
-        return self::$_optObj->optionsInit($premature);        
+        return self::$_optObj->init($premature);        
     }//end _optionsInit()   
 
 }//end class

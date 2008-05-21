@@ -77,7 +77,7 @@ $options = array(
 System_Daemon::setOptions($options);
 
 // Overrule the signal handler with any function
-System_Daemon::setSigHandler(SIGCONT, array("System_Daemon", "daemonHandleSig"));
+System_Daemon::setSigHandler(SIGCONT, array("System_Daemon", "defaultSigHandler"));
 
 
 // This program can also be run in the forground with runmode --no-daemon
@@ -93,7 +93,7 @@ if (!$runmode["write-initd"]) {
     System_Daemon::log(System_Daemon::LOG_INFO, "not writing ".
         "an init.d script this time");
 } else {
-    if (($initd_location = System_Daemon::osInitDWrite()) === false) {
+    if (($initd_location = System_Daemon::writeAutoStart()) === false) {
         System_Daemon::log(System_Daemon::LOG_NOTICE, "unable to write ".
             "init.d script");
     } else {
@@ -116,9 +116,9 @@ $cnt = 1;
 // - That the Daemon Class hasn't reported it's dying
 // - That your own code has been running Okay
 // - That we're not executing more than 3 runs 
-while (!System_Daemon::daemonIsDying() && $runningOkay && $cnt <=3) {
+while (!System_Daemon::isDying() && $runningOkay && $cnt <=3) {
     // What mode are we in?
-    $mode = "'".(System_Daemon::daemonIsInBackground() ? "" : "non-" ).
+    $mode = "'".(System_Daemon::isInBackground() ? "" : "non-" ).
         "daemon' mode";
     
     // Log something using the Daemon class's logging facility
