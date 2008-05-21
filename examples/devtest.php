@@ -27,6 +27,16 @@
 error_reporting(E_ALL);
 require_once "System/Daemon.php";
 
+
+$os_funcs = &new System_Daemon_OS();
+$os = $os_funcs->getSpecific();
+
+$os->getDetails();
+
+
+die();
+
+
 // Bare minimum setup
 System_Daemon::setOption("appName", "optest");
 System_Daemon::setOption("authorEmail", "kevin@vanzonneveld.net");

@@ -15,7 +15,7 @@
  */
 
 /**
- * A System_Daemon_OS driver for Debian based Operating Systems (including Ubuntu)
+ * A System_Daemon_OS driver for RedHat based Operating Systems
  *
  * @category  System
  * @package   System_Daemon
@@ -26,9 +26,9 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * * 
  */
-class System_Daemon_OS_Debian extends System_Daemon_OS_Linux
+class System_Daemon_OS_RedHat extends System_Daemon_OS_Linux
 {
-    public $osVersionFile = "/etc/debian_version";
+    public $osVersionFile = "/etc/redhat-release";
     
 }//end class
 ?>

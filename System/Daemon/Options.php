@@ -214,12 +214,12 @@ class System_Daemon_Options
         }
         
         // Compile array of allowd main & subtypes
-        $allowedTypes = $this->allowedTypes($definition["type"]);
+        $_allowedTypes = $this->_allowedTypes($definition["type"]);
         
         // Loop over main & subtypes to detect matching format
         if (!$reason) {
             $type_valid = false;
-            foreach ($allowedTypes as $type_a=>$sub_types) {
+            foreach ($_allowedTypes as $type_a=>$sub_types) {
                 foreach ($sub_types as $type_b) {
                     
                     // Determine range based on subtype
@@ -352,12 +352,12 @@ class System_Daemon_Options
         }
         
         // Compile array of allowd main & subtypes
-        $allowedTypes = $this->allowedTypes($definition["type"]);        
+        $_allowedTypes = $this->_allowedTypes($definition["type"]);        
         
         $type  = $definition["type"];
         $value = $definition["default"];
 
-        if (isset($allowedTypes["string"]) && !is_bool($value)) {
+        if (isset($_allowedTypes["string"]) && !is_bool($value)) {
             // Replace variables
             $value = preg_replace_callback('/\{([^\{\}]+)\}/is', 
                 array("self", "_replaceVars"), $value);
@@ -460,8 +460,6 @@ class System_Daemon_Options
         return call_user_func_array($function, $arguments);
     }//end _replaceFuncs()
 
-
-    
     /**
      * Compile array of allowed types
      * 
@@ -469,19 +467,19 @@ class System_Daemon_Options
      * 
      * @return array      
      */
-    protected function allowedTypes($str) 
+    private function _allowedTypes($str) 
     {
-        $allowedTypes = array();
-        $raw_types    = explode("|", $str);
+        $allowed_types = array();
+        $raw_types     = explode("|", $str);
         foreach ($raw_types as $raw_type) {
             $raw_subtypes = explode("/", $raw_type);
             $type_a       = array_shift($raw_subtypes);
             if (!count($raw_subtypes)) {
                 $raw_subtypes = array("normal");
             } 
-            $allowedTypes[$type_a] = $raw_subtypes;
+            $allowed_types[$type_a] = $raw_subtypes;
         }
-        return $allowedTypes;
+        return $allowed_types;
     }    
     
     

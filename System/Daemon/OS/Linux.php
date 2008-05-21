@@ -15,7 +15,7 @@
  */
 
 /**
- * A System_Daemon_OS driver for Debian based Operating Systems (including Ubuntu)
+ * A System_Daemon_OS driver for Linux based Operating Systems
  *
  * @category  System
  * @package   System_Daemon
@@ -26,9 +26,26 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * * 
  */
-class System_Daemon_OS_Debian extends System_Daemon_OS_Linux
+class System_Daemon_OS_Linux extends System_Daemon_OS_Common
 {
-    public $osVersionFile = "/etc/debian_version";
+    
+    public $osVersionFile = "";
+    
+    
+    public function isInstalled() 
+    {
+        if (!stristr(PHP_OS, "Linux")) {
+            return false;
+        }
+        
+        if ($this->osVersionFile) {
+            if (!file_exists($this->osVersionFile)) {
+                return false;
+            }            
+        }
+        
+        return true;
+    }//end isInstalled
     
 }//end class
 ?>

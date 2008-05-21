@@ -293,16 +293,6 @@ class System_Daemon
         SIGUSR1 => array("System_Daemon", "defaultSigHandler"),
         SIGCHLD => array("System_Daemon", "defaultSigHandler")
     );
-
-    /**
-     * Cache that holds values of some functions 
-     * for performance gain. Easier then doing 
-     * if (!isset(self::$XXX)) { self::$XXX = self::XXX(); }
-     * every time, in my opinion. 
-     *
-     * @var array
-     */
-    static private $_intFunctionCache = array();
     
 
     
@@ -663,7 +653,7 @@ class System_Daemon
      * 
      * @return boolean
      */
-    static public function writeAutoStart( $overwrite=false )
+    static public function writeAutoRun( $overwrite=false )
     {
         // Init Options (needed for properties of init.d script)
         if (self::_optionsInit(false) === false) {
@@ -677,7 +667,7 @@ class System_Daemon
         
         // Copy properties to OS object
         $options = self::getOptions();
-        if (!self::$_osObj->setProperties($options)) {
+        if (!self::$_osObj->setAutoRunProperties($options)) {
             // Show Errors
             if (is_array(self::$_osObj->errors)) {
                 foreach (self::$_osObj->errors as $error) {
@@ -690,7 +680,7 @@ class System_Daemon
         }
         
         // Try to write init.d 
-        if (!self::$_osObj->writeAutoStart($overwrite)) {
+        if (!self::$_osObj->writeAutoRun($overwrite)) {
             // Show Errors
             if (is_array(self::$_osObj->errors)) {
                 foreach (self::$_osObj->errors as $error) {
@@ -700,7 +690,7 @@ class System_Daemon
             self::log(self::LOG_WARNING, "Unable to create startup file.");
             return false; 
         }        
-    }//end writeAutoStart()       
+    }//end writeAutoRun()       
     
     /**
      * Default signal handler.
@@ -724,7 +714,7 @@ class System_Daemon
             
         switch ($signo) {
         case SIGTERM:
-            // handle shutdown tasks
+            // Handle shutdown tasks
             if (self::isInBackground()) {
                 self::_die();
             } else {
@@ -732,7 +722,7 @@ class System_Daemon
             }
             break;
         case SIGHUP:
-            // handle restart tasks
+            // Handle restart tasks
             self::log(self::LOG_INFO, self::getOption("appName").
                 " daemon received signal: restart", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -746,7 +736,7 @@ class System_Daemon
             }
             break;
         default:
-            // handle all other signals
+            // Handle all other signals
             break;
         }
     }//end defaultSigHandler()
