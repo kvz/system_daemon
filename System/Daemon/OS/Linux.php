@@ -93,7 +93,6 @@ class System_Daemon_OS_Linux extends System_Daemon_OS
         return $this->autoRunPath."/".$appName;
     }//end getAutoRunPath
     
-    
     public function getAutoRunTemplate() 
     {
         if (!$this->autoRunTemplatePath) {

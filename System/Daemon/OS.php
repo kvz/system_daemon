@@ -37,28 +37,6 @@ class System_Daemon_OS
     public $errors = array();
     
     
-    /**
-     * Holds drivers for all the different Operating Systems
-     *
-     * @var array
-     */
-    private $_driversAll = array();
-    
-    /**
-     * Holds drivers for all the different Installed Operating Systems
-     *
-     * @var array
-     */
-    private $_driversValid = array();
-    
-    /**
-     * Holds driver for the Most specific Operating Systems found
-     *
-     * @var array
-     */
-    private $_driverUse = array();
-    
-    
     
     /**
      * Array that holds the properties of the parent
@@ -113,7 +91,8 @@ class System_Daemon_OS
      *
      * @return unknown
      */
-    public function &factory() {
+    public function &factory()
+    {
         
         $drivers      = array();
         $driversValid = array();
@@ -155,12 +134,9 @@ class System_Daemon_OS
         // e.g. Ubuntu > Debian > Linux    
         $use_name = System_Daemon_OS::_mostSpecific($driversValid);
         $obj      = $driversValid[$use_name];
-        
-        //print_r($driversValid);
-        
-                
+                        
         return $obj;
-    }
+    }//end &factory()
         
     
     public function isInstalled() 
@@ -175,12 +151,14 @@ class System_Daemon_OS
     
     public function getAutoRunPath() 
     {
-        
+        $this->errors[] = "Not implemented for OS";
+        return false;
     }//end getAutoRunPath
     
     public function getAutoRunScript()
     {
-        
+        $this->errors[] = "Not implemented for OS";
+        return false;
     }//end getAutoRunScript()
     
     /**
@@ -194,6 +172,8 @@ class System_Daemon_OS
      */
     public function writeAutoRun($overwrite = false)
     {
+        $this->errors[] = "Not implemented for OS";
+        return false;
         
         // Collect init.d path
         $initd_location = $this->initDLocation();
@@ -248,7 +228,7 @@ class System_Daemon_OS
     }//end writeAutoRun() 
     
     
-
+    
     /**
      * Sets daemon specific properties
      *  
@@ -300,7 +280,7 @@ class System_Daemon_OS
         
         return $success;
         
-    } // end setProperties    
+    } //end _testAutoRunProperties    
     
     
     /**
@@ -317,12 +297,21 @@ class System_Daemon_OS
         $weights = array_map(array("System_Daemon_OS", "_getAncestorCount"), $classes);
         arsort($weights);        
         return reset(array_keys($weights));
-    }
+    }//end _mostSpecific
     
+    /**
+     * Extracts last part of a classname. e.g. System_Daemon_OS_Ubuntu -> Ubuntu
+     *
+     * @param unknown_type $class
+     * @return unknown
+     */
     private function _getShortHand($class) {
+        if (!is_string($class) || ! $class ) {
+            return false;
+        }
         $parts = explode("_", $class);
         return end($parts);
-    }
+    } //end _getShortHand
     
     /**
      * Get the total parent count of a class
@@ -333,7 +322,7 @@ class System_Daemon_OS
      */
     private function _getAncestorCount ($class) {
         return count(System_Daemon_OS::_getAncestors($class));        
-    }
+    }//end _getAncestorCount
     
     /**
      * Get an array of parent classes
@@ -348,7 +337,7 @@ class System_Daemon_OS
             $classes[] = $class; 
         }
         return $classes;
-    }    
+    }//end _getAncestors
     
 }//end class
 ?>
