@@ -653,7 +653,7 @@ class System_Daemon
      * 
      * @return boolean
      */
-    static public function writeAutoRun( $overwrite=false )
+    static public function writeAutoRun($overwrite=false)
     {
         // Init Options (needed for properties of init.d script)
         if (self::_optionsInit(false) === false) {
@@ -665,31 +665,27 @@ class System_Daemon
             return false;
         }
         
-        // Copy properties to OS object
+        // Get daemon properties
         $options = self::getOptions();
-        if (!self::$_osObj->setAutoRunProperties($options)) {
-            // Show Errors
-            if (is_array(self::$_osObj->errors)) {
-                foreach (self::$_osObj->errors as $error) {
-                    self::log(self::LOG_NOTICE, $error);
-                }
-            }
-            self::log(self::LOG_WARNING, "Unable to set all required ".
-                "properties for init.d file");
-            return false;
-        }
         
         // Try to write init.d 
-        if (!self::$_osObj->writeAutoRun($overwrite)) {
-            // Show Errors
+        if (($res = self::$_osObj->writeAutoRun($options, $overwrite)) === false) {
             if (is_array(self::$_osObj->errors)) {
                 foreach (self::$_osObj->errors as $error) {
                     self::log(self::LOG_NOTICE, $error);
                 }
             }
             self::log(self::LOG_WARNING, "Unable to create startup file.");
-            return false; 
-        }        
+            return false;
+        }
+        
+        if ($res === true) {
+            self::log(self::LOG_NOTICE, "Startup was already written");
+        } else {
+            self::log(self::LOG_NOTICE, "Startup written to ".$res."");
+        }
+        
+        return true;
     }//end writeAutoRun()       
     
     /**

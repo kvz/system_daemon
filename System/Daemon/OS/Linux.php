@@ -35,6 +35,12 @@ class System_Daemon_OS_Linux extends System_Daemon_OS
      */
     protected $osVersionFile = "";
     
+    /**
+     * Path to autoRun script
+     *
+     * @var string
+     */
+    protected $autoRunDir = "/etc/init.d";    
     
     
     /**
@@ -69,24 +75,39 @@ class System_Daemon_OS_Linux extends System_Daemon_OS
      */
     public function getAutoRunScript($properties)    
     {
-        $template = $this->getAutoRunTemplate();
         
-        if (!$template) {
+        // All data in place? 
+        if (($template = $this->getAutoRunTemplate()) === false) {
             return false;
         }
-        
         if (!$this->autoRunTemplateReplace 
             || !is_array($this->autoRunTemplateReplace)
             || !count($this->autoRunTemplateReplace)) {
             return false;
         }
-
-        // REPLACE {} vars with real values!!!
         
-        return str_replace(array_keys($this->autoRunTemplateReplace), 
+        // Replace System specific keywords with Universal placeholder keywords
+        $script = str_replace(array_keys($this->autoRunTemplateReplace), 
             array_values($this->autoRunTemplateReplace), 
-            $template);        
+            $template);
         
+        // Replace Universal placeholder keywords with Daemon specific properties
+        if (!preg_match_all('/(\{PROPERTIES([^\}]+)\})/is', $script, $r)) {
+            $this->errors[] = "No PROPERTIES found in autoRun template";
+            return false;
+        }
+        
+        $placeholders = $r[1];
+        array_unique($placeholders);
+        foreach ($placeholders as $placeholder) {
+            // Get var
+            $var    = str_replace(array("{PROPERTIES.", "}"), "", $placeholder);
+            
+            // Replace placeholder with actual daemon property
+            $script = str_replace($placeholder, $properties[$var], $script);
+        }
+        
+        return $script;        
     }//end getAutoRunScript()    
     
 }//end class

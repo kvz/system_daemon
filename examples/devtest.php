@@ -27,21 +27,29 @@
 error_reporting(E_ALL);
 require_once "System/Daemon.php";
 
+$options                   = array();
+$options["appName"]        = "devtest";
+$options["appExecutable"]  = "devtest.php";
+$options["appDir"]         = realpath(dirname(__FILE__));
+$options["appDescription"] = "Developer test daemon";
+$options["authorName"]     = "kevman";
+$options["authorEmail"]    = "kev@man.com";
 
 $os = System_Daemon_OS::factory();
-
-
 
 $details = $os->getDetails();
 print_r($details);
 
-$options                   = array();
-$options["appName"]        = "kevman";
-$options["appExecutable"]  = "kevman";
-$options["appDir"]         = "kevman";
-$options["appDescription"] = "kevman";
-$options["authorName"]     = "kevman";
-$options["authorEmail"]    = "kevman";
+if (($res = $os->writeAutoRun($options, true)) === false) {
+    print_r($os->errors);
+} elseif ($res === true) {
+    echo "alread written\n";
+} else {
+    echo "written to ".$res."\n";
+}
+
+
+
 
 /*if (!$os->setAutoRunProperties($options)) {
     print_r($os->errors);
