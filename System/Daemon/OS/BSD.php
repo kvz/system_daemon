@@ -15,7 +15,7 @@
  */
 
 /**
- * A System_Daemon_OS driver for Windows
+ * A System_Daemon_OS driver for BSD
  *
  * @category  System
  * @package   System_Daemon
@@ -82,7 +82,7 @@ class System_Daemon_OS_BSD extends System_Daemon_OS
         }
         
         if (!$dir) {
-            $this->errors[] = "No data dir found in either: ".implode(", ", $tried_dirs);
+            $this->errors[] = "No data dir found in either: ".implode(" or ", $tried_dirs);
             return false;
         }
                 
