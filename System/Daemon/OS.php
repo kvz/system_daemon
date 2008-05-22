@@ -85,12 +85,16 @@ class System_Daemon_OS
 
     /**
      * Loads all the drivers and returns the one for the most specifc OS
+     * 
+     * @param mixed   $force_os boolean or string when you want to enforce an OS 
+     * for testing purposes. CAN BE VERY DANGEROUS IF WRONG OS IS SPECIFIED! 
+     * Will otherwise autodetect OS.
+     * @param boolean $retried  used internally to find out wether we are retrying 
      *
-     * @return unknown
+     * @return object
      */
-    public function &factory()
+    public function &factory($force_os = false, $retried = false)
     {
-        
         $drivers      = array();
         $driversValid = array();
         $class_prefix = "System_Daemon_OS_";
@@ -117,21 +121,38 @@ class System_Daemon_OS
             $drivers[$class] = new $class;            
         }
         
-        
-        // What OSes are valid for this system?
-        // e.g. Debian makes Linux valid as well
-        foreach ($drivers as $class=>$obj) {
-            // Save in Installed container
-            if (call_user_func(array($obj, "isInstalled"))) {
-                $driversValid[$class] = $obj;         
+        if ($force_os !== false) {
+            // Let's use the Forced OS. This could be dangerous
+            $use_name = $class_prefix.$force_os;
+        } else {
+            // What OSes are valid for this system?
+            // e.g. Debian makes Linux valid as well
+            foreach ($drivers as $class=>$obj) {
+                // Save in Installed container
+                if (call_user_func(array($obj, "isInstalled"))) {
+                    $driversValid[$class] = $obj;         
+                }
             }
+            
+            // What's the most specific OS?
+            // e.g. Ubuntu > Debian > Linux    
+            $use_name = System_Daemon_OS::_mostSpecific($driversValid);
         }
         
-        // What's the most specific OS?
-        // e.g. Ubuntu > Debian > Linux    
-        $use_name = System_Daemon_OS::_mostSpecific($driversValid);
-        $obj      = $driversValid[$use_name];
-                        
+        // If forced driver wasn't found, retry to autodetect it
+        if (!isset($drivers[$use_name])) {
+            // Make sure we don't build a loop
+            if (!$retried) {
+                $obj = System_Daemon_OS::factory(false, true);
+                $obj->errors[] = "Unable to use driver: ".$force_os." falling ".
+                    "back to autodetection.";
+            } else {
+                $obj = false;
+            }
+        } else {
+            $obj = $drivers[$use_name]; 
+        }
+       
         return $obj;
     }//end &factory()
 
@@ -157,6 +178,23 @@ class System_Daemon_OS
     {
         return $this->_osDetails;
     }//end getDetails
+
+    /**
+     * Returns a template path to base the autuRun script on.
+     * Uses $autoRunTemplatePath if possible. 
+     *
+     * @return unknown
+     * @see autoRunTemplatePath
+     */
+    public function getAutoRunTemplatePath() 
+    {
+        if (!$this->autoRunTemplatePath) {
+            $this->errors[] = "No autoRunTemplatePath found";
+            return false;
+        }
+        
+        return $this->autoRunTemplatePath; 
+    }//end getAutoRunTemplatePath        
     
     /**
      * Returns OS specific path to autoRun file
@@ -189,7 +227,7 @@ class System_Daemon_OS
         }
         
         return $path;
-    }//end getAutoRunPath
+    }//end getAutoRunPath    
     
     /**
      * Returns a template to base the autuRun script on.
@@ -200,14 +238,13 @@ class System_Daemon_OS
      */
     public function getAutoRunTemplate() 
     {
-        if (!$this->autoRunTemplatePath) {
-            $this->errors[] = "No autoRunTemplatePath found";
+        if (($path = $this->getAutoRunTemplatePath()) === false) {
             return false;
         }
         
-        if (!file_exists($this->autoRunTemplatePath)) {
-            $this->errors[] = "No autoRunTemplatePath: ".
-                $this->autoRunTemplatePath." does not exist";
+        if (!file_exists($path)) {
+            $this->errors[] = "autoRunTemplatePath: ".
+                $path." does not exist";
             return false;
         }
         

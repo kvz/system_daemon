@@ -29,17 +29,56 @@
 class System_Daemon_OS_BSD extends System_Daemon_OS
 {
     /**
+     * Template path
+     *
+     * @var string
+     */
+    protected $autoRunTemplatePath = false;
+    
+    /**
      * Determines wether the system is compatible with this OS
      *
      * @return boolean
      */
     public function isInstalled() 
     {
-        if (!stristr(PHP_OS, "Darwin")) {
+        if (!stristr(PHP_OS, "Darwin") && 
+            !stristr(PHP_OS, "BSD")) {
             return false;
         }
         
         return true;
     }//end isInstalled
+    
+    /**
+     * Returns a template path to base the autuRun script on.
+     * Uses $autoRunTemplatePath if possible. 
+     *
+     * @return unknown
+     * @see autoRunTemplatePath
+     */
+    public function getAutoRunTemplatePath() 
+    {
+        $dir  = false;
+        $file = "template_BSD";
+        
+        if (class_exists("PEAR_Config", true)) {
+            $dir = PEAR_Config::singleton()->get("data_dir") ."/Daemon"; 
+        }
+        
+        if (!$dir) {
+            $try_dir = realpath(dirname(__FILE__)."../../../../data");
+            if (is_dir($try_dir)) {
+                $dir = $try_dir;
+            }
+        }
+        
+        if (!$dir) {
+            return false;
+        }
+                
+        return $dir."/".$file;
+    }//end getAutoRunTemplatePath        
+    
 }//end class
 ?>

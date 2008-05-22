@@ -35,11 +35,18 @@ $options["appDescription"] = "Developer test daemon";
 $options["authorName"]     = "kevman";
 $options["authorEmail"]    = "kev@man.com";
 
-$os = System_Daemon_OS::factory();
+if (($os = System_Daemon_OS::factory("BSD")) === false) {
+    echo "Cannot create OS\n";
+} else {
+    print_r($os->errors);
+    $details = $os->getDetails();
+    print_r($details);    
+}
 
-$details = $os->getDetails();
-print_r($details);
 
+
+
+die ();
 if (($res = $os->writeAutoRun($options, true)) === false) {
     print_r($os->errors);
 } elseif ($res === true) {
