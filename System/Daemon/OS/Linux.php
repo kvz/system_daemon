@@ -43,6 +43,7 @@ class System_Daemon_OS_Linux extends System_Daemon_OS
     protected $autoRunDir = "/etc/init.d";    
     
     
+    
     /**
      * Determines wether the system is compatible with this OS
      *

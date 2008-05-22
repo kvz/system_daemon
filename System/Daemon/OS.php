@@ -28,7 +28,6 @@
  */
 class System_Daemon_OS
 {
-
     /**
      * Holds errors
      *
@@ -135,7 +134,9 @@ class System_Daemon_OS
                         
         return $obj;
     }//end &factory()
-        
+
+    
+    
     /**
      * Determines wether the system is compatible with this OS
      *
@@ -212,8 +213,7 @@ class System_Daemon_OS
         
         return file_get_contents($this->autoRunTemplatePath);
     }//end getAutoRunTemplate    
-    
-        
+         
     /**
      * Uses properties to enrich the autuRun Template
      *
@@ -318,19 +318,7 @@ class System_Daemon_OS
     }//end writeAutoRun() 
             
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        
     /**
      * Sets daemon specific properties
      *  
@@ -384,9 +372,7 @@ class System_Daemon_OS
         return $success;
         
     } //end _testAutoRunProperties    
-    
-    
-    
+        
     /**
      * Determines how specific an operating system is.
      * e.g. Ubuntu is more specific than Debian is more 

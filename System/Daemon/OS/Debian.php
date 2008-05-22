@@ -34,7 +34,7 @@ class System_Daemon_OS_Debian extends System_Daemon_OS_Linux
      * @var string
      */
     protected $osVersionFile = "/etc/debian_version";
-
+    
     /**
      * Template path
      *
@@ -61,8 +61,6 @@ class System_Daemon_OS_Debian extends System_Daemon_OS_Linux
         "# Please remove the \"Author\" lines above and replace them" => "",
         "# with your own name if you copy and modify this script." => ""
     );
-    
-    
     
 }//end class
 ?>
