@@ -35,28 +35,6 @@ class System_Daemon_OS_Linux extends System_Daemon_OS
      */
     protected $osVersionFile = "";
     
-    /**
-     * Path to init.d script
-     *
-     * @var string
-     */
-    protected $autoRunDir = "/etc/init.d";    
-    
-    /**
-     * Template path
-     *
-     * @var string
-     */
-    protected $autoRunTemplatePath = "";    
-        
-    /**
-     * Replace the following keys with values to convert a template into
-     * a read autorun script
-     *
-     * @var array
-     */
-    protected $autoRunTemplateReplace = array();
-    
     
     
     /**
@@ -81,32 +59,15 @@ class System_Daemon_OS_Linux extends System_Daemon_OS
         
         return true;
     }//end isInstalled
-
-    
-    public function getAutoRunPath($appName) 
-    {
-        if (!$this->autoRunPath) {
-            return false;
-        }
         
-        return $this->autoRunPath."/".$appName;
-    }//end getAutoRunPath
-    
-    public function getAutoRunTemplate() 
-    {
-        if (!$this->autoRunTemplatePath) {
-            return false;
-        }
-        
-        if (!file_exists($this->autoRunTemplatePath)) {
-            return false;
-        }
-        
-        return file_get_contents($this->autoRunTemplatePath);
-
-    }//end getAutoRunTemplate    
-    
-    public function getAutoRunScript()
+    /**
+     * Uses properties to enrich the autuRun Template
+     *
+     * @param array $properties Contains the daemon properties
+     * 
+     * @return mixed string or boolean on failure
+     */
+    public function getAutoRunScript($properties)    
     {
         $template = $this->getAutoRunTemplate();
         
