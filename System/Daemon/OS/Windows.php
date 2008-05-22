@@ -29,7 +29,7 @@
 class System_Daemon_OS_Windows extends System_Daemon_OS
 {
     /**
-     * Determines wether this the system is compatible with this OS
+     * Determines wether this system is compatible with this OS
      *
      * @return boolean
      */

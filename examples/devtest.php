@@ -28,18 +28,20 @@ error_reporting(E_ALL);
 require_once "System/Daemon.php";
 
 
-$os =& System_Daemon_OS::factory();
+$os = System_Daemon_OS::factory();
 
 
 
 $details = $os->getDetails();
+print_r($details);
 
-
-$options["appName"] = "kevman";
-$options["appDir"] = "kevman";
+$options                   = array();
+$options["appName"]        = "kevman";
+$options["appExecutable"]  = "kevman";
+$options["appDir"]         = "kevman";
 $options["appDescription"] = "kevman";
-$options["authorName"] = "kevman";
-$options["authorEmail"] = "kevman";
+$options["authorName"]     = "kevman";
+$options["authorEmail"]    = "kevman";
 
 /*if (!$os->setAutoRunProperties($options)) {
     print_r($os->errors);
@@ -47,7 +49,6 @@ $options["authorEmail"] = "kevman";
 */
 
 
-print_r($details);
 
 
 die();
