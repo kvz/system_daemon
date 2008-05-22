@@ -26,7 +26,7 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * * 
  */
-class System_Daemon_OS_Linux extends System_Daemon_OS_Common
+class System_Daemon_OS_Linux extends System_Daemon_OS
 {
     /**
      * On Linux, a distro-specific version file is often telling us enough
@@ -59,17 +59,26 @@ class System_Daemon_OS_Linux extends System_Daemon_OS_Common
     
     
     
+    /**
+     * Determines wether this the system is compatible with this OS
+     *
+     * @return boolean
+     */
+    
     public function isInstalled() 
     {
         if (!stristr(PHP_OS, "Linux")) {
             return false;
         }
         
+        // Find out more specific
+        // This is used by extended classes that inherit
+        // this function
         if ($this->osVersionFile) {
             if (!file_exists($this->osVersionFile)) {
                 return false;
-            }            
-        }
+            } 
+        } 
         
         return true;
     }//end isInstalled

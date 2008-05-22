@@ -26,8 +26,13 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * * 
  */
-class System_Daemon_OS_BSD extends System_Daemon_OS_Common
+class System_Daemon_OS_BSD extends System_Daemon_OS
 {
+    /**
+     * Determines wether this the system is compatible with this OS
+     *
+     * @return boolean
+     */
     public function isInstalled() 
     {
         if (!stristr(PHP_OS, "Darwin")) {

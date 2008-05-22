@@ -28,8 +28,7 @@ error_reporting(E_ALL);
 require_once "System/Daemon.php";
 
 
-$os_funcs = &new System_Daemon_OS();
-$os = $os_funcs->getSpecific();
+$os =& System_Daemon_OS::factory();
 
 
 
@@ -41,10 +40,11 @@ $options["appDir"] = "kevman";
 $options["appDescription"] = "kevman";
 $options["authorName"] = "kevman";
 $options["authorEmail"] = "kevman";
-if (!$os->setAutoRunProperties($options)) {
+
+/*if (!$os->setAutoRunProperties($options)) {
     print_r($os->errors);
 }
-
+*/
 
 
 print_r($details);

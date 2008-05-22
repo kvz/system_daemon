@@ -979,7 +979,6 @@ class System_Daemon
         
         return true;
     }
-        
     
     /**
      * Sets up Option Object instance
