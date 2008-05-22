@@ -82,7 +82,7 @@ class System_Daemon_OS_BSD extends System_Daemon_OS
         }
         
         if (!$dir) {
-            $this->errors[] = "No data dir found in either: ".implode(",", $tried_dirs);
+            $this->errors[] = "No data dir found in either: ".implode(", ", $tried_dirs);
             return false;
         }
                 
