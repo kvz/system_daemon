@@ -39,8 +39,16 @@ if (($os = System_Daemon_OS::factory("BSD")) === false) {
     echo "Cannot create OS\n";
 } else {
     print_r($os->errors);
+    
+    echo "\n";
+    
+    echo $os->getAutoRunTemplatePath();
+    echo "\n";
+    
     $details = $os->getDetails();
-    print_r($details);    
+    echo "\n";
+    print_r($details);
+    echo "\n";    
 }
 
 

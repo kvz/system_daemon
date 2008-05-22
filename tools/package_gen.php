@@ -67,7 +67,8 @@ $options = array(
     "dir_roles"         => array(
                                 "docs" => "doc",
                                 "examples" => "doc",
-                                "tests" => "test"
+                                "tests" => "test",
+                                "data" => "data"
                             ),
     "roles"             => array(
                                 "*" => "php"

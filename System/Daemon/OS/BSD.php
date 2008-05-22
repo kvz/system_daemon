@@ -59,21 +59,30 @@ class System_Daemon_OS_BSD extends System_Daemon_OS
      */
     public function getAutoRunTemplatePath() 
     {
-        $dir  = false;
-        $file = "template_BSD";
+        $dir        = false;
+        $file       = "template_BSD";
+        $tried_dirs = array();
         
         if (class_exists("PEAR_Config", true)) {
-            $dir = PEAR_Config::singleton()->get("data_dir") ."/Daemon"; 
-        }
-        
-        if (!$dir) {
-            $try_dir = realpath(dirname(__FILE__)."../../../../data");
-            if (is_dir($try_dir)) {
+            $try_dir = realpath(PEAR_Config::singleton()->get("data_dir") ."/System_Daemon");
+            if (!is_dir($try_dir)) {
+                $tried_dirs[] = $try_dir;
+            } else {
                 $dir = $try_dir;
             }
         }
         
         if (!$dir) {
+            $try_dir = realpath(dirname(__FILE__)."../../../../data");
+            if (!is_dir($try_dir)) {
+                $tried_dirs[] = $try_dir;
+            } else {
+                $dir = $try_dir;
+            }
+        }
+        
+        if (!$dir) {
+            $this->errors[] = "No data dir found in either: ".implode(",", $tried_dirs);
             return false;
         }
                 
