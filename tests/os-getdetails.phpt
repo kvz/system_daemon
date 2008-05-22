@@ -11,11 +11,11 @@ require_once 'tests-config.php';
 require_once 'System/Daemon.php';
 require_once 'System/Daemon/OS.php';
 
-$osObj = new System_Daemon_OS(); 
-$res = $osObj->determine();
+$os = System_Daemon_OS::factory();
+$details = $os->getDetails();
 
-echo count($res);
+echo count($details);
 
 ?>
 --EXPECT--
-3
+2

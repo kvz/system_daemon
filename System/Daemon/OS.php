@@ -213,18 +213,50 @@ class System_Daemon_OS
         return file_get_contents($this->autoRunTemplatePath);
     }//end getAutoRunTemplate    
     
+        
     /**
-     * Uses properties to enrich the autoRun Template
+     * Uses properties to enrich the autuRun Template
      *
      * @param array $properties Contains the daemon properties
      * 
      * @return mixed string or boolean on failure
      */
-    public function getAutoRunScript($properties)
+    public function getAutoRunScript($properties)    
     {
-        $this->errors[] = "Not implemented for OS";
-        return false;
-    }//end getAutoRunScript()
+        
+        // All data in place? 
+        if (($template = $this->getAutoRunTemplate()) === false) {
+            return false;
+        }
+        if (!$this->autoRunTemplateReplace 
+            || !is_array($this->autoRunTemplateReplace)
+            || !count($this->autoRunTemplateReplace)) {
+            return false;
+        }
+        
+        // Replace System specific keywords with Universal placeholder keywords
+        $script = str_replace(array_keys($this->autoRunTemplateReplace), 
+            array_values($this->autoRunTemplateReplace), 
+            $template);
+        
+        // Replace Universal placeholder keywords with Daemon specific properties
+        if (!preg_match_all('/(\{PROPERTIES([^\}]+)\})/is', $script, $r)) {
+            $this->errors[] = "No PROPERTIES found in autoRun template";
+            return false;
+        }
+        
+        $placeholders = $r[1];
+        array_unique($placeholders);
+        foreach ($placeholders as $placeholder) {
+            // Get var
+            $var = str_replace(array("{PROPERTIES.", "}"), "", $placeholder);
+            
+            // Replace placeholder with actual daemon property
+            $script = str_replace($placeholder, $properties[$var], $script);
+        }
+        
+        return $script;        
+    }//end getAutoRunScript()   
     
     /**
      * Writes an: 'init.d' script on the filesystem
