@@ -36,7 +36,7 @@ if ($r) {
 // If there are any updates, overwrite changelog
 $change_log = trim(implode("\n", $o));
 if ($change_log) {
-    file_put_contents($workspace_dir."/docs/NOTES", $change_log);
+    file_put_contents($workspace_dir."/docs/CHANGELOG", $change_log);
 }
 
 // Build XML

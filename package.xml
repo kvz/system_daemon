@@ -24,12 +24,12 @@ spawning standalone daemons, and for example includes:
    8. Set options like max RAM usage</description>
  <lead>
   <name>Kevin van Zonneveld</name>
-  <user>kevin</user>
+  <user>kvz</user>
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
  <date>2008-06-04</date>
- <time>12:51:11</time>
+ <time>13:04:37</time>
  <version>
   <release>0.4.0</release>
   <api>0.4.0</api>
@@ -41,7 +41,7 @@ spawning standalone daemons, and for example includes:
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
  <notes>2008-06-04 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
-        [r141] Package System_Daemon-0.4.0-alpha
+        [r143] Package System_Daemon-0.4.0-alpha
 
 2008-05-22 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
@@ -216,7 +216,7 @@ spawning standalone daemons, and for example includes:
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
    <notes>2008-06-04 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
-        [r141] Package System_Daemon-0.4.0-alpha
+        [r143] Package System_Daemon-0.4.0-alpha
 
 2008-05-22 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
