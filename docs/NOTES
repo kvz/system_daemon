@@ -1,9 +1,53 @@
+2008-06-04 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r141] Package System_Daemon-0.4.0-alpha
+
+2008-05-22 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r140] Incomplete - # 16: Create seperate files for daemon templates
+        [r140] http://trac.plutonia.nl/projects/system_daemon/ticket/16
+        [r136] Incomplete - # 1: phase out OS-specifics into a driver architecture
+        [r136] http://trac.plutonia.nl/projects/system_daemon/ticket/1
+
+2008-05-21 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r129] Incomplete - # 1: phase out OS-specifics into a driver architecture
+        [r129] http://trac.phpjs.org/projects/system_daemon/ticket/1
+        [r127] Concistency
+        [r127] http://trac.phpjs.org/projects/system_daemon/ticket/15
+        [r126] Incomplete - # 15: Concistency
+        [r123] Better loading & checking of required classes
+
+2008-05-20 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r122] Prepare for phase-out OS methods into driver architecture
+        [r120] Bug fixed: Undefined index when asking for an undefined Option
+        [r119] Incomplete - # 14: Phase out option mechanism into separate class
+        [r119] http://trac.plutonia.nl/projects/system_daemon/ticket/14
+
+2008-05-19 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r118] Prepare for phase-out OS methods into driver architecture
+        [r117] Fixed minor bugs concerning the init.d mechanisms
+        [r116] Continue to set other options when one has failed
+        [r115] Implemented System_Daemon API changes
+        [r113] Bugfix: integer type is not defined. Should be number
+
+2008-05-17 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r112] Changed author
+
+2008-05-14 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r111] Improved Option System
+
 2008-05-13 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
-        [r107] Package version 0.3
+        [r110] Improved Option System
+        [r109] Incomplete - # 4: less public variables
+        [r109] http://trac.phpjs.org/projects/system_daemon/ticket/4
+        [r108] Package version 0.3
         [r106] Improved Tests
-        [r105] Incomplete - # 4: less public variables
-        [r105] http://trac.phpjs.org/projects/system_daemon/ticket/4
 
 2008-05-12 Kevin van Zonneveld <kevin@vanzonneveld.net>
 

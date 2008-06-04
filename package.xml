@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.7.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+<package packagerversion="1.6.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
     http://pear.php.net/dtd/tasks-1.0.xsd
     http://pear.php.net/dtd/package-2.0
     http://pear.php.net/dtd/package-2.0.xsd">
@@ -28,23 +28,67 @@ spawning standalone daemons, and for example includes:
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
- <date>2008-05-13</date>
- <time>15:47:01</time>
+ <date>2008-06-04</date>
+ <time>12:51:11</time>
  <version>
-  <release>0.3</release>
-  <api>0.3</api>
+  <release>0.4.0</release>
+  <api>0.4.0</api>
  </version>
  <stability>
   <release>alpha</release>
   <api>alpha</api>
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
- <notes>2008-05-13 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ <notes>2008-06-04 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
-        [r107] Package version 0.3
+        [r141] Package System_Daemon-0.4.0-alpha
+
+2008-05-22 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r140] Incomplete - # 16: Create seperate files for daemon templates
+        [r140] http://trac.plutonia.nl/projects/system_daemon/ticket/16
+        [r136] Incomplete - # 1: phase out OS-specifics into a driver architecture
+        [r136] http://trac.plutonia.nl/projects/system_daemon/ticket/1
+
+2008-05-21 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r129] Incomplete - # 1: phase out OS-specifics into a driver architecture
+        [r129] http://trac.phpjs.org/projects/system_daemon/ticket/1
+        [r127] Concistency
+        [r127] http://trac.phpjs.org/projects/system_daemon/ticket/15
+        [r126] Incomplete - # 15: Concistency
+        [r123] Better loading &amp;amp; checking of required classes
+
+2008-05-20 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r122] Prepare for phase-out OS methods into driver architecture
+        [r120] Bug fixed: Undefined index when asking for an undefined Option
+        [r119] Incomplete - # 14: Phase out option mechanism into separate class
+        [r119] http://trac.plutonia.nl/projects/system_daemon/ticket/14
+
+2008-05-19 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r118] Prepare for phase-out OS methods into driver architecture
+        [r117] Fixed minor bugs concerning the init.d mechanisms
+        [r116] Continue to set other options when one has failed
+        [r115] Implemented System_Daemon API changes
+        [r113] Bugfix: integer type is not defined. Should be number
+
+2008-05-17 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r112] Changed author
+
+2008-05-14 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r111] Improved Option System
+
+2008-05-13 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r110] Improved Option System
+        [r109] Incomplete - # 4: less public variables
+        [r109] http://trac.phpjs.org/projects/system_daemon/ticket/4
+        [r108] Package version 0.3
         [r106] Improved Tests
-        [r105] Incomplete - # 4: less public variables
-        [r105] http://trac.phpjs.org/projects/system_daemon/ticket/4
 
 2008-05-12 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
@@ -63,6 +107,9 @@ spawning standalone daemons, and for example includes:
         [r94] Added version mapping</notes>
  <contents>
   <dir baseinstalldir="./" name="/">
+   <dir name="data">
+    <file name="template_BSD" role="data" />
+   </dir> <!-- /data -->
    <dir name="docs">
     <file name="DESCRIPTION" role="doc" />
     <file name="MAINTAINERS" role="doc" />
@@ -75,13 +122,21 @@ spawning standalone daemons, and for example includes:
     <dir name="System">
      <dir name="Daemon">
       <dir name="OS">
+       <file name="BSD.php" role="doc" />
+       <file name="Debian.php" role="doc" />
        <file name="Exception.php" role="doc" />
+       <file name="Linux.php" role="doc" />
+       <file name="RedHat.php" role="doc" />
+       <file name="Ubuntu.php" role="doc" />
+       <file name="Windows.php" role="doc" />
       </dir> <!-- /examples/System/Daemon/OS -->
       <file name="Exception.php" role="doc" />
+      <file name="Options.php" role="doc" />
       <file name="OS.php" role="doc" />
      </dir> <!-- /examples/System/Daemon -->
      <file name="Daemon.php" role="doc" />
     </dir> <!-- /examples/System -->
+    <file name="devtest.php" role="doc" />
     <file name="logparser.php" role="doc" />
     <file name="nopear.php" role="doc" />
     <file name="pearlog.php" role="doc" />
@@ -90,9 +145,16 @@ spawning standalone daemons, and for example includes:
    <dir name="System">
     <dir name="Daemon">
      <dir name="OS">
+      <file name="BSD.php" role="php" />
+      <file name="Debian.php" role="php" />
       <file name="Exception.php" role="php" />
+      <file name="Linux.php" role="php" />
+      <file name="RedHat.php" role="php" />
+      <file name="Ubuntu.php" role="php" />
+      <file name="Windows.php" role="php" />
      </dir> <!-- /System/Daemon/OS -->
      <file name="Exception.php" role="php" />
+     <file name="Options.php" role="php" />
      <file name="OS.php" role="php" />
     </dir> <!-- /System/Daemon -->
     <file name="Daemon.php" role="php" />
@@ -100,7 +162,11 @@ spawning standalone daemons, and for example includes:
    <dir name="tests">
     <file name="inbackground.phpt" role="test" />
     <file name="log.phpt" role="test" />
-    <file name="os-determine.phpt" role="test" />
+    <file name="os-determine.phpt.diff" role="test" />
+    <file name="os-determine.phpt.exp" role="test" />
+    <file name="os-determine.phpt.out" role="test" />
+    <file name="os-determine.phpt.php" role="test" />
+    <file name="os-getdetails.phpt" role="test" />
     <file name="tests-config.php" role="test" />
    </dir> <!-- /tests -->
    <dir name="tools">
@@ -139,21 +205,65 @@ spawning standalone daemons, and for example includes:
  <changelog>
   <release>
    <version>
-    <release>0.3</release>
-    <api>0.3</api>
+    <release>0.4.0</release>
+    <api>0.4.0</api>
    </version>
    <stability>
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2008-05-13</date>
+   <date>2008-06-04</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
-   <notes>2008-05-13 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+   <notes>2008-06-04 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
-        [r107] Package version 0.3
+        [r141] Package System_Daemon-0.4.0-alpha
+
+2008-05-22 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r140] Incomplete - # 16: Create seperate files for daemon templates
+        [r140] http://trac.plutonia.nl/projects/system_daemon/ticket/16
+        [r136] Incomplete - # 1: phase out OS-specifics into a driver architecture
+        [r136] http://trac.plutonia.nl/projects/system_daemon/ticket/1
+
+2008-05-21 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r129] Incomplete - # 1: phase out OS-specifics into a driver architecture
+        [r129] http://trac.phpjs.org/projects/system_daemon/ticket/1
+        [r127] Concistency
+        [r127] http://trac.phpjs.org/projects/system_daemon/ticket/15
+        [r126] Incomplete - # 15: Concistency
+        [r123] Better loading &amp;amp; checking of required classes
+
+2008-05-20 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r122] Prepare for phase-out OS methods into driver architecture
+        [r120] Bug fixed: Undefined index when asking for an undefined Option
+        [r119] Incomplete - # 14: Phase out option mechanism into separate class
+        [r119] http://trac.plutonia.nl/projects/system_daemon/ticket/14
+
+2008-05-19 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r118] Prepare for phase-out OS methods into driver architecture
+        [r117] Fixed minor bugs concerning the init.d mechanisms
+        [r116] Continue to set other options when one has failed
+        [r115] Implemented System_Daemon API changes
+        [r113] Bugfix: integer type is not defined. Should be number
+
+2008-05-17 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r112] Changed author
+
+2008-05-14 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r111] Improved Option System
+
+2008-05-13 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+
+        [r110] Improved Option System
+        [r109] Incomplete - # 4: less public variables
+        [r109] http://trac.phpjs.org/projects/system_daemon/ticket/4
+        [r108] Package version 0.3
         [r106] Improved Tests
-        [r105] Incomplete - # 4: less public variables
-        [r105] http://trac.phpjs.org/projects/system_daemon/ticket/4
 
 2008-05-12 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
 
