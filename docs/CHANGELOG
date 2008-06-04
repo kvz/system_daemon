@@ -1,7 +1,3 @@
-2008-06-04 Kevin van Zonneveld <kevin@vanzonneveld.net>
-
-        [r143] Package System_Daemon-0.4.0-alpha
-
 2008-05-22 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
         [r140] Incomplete - # 16: Create seperate files for daemon templates
@@ -64,3 +60,104 @@
         [r96] Incomplete - # 8: class constants for error codes
         [r96] http://trac.phpjs.org/projects/system_daemon/ticket/8
         [r94] Added version mapping
+        [r92] Improved Package Tool
+        [r91] Incomplete - # 6: Log should be an optional dependency
+        [r91] http://trac.phpjs.org/projects/system_daemon/ticket/6
+        [r90] Incomplete - # 5: tests should be added to a tests dir and added to package.xml
+        [r90] http://trac.phpjs.org/projects/system_daemon/ticket/5
+
+2008-05-06 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r89] Minor improvements to code layout
+
+2008-04-29 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r88] Improved the packaging tools
+        [r87] Added optional support for acceptance of an instance of PEAR's Log package
+        [r84] Improved code layout
+        [r81] Improved SAFE_MODE check
+        [r80] Added a 'nopear' example
+        [r78] Allowed for ini_sets to be defined outside of the class
+        [r78] Enabled a SAFE_MODE check for the ini_sets
+        [r77] Made log levels comply with PEAR_LOG_ levels.
+        [r76] You can now pass your own custom handlers to the various sig states.
+
+2008-04-28 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r74] Remove error_reporting all (debug purposes)
+        [r73] Fixed abstraction related pcntl_signal bug
+        [r72] Protected members must not be prefixed with an underscore
+        [r70] Improved function hierarchy (static, protected, etc)
+        [r69] Improved independency of OS class by pushing properties from parent object
+        [r68] Ignore project file
+
+2008-04-27 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r67] Instantiating the Daemon is foolish. Therefore change the entire package to abstract.
+        [r63] Stripped some default unit tests that are not going to be compatible with the actuall daemon mechanism
+        [r62] Include tgz package in SVN
+        [r61] Improved the packaging tools
+        [r60] Improved the unit tests
+        [r59] Becoming a daemon breaks the PHPUnit test mechanism.
+        [r57] Added basic Unit Test
+        [r57] Moved OS functions to own class
+
+2008-04-24 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r56] Improved the packaging tools
+        [r55] Improved the tools
+
+2008-04-23 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r54] Improved the examples
+        [r53] Created tools for package & changelog generation
+        [r52] delete tools. svn2cl is in subversion-tools package.
+        [r51] reorganize directory structure
+        [r50] package.xml
+
+2008-04-22 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r49] more packaging tryouts
+        [r48] package.xml generator
+        [r46] executable
+        [r45] comments & executable
+        [r44] PEAR CS compliance
+        [r43] comments
+        [r42] readded autoloader code from the PHP_CodeSniffer package by Greg Sherwood and Marc McIntyre
+        [r41] revised log facility
+        [r40] improved logging facility
+        [r39] replaced to many uids. fixed
+        [r38] added more consistency in methodnames
+        [r37] improved example
+        [r37] added better PEAR independance
+        [r36] removed autoloader code from the PHP_CodeSniffer package
+        [r35] autoloader code from the PHP_CodeSniffer package by Greg Sherwood and Marc McIntyre
+        [r34] added PHP-CLI requirement
+        [r32] reorganise directory structure
+        [r30] reorganise directory structue
+        [r26] camelized every variable & function
+        [r22] renamed initd to more distinct initdForge
+        [r21] more comments
+        [r19] rename Daemon to System_Daemon and add Exception class
+
+2008-04-21 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r18] process PHP_CodeSniffer pointers
+        [r13] svn keywords
+
+2008-04-19 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r11] svn://svn.plutonia.nl/system_daemon
+
+2008-04-15 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r10] more ignores
+
+2008-03-24 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r5] added example code
+
+2008-03-23 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r2] Move Daemon Class to own repository
+        [r1] .:

@@ -25,8 +25,11 @@ $build_version  = end(array_keys($mapping));
 $build_revision = preg_replace('/[^\d]/', '', end($mapping));
 
 // Read changes up from current revision
-$cmd = "php ".$workspace_dir."/tools/changelog_gen.php ".
-    $build_revision;
+$cmd = "php ".$workspace_dir."/tools/changelog_gen.php ";//.
+    //$build_revision; 
+    // Don't use changelog since previous version anymore.
+    // Do that in NOTES
+    // And keep a full changelog
 exec($cmd, $o, $r);
 if ($r) {
     print_r($o);
