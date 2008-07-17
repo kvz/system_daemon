@@ -106,14 +106,16 @@ class System_Daemon_Options
      */
     public function setOption($name, $value)
     {
+        $success = true;
         // Not validated?
         if (!$this->_validate($name, $value, $reason)) {
             // Default not used or failed as well!
             $this->errors[] = "Option ".$name." invalid: ".$reason;
-            return false;
+            $success = false;
         }
         
         $this->_options[$name] = $value;
+        return $success;
     }//end setOption()
         
     /**
