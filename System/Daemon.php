@@ -386,10 +386,20 @@ class System_Daemon
                 trigger_error($msg, E_USER_ERROR);
             }
         }        
-        
+
         // Check for CLI
         if ((php_sapi_name() != 'cli')) {
-            $msg = "You can only create daemon from the command line";
+            $msg = "You can only create daemon from the command line (CLI-mode)";
+            if (self::getOption("usePEAR")) {
+                throw new System_Daemon_Exception($msg);
+            } else {
+                trigger_error($msg, E_USER_ERROR);
+            }
+        }
+        
+        // Check for POSIX
+        if (!function_exists("posix_getpid")) {
+            $msg = "PHP is compiled without --enable-posix directive";
             if (self::getOption("usePEAR")) {
                 throw new System_Daemon_Exception($msg);
             } else {
