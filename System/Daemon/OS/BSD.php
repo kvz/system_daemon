@@ -64,7 +64,8 @@ class System_Daemon_OS_BSD extends System_Daemon_OS
         $tried_dirs = array();
         
         if (class_exists("PEAR_Config", true)) {
-            $try_dir = realpath(PEAR_Config::singleton()->get("data_dir") ."/System_Daemon");
+            $try_dir = realpath(PEAR_Config::singleton()->get("data_dir").
+                "/System_Daemon");
             if (!is_dir($try_dir)) {
                 $tried_dirs[] = $try_dir;
             } else {
@@ -82,7 +83,8 @@ class System_Daemon_OS_BSD extends System_Daemon_OS
         }
         
         if (!$dir) {
-            $this->errors[] = "No data dir found in either: ".implode(" or ", $tried_dirs);
+            $this->errors[] = "No data dir found in either: ".
+                implode(" or ", $tried_dirs);
             return false;
         }
                 

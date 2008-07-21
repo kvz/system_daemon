@@ -974,7 +974,7 @@ class System_Daemon
     {
         // Create Option Object if nescessary
         if (self::$_osObj === false) {
-            self::$_osObj = new System_Daemon_OS();
+            self::$_osObj = System_Daemon_OS::factory();
         }
         
         // Still false? This was an error!

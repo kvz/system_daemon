@@ -93,7 +93,7 @@ if (!$runmode["write-initd"]) {
     System_Daemon::log(System_Daemon::LOG_INFO, "not writing ".
         "an init.d script this time");
 } else {
-    if (($initd_location = System_Daemon::writeAutoStart()) === false) {
+    if (($initd_location = System_Daemon::writeAutoRun()) === false) {
         System_Daemon::log(System_Daemon::LOG_NOTICE, "unable to write ".
             "init.d script");
     } else {

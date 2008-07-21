@@ -65,7 +65,7 @@ class System_Daemon_OS
     
     /**
      * Constructor
-     * Only run by instantiated OS Drivers
+     * Only ran by instantiated OS Drivers
      */
     public function __construct() 
     {
@@ -121,6 +121,7 @@ class System_Daemon_OS
             $drivers[$class] = new $class;            
         }
         
+        // Determine which one to use
         if ($force_os !== false) {
             // Let's use the Forced OS. This could be dangerous
             $use_name = $class_prefix.$force_os;
@@ -143,7 +144,7 @@ class System_Daemon_OS
         if (!isset($drivers[$use_name])) {
             // Make sure we don't build a loop
             if (!$retried) {
-                $obj = System_Daemon_OS::factory(false, true);
+                $obj           = System_Daemon_OS::factory(false, true);
                 $obj->errors[] = "Unable to use driver: ".$force_os." falling ".
                     "back to autodetection.";
             } else {

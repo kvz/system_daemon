@@ -111,7 +111,7 @@ class System_Daemon_Options
         if (!$this->_validate($name, $value, $reason)) {
             // Default not used or failed as well!
             $this->errors[] = "Option ".$name." invalid: ".$reason;
-            $success = false;
+            $success        = false;
         }
         
         $this->_options[$name] = $value;
