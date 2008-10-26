@@ -1,66 +1,30 @@
-2008-06-04 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+System_Daemon 0.5.0-alpha 2008-10-26 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Pack and release r150 as 0.5.0-alpha
+ * Fixed bug: autoRunTemplatePath when writing init.d script
+ * Added default return value TRUE to Options::setOption
+ * Check for POSIX functions before calling them
+ * Keep a full changelog, keep manual Release Notes in NOTES
+ * Separate (release) Notes from Changelog. Manually update NOTES from now on
 
-[r143] Package System_Daemon-0.4.0-alpha
+System_Daemon 0.4.0-alpha 2008-06-04 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Pack and release r143 as 0.4.0-alpha
+ * Created seperate files for daemon templates
+ * Phased out OS-specifics into a driver architecture
+ * Phased out option mechanism into separate class
+ * Better naming concistency
+ * Better loading &amp; checking of required classes
+ * Fixed bug: Undefined index when asking for an undefined Option
+ * Fixed bugs: concerning the init.d mechanisms
+ * Fixed bug: Continue setting other options when one has failed
+ * Implemented System_Daemon API changes
+ * Fixed bug: integer type is not defined. Should be number
+ * Improved Option System
+ * Reduced number of public variables
+ * Improved Tests
+ * Changed to non-abstract class
+ * Simplify if/else where possible
+ * Switched to class constants for error codes
 
-2008-05-22 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
-
-[r140] Incomplete - # 16: Create seperate files for daemon templates
-[r140] http://trac.plutonia.nl/projects/system_daemon/ticket/16
-[r136] Incomplete - # 1: phase out OS-specifics into a driver architecture
-[r136] http://trac.plutonia.nl/projects/system_daemon/ticket/1
-
-2008-05-21 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
-
-[r129] Incomplete - # 1: phase out OS-specifics into a driver architecture
-[r129] http://trac.phpjs.org/projects/system_daemon/ticket/1
-[r127] Concistency
-[r127] http://trac.phpjs.org/projects/system_daemon/ticket/15
-[r126] Incomplete - # 15: Concistency
-[r123] Better loading &amp; checking of required classes
-
-2008-05-20 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
-
-[r122] Prepare for phase-out OS methods into driver architecture
-[r120] Bug fixed: Undefined index when asking for an undefined Option
-[r119] Incomplete - # 14: Phase out option mechanism into separate class
-[r119] http://trac.plutonia.nl/projects/system_daemon/ticket/14
-
-2008-05-19 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
-
-[r118] Prepare for phase-out OS methods into driver architecture
-[r117] Fixed minor bugs concerning the init.d mechanisms
-[r116] Continue to set other options when one has failed
-[r115] Implemented System_Daemon API changes
-[r113] Bugfix: integer type is not defined. Should be number
-
-2008-05-17 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
-
-[r112] Changed author
-
-2008-05-14 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
-
-[r111] Improved Option System
-
-2008-05-13 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
-
-[r110] Improved Option System
-[r109] Incomplete - # 4: less public variables
-[r109] http://trac.phpjs.org/projects/system_daemon/ticket/4
-[r108] Package version 0.3
-[r106] Improved Tests
-
-2008-05-12 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
-
-[r101] Incomplete - # 4: less public variables
-[r101] http://trac.phpjs.org/projects/system_daemon/ticket/4
-[r100] Incomplete - # 7: Change to non-abstract class and Use a private constructor
-[r100] http://trac.phpjs.org/projects/system_daemon/ticket/7
-[r100] less public variables
-
-2008-05-11 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
-
-[r98] Incomplete - # 3: simplify if/else where possible
-[r98] http://trac.phpjs.org/projects/system_daemon/ticket/3
-[r96] Incomplete - # 8: class constants for error codes
-[r96] http://trac.phpjs.org/projects/system_daemon/ticket/8
-[r94] Added version mapping
+System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Pack and release r94 as 0.3.0-alpha
+ * Added version mapping

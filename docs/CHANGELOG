@@ -1,3 +1,22 @@
+2008-09-05 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r150] System/Daemon/Exception.php, System/Daemon/OS.php, System/Daemon/OS/BSD.php, System/Daemon/OS/Debian.php, System/Daemon/OS/Exception.php, System/Daemon/OS/Linux.php, System/Daemon/OS/RedHat.php, System/Daemon/OS/Ubuntu.php, System/Daemon/OS/Windows.php, System/Daemon/Options.php, System_Daemon-0.1.tgz, System_Daemon-0.2.tgz, System_Daemon-0.3.tgz, System_Daemon-0.4.0.tgz, data/template_BSD, docs/CHANGELOG, docs/DESCRIPTION, docs/MAINTAINERS, docs/MAPPING, docs/NOTES, docs/SUMMARY, docs/VERSION, docs/suggested_notes_format, examples/devtest.php, examples/nopear.php, examples/pearlog.php, examples/simple.php, package.php, package.xml, test.php, tests/inbackground.phpt, tests/log.phpt, tests/os-determine.phpt.diff, tests/os-determine.phpt.exp, tests/os-determine.phpt.out, tests/os-determine.phpt.php, tests/os-getdetails.phpt, tests/tests-config.php, tools/changelog_gen.php, tools/package_gen.php:
+
+2008-07-21 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r149] Fixed bug which caused: autoRunTemplatePath when writing init.d script
+
+2008-07-17 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r148] Added default return value TRUE to Options::setOption
+        [r147] Check for POSIX functions before calling them
+
+2008-06-04 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r146] Keep a full changelog, keep manual Release Notes in NOTES
+        [r144] Separate (release) Notes from Changelog. Manually update NOTES from now on
+        [r143] Package System_Daemon-0.4.0-alpha
+
 2008-05-22 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
         [r140] Incomplete - # 16: Create seperate files for daemon templates
