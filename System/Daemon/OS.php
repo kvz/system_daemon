@@ -425,8 +425,9 @@ class System_Daemon_OS
     {
         $weights = array_map(array("System_Daemon_OS", "_getAncestorCount"), 
             $classes);
-        arsort($weights);        
-        return reset(array_keys($weights));
+        arsort($weights);
+        $fattest = reset(array_keys($weights));
+        return $fattest;
     }//end _mostSpecific
     
     /**
