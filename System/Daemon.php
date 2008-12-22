@@ -966,7 +966,7 @@ class System_Daemon
     
     
     /**
-     * Sets up Option Object instance
+     * Sets up OS instance
      *
      * @return boolean
      */
