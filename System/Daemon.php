@@ -88,21 +88,21 @@ class System_Daemon
      *
      * @var integer
      */
-    static private $_processId = 0;
+    static protected $_processId = 0;
 
     /**
      * Wether the our daemon is being killed
      *
      * @var boolean
      */
-    static private $_isDying = false;    
+    static protected $_isDying = false;
     
     /**
      * Wether the current process is a forked child
      *
      * @var boolean
      */
-    static private $_processIsChild = false;
+    static protected $_processIsChild = false;
     
     /**
      * Wether SAFE_MODE is on or off. This is important for ini_set
@@ -110,14 +110,14 @@ class System_Daemon
      *
      * @var boolean
      */
-    static private $_safeMode = false;
+    static protected $_safeMode = false;
     
     /**
      * Available log levels
      *
      * @var array
      */
-    static private $_logLevels = array(
+    static protected $_logLevels = array(
         self::LOG_EMERG => "emerg",
         self::LOG_ALERT => "alert",
         self::LOG_CRIT => "crit",
@@ -133,14 +133,14 @@ class System_Daemon
      * 
      * @var mixed object or boolean
      */
-    static private $_optObj = false;
+    static protected $_optObj = false;
     
     /**
      * Holds OS Object
      * 
      * @var mixed object or boolean
      */
-    static private $_osObj = false;
+    static protected $_osObj = false;
     
     /**
      * Definitions for all Options
@@ -149,7 +149,7 @@ class System_Daemon
      * @see setOption()
      * @see getOption()
      */
-    static private $_optionDefinitions = array(
+    static protected $_optionDefinitions = array(
         "usePEAR" => array(
             "type" => "boolean",
             "default" => true,
@@ -283,7 +283,7 @@ class System_Daemon
      * @var array
      * @see setSigHandler()
      */
-    static private $_sigHandlers = array(
+    static protected $_sigHandlers = array(
         SIGCONT => array("System_Daemon", "defaultSigHandler"),
         SIGALRM => array("System_Daemon", "defaultSigHandler"),
         SIGINT => array("System_Daemon", "defaultSigHandler"),
@@ -297,12 +297,12 @@ class System_Daemon
 
     
     /**
-     * Making the class non-abstract with a private constructor does a better
+     * Making the class non-abstract with a protected constructor does a better
      * job of preventing instantiation than just marking the class as abstract.
      * 
      * @see start()
      */
-    private function __construct() 
+    protected function __construct()
     {
         
     }    
@@ -471,7 +471,7 @@ class System_Daemon
 
     /**
      * Sets any option found in $_optionDefinitions
-     * Public interface to talk with with private option methods
+     * Public interface to talk with with protected option methods
      * 
      * @param string $name  Name of the Option
      * @param mixed  $value Value of the Option
@@ -489,7 +489,7 @@ class System_Daemon
     
     /**
      * Sets an array of options found in $_optionDefinitions
-     * Public interface to talk with with private option methods
+     * Public interface to talk with with protected option methods
      * 
      * @param array $use_options Array with Options
      *
@@ -506,7 +506,7 @@ class System_Daemon
     
     /**
      * Gets any option found in $_optionDefinitions
-     * Public interface to talk with with private option methods
+     * Public interface to talk with with protected option methods
      * 
      * @param string $name Name of the Option
      *
@@ -712,7 +712,7 @@ class System_Daemon
     static public function defaultSigHandler( $signo )
     {
         // Must be public or else will throw a 
-        // fatal error: Call to private method 
+        // fatal error: Call to protected method
          
         self::log(self::LOG_DEBUG, self::getOption("appName").
             " daemon received signal: ".$signo, 
@@ -803,7 +803,7 @@ class System_Daemon
      *
      * @return void
      */
-    static private function _summon() 
+    static protected function _summon()
     {
 
         self::log(self::LOG_INFO, "starting ".self::getOption("appName").
@@ -902,7 +902,7 @@ class System_Daemon
      *
      * @return boolean
      */
-    static private function _fork()
+    static protected function _fork()
     {
         self::log(self::LOG_DEBUG, "forking ".self::getOption("appName").
             " daemon", 
@@ -935,7 +935,7 @@ class System_Daemon
      *
      * @return string
      */
-    static private function _whatIAm()
+    static protected function _whatIAm()
     {
         return (self::isInBackground()?"child":"parent");
     }//end _whatIAm()
@@ -946,7 +946,7 @@ class System_Daemon
      *
      * @return void
      */
-    static private function _die()
+    static protected function _die()
     {
         if (!self::isDying()) {
             self::$_isDying = true;
@@ -970,7 +970,7 @@ class System_Daemon
      *
      * @return boolean
      */
-    static private function _osObjSetup() 
+    static protected function _osObjSetup()
     {
         // Create Option Object if nescessary
         if (self::$_osObj === false) {
@@ -991,7 +991,7 @@ class System_Daemon
      *
      * @return boolean
      */
-    static private function _optionObjSetup() 
+    static protected function _optionObjSetup()
     {
         // Create Option Object if nescessary
         if (self::$_optObj === false) {
@@ -1016,7 +1016,7 @@ class System_Daemon
      * 
      * @return mixed integer or boolean
      */
-    static private function _optionsInit($premature=false) 
+    static protected function _optionsInit($premature=false)
     {
         if (!self::_optionObjSetup()) {
             return false;

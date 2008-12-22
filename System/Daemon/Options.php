@@ -33,21 +33,21 @@ class System_Daemon_Options
      *
      * @var array
      */
-    private $_options = array();
+    protected $_options = array();
     
     /**
      * Definitions for all Options
      *
      * @var array
      */
-    private $_definitions = array();
+    protected $_definitions = array();
     
     /**
      * Wether all the options have been initialized
      *
      * @var boolean
      */
-    private $_isInitialized = false;
+    protected $_isInitialized = false;
 
     /**
      * Holds errors
@@ -201,7 +201,7 @@ class System_Daemon_Options
      *
      * @return boolean
      */
-    private function _validate($name, $value, &$reason="")
+    protected function _validate($name, $value, &$reason="")
     {
         $reason = false;
         
@@ -339,7 +339,7 @@ class System_Daemon_Options
      *
      * @return boolean
      */
-    private function _setDefault($name)
+    protected function _setDefault($name)
     {
         if (!isset($this->_definitions[$name])) {
             return false;
@@ -380,7 +380,7 @@ class System_Daemon_Options
      * 
      * @return string
      */
-    private function _replaceVars($matches)
+    protected function _replaceVars($matches)
     {
         // Init
         $allowedVars = array(
@@ -443,7 +443,7 @@ class System_Daemon_Options
      * 
      * @return string
      */
-    private function _replaceFuncs($matches)
+    protected function _replaceFuncs($matches)
     {
         $allowedFunctions = array("basename", "dirname");
         
@@ -469,7 +469,7 @@ class System_Daemon_Options
      * 
      * @return array      
      */
-    private function _allowedTypes($str) 
+    protected function _allowedTypes($str)
     {
         $allowed_types = array();
         $raw_types     = explode("|", $str);
