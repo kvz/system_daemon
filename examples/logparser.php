@@ -9,7 +9,7 @@
  * @package   System_Daemon
  * @author    Kevin <kevin@vanzonneveld.net>
  * @copyright 2008 Kevin van Zonneveld
- * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
+ * @license   http://www.opensource.org/licenses/bsd-license.php
  * @version   SVN: Release: $Id$
  * @link      http://trac.plutonia.nl/projects/system_daemon
  */
@@ -77,7 +77,8 @@ $options = array(
 System_Daemon::setOptions($options);
 
 // Overrule the signal handler with any function
-System_Daemon::setSigHandler(SIGCONT, array("System_Daemon", "defaultSigHandler"));
+System_Daemon::setSigHandler(SIGCONT, array("System_Daemon",
+    "defaultSigHandler"));
 
 
 // This program can also be run in the forground with runmode --no-daemon
@@ -125,22 +126,25 @@ while (!System_Daemon::isDying() && $runningOkay && $cnt <=3) {
     // Depending on runmode it will either end up:
     //  - In the /var/log/logparser.log
     //  - On screen (in case we're not a daemon yet)  
-    System_Daemon::log(System_Daemon::LOG_INFO, System_Daemon::getOption("appName").
+    System_Daemon::log(System_Daemon::LOG_INFO,
+        System_Daemon::getOption("appName").
         " running in ".$mode." ".$cnt."/3");
     
     // In the actuall logparser program, You could replace 'true'
     // With e.g. a  parseLog('vsftpd') function, and have it return
     // either true on success, or false on failure.
     $runningOkay = true;
+    //$runningOkay = parseLog('vsftpd');
     
     // Should your parseLog('vsftpd') return false, then
     // the daemon is automatically shut down.
-    // An extra log entry would be nice, we're using level 3, which is critical.
-    // Level 4 would be fatal and shuts down the daemon immediately, which in 
-    // this case is handled by the while condition.
+    // An extra log entry would be nice, we're using level 3,
+    // which is critical.
+    // Level 4 would be fatal and shuts down the daemon immediately,
+    // which in this case is handled by the while condition.
     if (!$runningOkay) {
         System_Daemon::log(System_Daemon::LOG_CRITICAL, "parseLog() ".
-            "produces an error, ".
+            "produced an error, ".
             "so this will be my last run");
     }
     
