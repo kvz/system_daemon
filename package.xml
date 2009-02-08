@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.7.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+    http://pear.php.net/dtd/tasks-1.0.xsd
+    http://pear.php.net/dtd/package-2.0
+    http://pear.php.net/dtd/package-2.0.xsd">
+ <name>System_Daemon</name>
+ <channel>pear.php.net</channel>
+ <summary>Turn PHP scripts into Linux daemons</summary>
+ <description>System_Daemon is a PHP class that allows developers to create their own daemon 
+applications on Linux systems. The class is focussed entirely on creating &amp;amp; 
+spawning standalone daemons, and for example includes:
+
+   1. Methods to generate OS-specific startup-files (init.d) (currently only 
+      Debian/Ubuntu are supported), so that your application gets started on 
+      reboot as well.
+   2. Methods for logging purposes, also support for PEAR&apos;s Log package 
+   3. Simple syntax
+   5. Can run with or without PEAR (PEAR adds more elegance &amp;amp; functionality, 
+      no-PEAR offers functionality like including system_daemon with svn:externals
+      and reduced dependencies)
+   6. Default signal handlers, but optionally reroute signals to your own 
+      handlers. 
+   7. Set options like max RAM usage</description>
+ <lead>
+  <name>Kevin van Zonneveld</name>
+  <user>kvz</user>
+  <email>kevin@vanzonneveld.net</email>
+  <active>yes</active>
+ </lead>
+ <date>2009-02-08</date>
+ <time>15:32:36</time>
+ <version>
+  <release>0.6.0</release>
+  <api>0.6.0</api>
+ </version>
+ <stability>
+  <release>alpha</release>
+  <api>alpha</api>
+ </stability>
+ <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
+ <notes>System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ * Added restart function by Felix Geisendörfer
+ * Fixed bug: identitycrisis: Call posix_setgid() first, posix_setuid() last.
+
+System_Daemon 0.5.0-alpha 2008-10-26 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ * Pack and release r150 as 0.5.0-alpha
+ * Fixed bug: autoRunTemplatePath when writing init.d script
+ * Added default return value TRUE to Options::setOption
+ * Check for POSIX functions before calling them
+ * Keep a full changelog, keep manual Release Notes in NOTES
+ * Separate (release) Notes from Changelog. Manually update NOTES from now on
+
+System_Daemon 0.4.0-alpha 2008-06-04 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ * Pack and release r143 as 0.4.0-alpha
+ * Created seperate files for daemon templates
+ * Phased out OS-specifics into a driver architecture
+ * Phased out option mechanism into separate class
+ * Better naming concistency
+ * Better loading &amp;amp;amp; checking of required classes
+ * Fixed bug: Undefined index when asking for an undefined Option
+ * Fixed bugs: concerning the init.d mechanisms
+ * Fixed bug: Continue setting other options when one has failed
+ * Implemented System_Daemon API changes
+ * Fixed bug: integer type is not defined. Should be number
+ * Improved Option System
+ * Reduced number of public variables
+ * Improved Tests
+ * Changed to non-abstract class
+ * Simplify if/else where possible
+ * Switched to class constants for error codes
+
+System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ * Pack and release r94 as 0.3.0-alpha
+ * Added version mapping</notes>
+ <contents>
+  <dir baseinstalldir="./" name="/">
+   <dir name="data">
+    <file name="template_BSD" role="data" />
+   </dir> <!-- /data -->
+   <dir name="docs">
+    <file name="CHANGELOG" role="doc" />
+    <file name="DESCRIPTION" role="doc" />
+    <file name="MAINTAINERS" role="doc" />
+    <file name="MAPPING" role="doc" />
+    <file name="NOTES" role="doc" />
+    <file name="suggested_notes_format" role="doc" />
+    <file name="SUMMARY" role="doc" />
+    <file name="VERSION" role="doc" />
+   </dir> <!-- /docs -->
+   <dir name="examples">
+    <file name="devtest.php" role="doc" />
+    <file name="logparser.php" role="doc" />
+    <file name="nopear.php" role="doc" />
+    <file name="pearlog.php" role="doc" />
+    <file name="simple.php" role="doc" />
+   </dir> <!-- /examples -->
+   <dir name="nbproject">
+    <file name="project.properties" role="php" />
+    <file name="project.xml" role="php" />
+   </dir> <!-- /nbproject -->
+   <dir name="System">
+    <dir name="Daemon">
+     <dir name="OS">
+      <file name="BSD.php" role="php" />
+      <file name="Debian.php" role="php" />
+      <file name="Exception.php" role="php" />
+      <file name="Linux.php" role="php" />
+      <file name="RedHat.php" role="php" />
+      <file name="Ubuntu.php" role="php" />
+      <file name="Windows.php" role="php" />
+     </dir> <!-- /System/Daemon/OS -->
+     <file name="Exception.php" role="php" />
+     <file name="Options.php" role="php" />
+     <file name="OS.php" role="php" />
+    </dir> <!-- /System/Daemon -->
+    <file name="Daemon.php" role="php" />
+   </dir> <!-- /System -->
+   <dir name="tests">
+    <file name="inbackground.phpt" role="test" />
+    <file name="log.phpt" role="test" />
+    <file name="os-determine.phpt.diff" role="test" />
+    <file name="os-determine.phpt.exp" role="test" />
+    <file name="os-determine.phpt.out" role="test" />
+    <file name="os-determine.phpt.php" role="test" />
+    <file name="os-getdetails.phpt" role="test" />
+    <file name="tests-config.php" role="test" />
+   </dir> <!-- /tests -->
+   <dir name="tools">
+    <file name="changelog_gen.php" role="php" />
+    <file name="package_gen.php" role="php" />
+   </dir> <!-- /tools -->
+   <file name="package.php" role="php" />
+   <file name="package.xml.bak" role="php" />
+   <file name="test.php" role="php" />
+  </dir> <!-- / -->
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5.1.2</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0</min>
+   </pearinstaller>
+  </required>
+  <optional>
+   <package>
+    <name>Log</name>
+    <channel>pear.php.net</channel>
+    <min>1.0</min>
+   </package>
+  </optional>
+ </dependencies>
+ <phprelease>
+  <installconditions>
+   <os>
+    <name>(*ix|*ux|darwin*|*BSD|SunOS*)</name>
+   </os>
+  </installconditions>
+ </phprelease>
+ <phprelease />
+ <changelog>
+  <release>
+   <version>
+    <release>0.6.0</release>
+    <api>0.6.0</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2009-02-08</date>
+   <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
+   <notes>System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ * Added restart function by Felix Geisendörfer
+ * Fixed bug: identitycrisis: Call posix_setgid() first, posix_setuid() last.
+
+System_Daemon 0.5.0-alpha 2008-10-26 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ * Pack and release r150 as 0.5.0-alpha
+ * Fixed bug: autoRunTemplatePath when writing init.d script
+ * Added default return value TRUE to Options::setOption
+ * Check for POSIX functions before calling them
+ * Keep a full changelog, keep manual Release Notes in NOTES
+ * Separate (release) Notes from Changelog. Manually update NOTES from now on
+
+System_Daemon 0.4.0-alpha 2008-06-04 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ * Pack and release r143 as 0.4.0-alpha
+ * Created seperate files for daemon templates
+ * Phased out OS-specifics into a driver architecture
+ * Phased out option mechanism into separate class
+ * Better naming concistency
+ * Better loading &amp;amp;amp; checking of required classes
+ * Fixed bug: Undefined index when asking for an undefined Option
+ * Fixed bugs: concerning the init.d mechanisms
+ * Fixed bug: Continue setting other options when one has failed
+ * Implemented System_Daemon API changes
+ * Fixed bug: integer type is not defined. Should be number
+ * Improved Option System
+ * Reduced number of public variables
+ * Improved Tests
+ * Changed to non-abstract class
+ * Simplify if/else where possible
+ * Switched to class constants for error codes
+
+System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ * Pack and release r94 as 0.3.0-alpha
+ * Added version mapping</notes>
+  </release>
+ </changelog>
+</package>

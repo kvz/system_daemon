@@ -40,7 +40,9 @@ $dir     = $workspace_dir;
 $apiVersion   = $baseVersion;
 $apiStability = $state;
 
-require_once "PEAR/PackageFileManager2.php";
+if (!include("PEAR/PackageFileManager2.php")) {
+    die("Please: pear install -f PEAR_PackageFileManager-2");
+}
 PEAR::setErrorHandling(PEAR_ERROR_DIE);
 
 $options = array(
