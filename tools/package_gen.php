@@ -26,12 +26,12 @@ $workspace_dir = realpath(dirname(__FILE__)."/..");
 list($name, $baseVersion, $state) = explode("-", 
     trim(file_get_contents($workspace_dir . "/docs/VERSION")));
     
-$notes       = htmlspecialchars(file_get_contents($workspace_dir . 
-    "/docs/NOTES"));
-$summary     = htmlspecialchars(file_get_contents($workspace_dir . 
-    "/docs/SUMMARY"));
-$description = htmlspecialchars(file_get_contents($workspace_dir . 
-    "/docs/DESCRIPTION"));
+$notes       = file_get_contents($workspace_dir . 
+    "/docs/NOTES");
+$summary     = file_get_contents($workspace_dir . 
+    "/docs/SUMMARY");
+$description = file_get_contents($workspace_dir . 
+    "/docs/DESCRIPTION");
 $maintainers = file($workspace_dir . "/docs/MAINTAINERS");
 
 $version = $baseVersion . (isset($argv[3]) ? $argv[3] : "");

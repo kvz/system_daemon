@@ -28,7 +28,7 @@ spawning standalone daemons, and for example includes:
   <active>yes</active>
  </lead>
  <date>2009-02-08</date>
- <time>21:23:34</time>
+ <time>21:31:34</time>
  <version>
   <release>0.6.0</release>
   <api>0.6.0</api>
@@ -40,6 +40,8 @@ spawning standalone daemons, and for example includes:
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
  <notes>System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
  * Pack and release r160 as 0.6.0-alpha
+ * Cleaned up unused files
+ * Fixed minor code standard issues
  * Added restart function by Felix Geisendörfer
  * Fixed bug: identitycrisis: Call posix_setgid() first, posix_setuid() last.
 
@@ -131,8 +133,6 @@ System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonnev
     <file name="changelog_gen.php" role="php" />
     <file name="package_gen.php" role="php" />
    </dir> <!-- /tools -->
-   <file name="catalog.xml" role="php" />
-   <file name="package.php" role="php" />
    <file name="package.xml.bak" role="php" />
    <file name="test.php" role="php" />
   </dir> <!-- / -->
@@ -176,6 +176,8 @@ System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonnev
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
    <notes>System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
  * Pack and release r160 as 0.6.0-alpha
+ * Cleaned up unused files
+ * Fixed minor code standard issues
  * Added restart function by Felix Geisendörfer
  * Fixed bug: identitycrisis: Call posix_setgid() first, posix_setuid() last.
 
