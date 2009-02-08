@@ -1,0 +1,7 @@
+---- EXPECTED OUTPUT
+3
+---- ACTUAL OUTPUT
+
+Fatal error: Call to undefined method System_Daemon_OS::determine() in /home/kevin/workspace/plutonia-system_daemon/tests/os-determine.phpt.php on line 9
+
+---- FAILED

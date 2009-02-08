@@ -28,7 +28,7 @@ spawning standalone daemons, and for example includes:
   <active>yes</active>
  </lead>
  <date>2009-02-08</date>
- <time>15:32:36</time>
+ <time>21:19:02</time>
  <version>
   <release>0.6.0</release>
   <api>0.6.0</api>
@@ -39,6 +39,7 @@ spawning standalone daemons, and for example includes:
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
  <notes>System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ * Pack and release r160 as 0.6.0-alpha
  * Added restart function by Felix Geisendörfer
  * Fixed bug: identitycrisis: Call posix_setgid() first, posix_setuid() last.
 
@@ -172,6 +173,7 @@ System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonnev
    <date>2009-02-08</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
    <notes>System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
+ * Pack and release r160 as 0.6.0-alpha
  * Added restart function by Felix Geisendörfer
  * Fixed bug: identitycrisis: Call posix_setgid() first, posix_setuid() last.
 
