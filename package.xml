@@ -28,7 +28,7 @@ spawning standalone daemons, and for example includes:
   <active>yes</active>
  </lead>
  <date>2009-02-08</date>
- <time>21:19:02</time>
+ <time>21:19:58</time>
  <version>
   <release>0.6.0</release>
   <api>0.6.0</api>
@@ -121,6 +121,7 @@ System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonnev
     <file name="log.phpt" role="test" />
     <file name="os-determine.phpt.diff" role="test" />
     <file name="os-determine.phpt.exp" role="test" />
+    <file name="os-determine.phpt.log" role="test" />
     <file name="os-determine.phpt.out" role="test" />
     <file name="os-determine.phpt.php" role="test" />
     <file name="os-getdetails.phpt" role="test" />
@@ -130,6 +131,7 @@ System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonnev
     <file name="changelog_gen.php" role="php" />
     <file name="package_gen.php" role="php" />
    </dir> <!-- /tools -->
+   <file name="catalog.xml" role="php" />
    <file name="package.php" role="php" />
    <file name="package.xml.bak" role="php" />
    <file name="test.php" role="php" />
