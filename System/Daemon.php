@@ -788,7 +788,9 @@ class System_Daemon
      */
     static public function isRunning() 
     {
-        if(!file_exists(self::getOption("appPidLocation"))) return false;
+        if (!file_exists(self::getOption("appPidLocation"))) {
+            return false;
+        }
         $pid = @file_get_contents(self::getOption("appPidLocation"));
 
         if ($pid !== false) {
@@ -937,7 +939,7 @@ class System_Daemon
         } else {
             // Child
             self::$_processIsChild = true;
-            self::$_isDying  = false;
+            self::$_isDying        = false;
             self::$_processId      = posix_getpid();
             return true;
         }
@@ -957,7 +959,7 @@ class System_Daemon
      * Sytem_Daemon::_die()
      * Kill the daemon
      *
-     * @param boolean $restart
+     * @param boolean $restart Whether to restart after die
      *
      * @return void
      */

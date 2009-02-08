@@ -1,3 +1,10 @@
+2009-02-08 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r165] ignore nbproject
+        [r164] Re-packed 0.6.0
+        [r162] Added System_Daemon::restart()
+        [r159] Fixed identitycrisis: : The appropriate order of function calls is posix_setgid() first, posix_setuid() last.
+
 2009-01-12 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
         [r158] Fixed typo

@@ -54,10 +54,13 @@ $options = array(
     "notes"             => $notes,
     "filelistgenerator" => "svn",
     "ignore"            => array(   "package2.php",
+                                    "package.php",
                                     "package.xml",
+                                    "catalog.xml",
                                     "*.tgz",
                                     ".svn",
                                     ".project",
+                                    "nbproject",
                                     "docs",
                                     "tools"
                             ),

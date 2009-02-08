@@ -1,5 +1,7 @@
 System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld <kevin@vanzonneveld.net>
  * Pack and release r160 as 0.6.0-alpha
+ * Cleaned up unused files
+ * Fixed minor code standard issues
  * Added restart function by Felix Geisendörfer
  * Fixed bug: identitycrisis: Call posix_setgid() first, posix_setuid() last.
 

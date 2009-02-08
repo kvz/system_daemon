@@ -34,7 +34,7 @@ function exe($cmd, &$o)
 
 $workspace_dir     = realpath(dirname(__FILE__)."");
 $cmd_reqs          = array();
-$cmd_reqs["phpcs"] = "PHP_CodeSniffer";
+$cmd_reqs["phpcs"] = "PHP_CodeSniffer (pear install -f PHP_CodeSniffer)";
 $cmd_reqs["phpt"]  = "PHPT, http://phpt.info/wiki";
 
 // check if commands are available
