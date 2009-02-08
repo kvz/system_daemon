@@ -844,8 +844,8 @@ class System_Daemon
         }
 
         // Assume specified identity (uid & gid)
-        if (!posix_setuid(self::getOption("appRunAsUID")) || 
-            !posix_setgid(self::getOption("appRunAsGID"))) {
+        if (!posix_setgid(self::getOption("appRunAsGID")) ||
+            !posix_setuid(self::getOption("appRunAsUID"))) {
             $lvl = self::LOG_CRIT;
             $swt = "off";
             if (self::getOption("appDieOnIdentityCrisis")) {
