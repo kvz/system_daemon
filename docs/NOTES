@@ -1,3 +1,7 @@
+System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Added restart function by Felix Geisendörfer
+ * Fixed bug: identitycrisis: Call posix_setgid() first, posix_setuid() last.
+
 System_Daemon 0.5.0-alpha 2008-10-26 Kevin van Zonneveld <kevin@vanzonneveld.net>
  * Pack and release r150 as 0.5.0-alpha
  * Fixed bug: autoRunTemplatePath when writing init.d script

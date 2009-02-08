@@ -441,9 +441,22 @@ class System_Daemon
         self::log(self::LOG_INFO, "stopping ".
             self::getOption("appName")." daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-        self::_die();
+        self::_die(false);
     }//end stop()
     
+    /**
+     * Restart daemon process.
+     *
+     * @return void
+     * @see _die()
+     */
+    static public function restart()
+    {
+        self::log(self::LOG_INFO, "restarting ".
+            self::getOption("appName")." daemon",
+            __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+        self::_die(true);
+    }//end stop()
     
     /**
      * Overrule or add signal handlers.
@@ -944,9 +957,11 @@ class System_Daemon
      * Sytem_Daemon::_die()
      * Kill the daemon
      *
+     * @param boolean $restart
+     *
      * @return void
      */
-    static protected function _die()
+    static protected function _die($restart = false)
     {
         if (!self::isDying()) {
             self::$_isDying = true;
@@ -960,7 +975,12 @@ class System_Daemon
             }
             
             @unlink(self::getOption("appPidLocation"));
-            exit();
+
+            if ($restart) {
+                die(exec(join(' ', $GLOBALS['argv'])));
+            } else {
+                die();
+            }
         }
     }//end _die()
     
