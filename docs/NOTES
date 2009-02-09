@@ -4,34 +4,3 @@ System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld <kevin@vanzonneveld.net
  * Fixed minor code standard issues
  * Added restart function by Felix Geisendörfer
  * Fixed bug: identitycrisis: Call posix_setgid() first, posix_setuid() last.
-
-System_Daemon 0.5.0-alpha 2008-10-26 Kevin van Zonneveld <kevin@vanzonneveld.net>
- * Pack and release r150 as 0.5.0-alpha
- * Fixed bug: autoRunTemplatePath when writing init.d script
- * Added default return value TRUE to Options::setOption
- * Check for POSIX functions before calling them
- * Keep a full changelog, keep manual Release Notes in NOTES
- * Separate (release) Notes from Changelog. Manually update NOTES from now on
-
-System_Daemon 0.4.0-alpha 2008-06-04 Kevin van Zonneveld <kevin@vanzonneveld.net>
- * Pack and release r143 as 0.4.0-alpha
- * Created seperate files for daemon templates
- * Phased out OS-specifics into a driver architecture
- * Phased out option mechanism into separate class
- * Better naming concistency
- * Better loading &amp; checking of required classes
- * Fixed bug: Undefined index when asking for an undefined Option
- * Fixed bugs: concerning the init.d mechanisms
- * Fixed bug: Continue setting other options when one has failed
- * Implemented System_Daemon API changes
- * Fixed bug: integer type is not defined. Should be number
- * Improved Option System
- * Reduced number of public variables
- * Improved Tests
- * Changed to non-abstract class
- * Simplify if/else where possible
- * Switched to class constants for error codes
-
-System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld <kevin@vanzonneveld.net>
- * Pack and release r94 as 0.3.0-alpha
- * Added version mapping
