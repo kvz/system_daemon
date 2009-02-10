@@ -7,7 +7,7 @@
  <channel>pear.php.net</channel>
  <summary>Turn PHP scripts into Linux daemons</summary>
  <description>System_Daemon is a PHP class that allows developers to create their own daemon 
-applications on Linux systems. The class is focussed entirely on creating &amp;amp; 
+applications on Linux systems. The class is focussed entirely on creating &amp; 
 spawning standalone daemons, and for example includes:
 
    1. Methods to generate OS-specific startup-files (init.d) (currently only 
@@ -15,7 +15,7 @@ spawning standalone daemons, and for example includes:
       reboot as well.
    2. Methods for logging purposes, also support for PEAR&apos;s Log package 
    3. Simple syntax
-   5. Can run with or without PEAR (PEAR adds more elegance &amp;amp; functionality, 
+   5. Can run with or without PEAR (PEAR adds more elegance &amp; functionality, 
       no-PEAR offers functionality like including system_daemon with svn:externals
       and reduced dependencies)
    6. Default signal handlers, but optionally reroute signals to your own 
@@ -27,8 +27,8 @@ spawning standalone daemons, and for example includes:
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
- <date>2009-02-08</date>
- <time>21:31:34</time>
+ <date>2009-02-10</date>
+ <time>21:17:31</time>
  <version>
   <release>0.6.0</release>
   <api>0.6.0</api>
@@ -38,43 +38,12 @@ spawning standalone daemons, and for example includes:
   <api>alpha</api>
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
- <notes>System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
- * Pack and release r160 as 0.6.0-alpha
+ <notes>System_Daemon 0.6.1-alpha 2009-02-10 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
  * Cleaned up unused files
  * Fixed minor code standard issues
  * Added restart function by Felix Geisendörfer
  * Fixed bug: identitycrisis: Call posix_setgid() first, posix_setuid() last.
-
-System_Daemon 0.5.0-alpha 2008-10-26 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
- * Pack and release r150 as 0.5.0-alpha
- * Fixed bug: autoRunTemplatePath when writing init.d script
- * Added default return value TRUE to Options::setOption
- * Check for POSIX functions before calling them
- * Keep a full changelog, keep manual Release Notes in NOTES
- * Separate (release) Notes from Changelog. Manually update NOTES from now on
-
-System_Daemon 0.4.0-alpha 2008-06-04 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
- * Pack and release r143 as 0.4.0-alpha
- * Created seperate files for daemon templates
- * Phased out OS-specifics into a driver architecture
- * Phased out option mechanism into separate class
- * Better naming concistency
- * Better loading &amp;amp;amp; checking of required classes
- * Fixed bug: Undefined index when asking for an undefined Option
- * Fixed bugs: concerning the init.d mechanisms
- * Fixed bug: Continue setting other options when one has failed
- * Implemented System_Daemon API changes
- * Fixed bug: integer type is not defined. Should be number
- * Improved Option System
- * Reduced number of public variables
- * Improved Tests
- * Changed to non-abstract class
- * Simplify if/else where possible
- * Switched to class constants for error codes
-
-System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
- * Pack and release r94 as 0.3.0-alpha
- * Added version mapping</notes>
+ </notes>
  <contents>
   <dir baseinstalldir="./" name="/">
    <dir name="data">
@@ -86,6 +55,7 @@ System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonnev
     <file name="MAINTAINERS" role="doc" />
     <file name="MAPPING" role="doc" />
     <file name="NOTES" role="doc" />
+    <file name="OLD_NOTES" role="doc" />
     <file name="suggested_notes_format" role="doc" />
     <file name="SUMMARY" role="doc" />
     <file name="VERSION" role="doc" />
@@ -172,45 +142,14 @@ System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonnev
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2009-02-08</date>
+   <date>2009-02-10</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
-   <notes>System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
- * Pack and release r160 as 0.6.0-alpha
+   <notes>System_Daemon 0.6.1-alpha 2009-02-10 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
  * Cleaned up unused files
  * Fixed minor code standard issues
  * Added restart function by Felix Geisendörfer
  * Fixed bug: identitycrisis: Call posix_setgid() first, posix_setuid() last.
-
-System_Daemon 0.5.0-alpha 2008-10-26 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
- * Pack and release r150 as 0.5.0-alpha
- * Fixed bug: autoRunTemplatePath when writing init.d script
- * Added default return value TRUE to Options::setOption
- * Check for POSIX functions before calling them
- * Keep a full changelog, keep manual Release Notes in NOTES
- * Separate (release) Notes from Changelog. Manually update NOTES from now on
-
-System_Daemon 0.4.0-alpha 2008-06-04 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
- * Pack and release r143 as 0.4.0-alpha
- * Created seperate files for daemon templates
- * Phased out OS-specifics into a driver architecture
- * Phased out option mechanism into separate class
- * Better naming concistency
- * Better loading &amp;amp;amp; checking of required classes
- * Fixed bug: Undefined index when asking for an undefined Option
- * Fixed bugs: concerning the init.d mechanisms
- * Fixed bug: Continue setting other options when one has failed
- * Implemented System_Daemon API changes
- * Fixed bug: integer type is not defined. Should be number
- * Improved Option System
- * Reduced number of public variables
- * Improved Tests
- * Changed to non-abstract class
- * Simplify if/else where possible
- * Switched to class constants for error codes
-
-System_Daemon 0.3.0-alpha 2008-05-11 Kevin van Zonneveld &amp;lt;kevin@vanzonneveld.net&amp;gt;
- * Pack and release r94 as 0.3.0-alpha
- * Added version mapping</notes>
+   </notes>
   </release>
  </changelog>
 </package>
