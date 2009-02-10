@@ -1,5 +1,2 @@
 System_Daemon 0.6.1-alpha 2009-02-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
- * Cleaned up unused files
- * Fixed minor code standard issues
- * Added restart function by Felix Geisendörfer
- * Fixed bug: identitycrisis: Call posix_setgid() first, posix_setuid() last.
+ * Change identity AFTER chowning pidfile & setting system settings
