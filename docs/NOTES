@@ -1,5 +1,4 @@
-System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld <kevin@vanzonneveld.net>
- * Pack and release r160 as 0.6.0-alpha
+System_Daemon 0.6.1-alpha 2009-02-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
  * Cleaned up unused files
  * Fixed minor code standard issues
  * Added restart function by Felix Geisendörfer

@@ -858,6 +858,35 @@ class System_Daemon
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
+        // Additional PID succeeded check
+        if (!is_numeric(self::$_processId) || self::$_processId < 1) {
+            self::log(self::LOG_EMERG, "".self::getOption("appName").
+                " daemon didn't have a valid ".
+                "pid: '".self::$_processId."'",
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+        }
+
+        // Write pidfile
+        if (!@file_put_contents(self::getOption("appPidLocation"),
+            self::$_processId)) {
+            self::log(self::LOG_EMERG, "".self::getOption("appName").
+                " daemon was unable ".
+                "to write to pidfile: ".self::getOption("appPidLocation")."",
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+        }
+
+        // Chown pidfile
+        // We have to change pidfile owner in case of identity change.
+        // This way we can remove the pidfile after even if we're not root anymore
+        if (self::getOption("appRunAsGID")) {
+            chgrp(self::getOption("appPidLocation"),
+                self::getOption("appRunAsGID"));
+        }
+        if (self::getOption("appRunAsUID")) {
+            chown(self::getOption("appPidLocation"),
+                self::getOption("appRunAsUID"));
+        }
+        
         // Assume specified identity (uid & gid)
         if (!posix_setgid(self::getOption("appRunAsGID")) ||
             !posix_setuid(self::getOption("appRunAsUID"))) {
@@ -875,37 +904,6 @@ class System_Daemon
                 "and appDieOnIdentityCrisis was ". $swt, 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
-
-        // Additional PID succeeded check
-        if (!is_numeric(self::$_processId) || self::$_processId < 1) {
-            self::log(self::LOG_EMERG, "".self::getOption("appName").
-                " daemon didn't have a valid ".
-                "pid: '".self::$_processId."'", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-        }
-         
-        if (!file_put_contents(self::getOption("appPidLocation"), 
-            self::$_processId)) {
-            self::log(self::LOG_EMERG, "".self::getOption("appName").
-                " daemon was unable ".
-                "to write to pidfile: ".self::getOption("appPidLocation")."", 
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-        }
-        
-        // System settings
-        if (!self::$_safeMode) {       
-            $options = self::getOptions();
-            if (is_array($options)) {
-                foreach ($options as $name=>$value) {
-                    if (substr($name, 0, 3) == "sys" ) {
-                        ini_set($name, $value);
-                    }
-                }
-            }
-        }
-        set_time_limit(0);        
-        ob_implicit_flush();        
-        
 
         // Change dir & umask
         @chdir(self::getOption("appDir"));
