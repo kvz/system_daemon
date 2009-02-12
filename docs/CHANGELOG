@@ -1,3 +1,8 @@
+2009-02-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r173] Packed 0.6.1
+        [r171] We have to change pidfile owner in case of identity change.
+
 2009-02-09 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
         [r170] Don't keep the changelog from older releases in the main <notes> area - that's what the <changelog> section is for

@@ -1,4 +1,5 @@
 System_Daemon 0.6.3-alpha 2009-02-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Pack and release r174 as 0.6.3-alpha
  * Revised changeIdentity system. Now also chowns logfile.
  * Added new feature: Reroute PHP errors to log automatically
  * Moved pidfile to own subdir, otherwise it can never be removed when user is not root anymore
