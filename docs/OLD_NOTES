@@ -1,3 +1,6 @@
+System_Daemon 0.6.1-alpha 2009-02-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Change identity AFTER chowning pidfile & setting system settings
+
 System_Daemon 0.6.0-alpha 2009-02-08 Kevin van Zonneveld <kevin@vanzonneveld.net>
  * Pack and release r160 as 0.6.0-alpha
  * Cleaned up unused files

@@ -256,6 +256,11 @@ class System_Daemon_Options
                                 $type_valid = true;
                             }
                             break;
+                        case "unix_filepath":
+                            if ($this->strIsUnixFile($value)) {
+                                $type_valid = true;
+                            }
+                            break;
                         case "existing_dirpath":
                             if (is_dir($value)) {
                                 $type_valid = true;
@@ -484,7 +489,19 @@ class System_Daemon_Options
         return $allowed_types;
     }    
     
-    
+
+    /**
+     * Check if a string has a unix proof file-format (stripped spaces,
+     * special chars, etc)
+     *
+     * @param string $str What string to test for unix compliance
+     *
+     * @return boolean
+     */
+    protected function strIsUnixFile( $str )
+    {
+        return preg_match('/^[a-z0-9_\.\/\-]+$/', $str);
+    }//end strIsUnixFile()
     
     /**
      * Check if a string has a unix proof format (stripped spaces, 

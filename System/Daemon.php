@@ -127,7 +127,27 @@ class System_Daemon
         self::LOG_INFO => "info",
         self::LOG_DEBUG => "debug"        
     );
-    
+
+    /**
+     * Available PHP error levels and their meaning in POSIX loglevel terms
+     *
+     * @var array
+     */
+    static protected $_logPhpMapping = array(
+        E_ERROR => self::LOG_ERR,
+        E_WARNING => self::LOG_WARNING,
+        E_PARSE => self::LOG_EMERG,
+        E_NOTICE => self::LOG_DEBUG,
+        E_CORE_ERROR => self::LOG_EMERG,
+        E_CORE_WARNING => self::LOG_WARNING,
+        E_COMPILE_ERROR => self::LOG_EMERG,
+        E_COMPILE_WARNING => self::LOG_WARNING,
+        E_USER_ERROR => self::LOG_ERR,
+        E_USER_WARNING => self::LOG_WARNING,
+        E_USER_NOTICE => self::LOG_DEBUG
+    );
+
+
     /**
      * Holds Option Object
      * 
@@ -223,6 +243,13 @@ class System_Daemon
             "detail" => "",
             "required" => true
         ),
+        "logPhpErrors" => array(
+            "type" => "boolean",
+            "default" => true,
+            "punch" => "Reroute PHP errors to log function",
+            "detail" => "",
+            "required" => true
+        ),
         
         "appRunAsUID" => array(
             "type" => "number/0-65000",
@@ -241,10 +268,10 @@ class System_Daemon
             "required" => true
         ),
         "appPidLocation" => array(
-            "type" => "string/creatable_filepath",
-            "default" => "/var/run/{OPTIONS.appName}.pid",
+            "type" => "string/unix_filepath",
+            "default" => "/var/run/{OPTIONS.appName}/{OPTIONS.appName}.pid",
             "punch" => "The pid filepath",
-            "example" => "/var/run/logparser.pid",
+            "example" => "/var/run/logparser/logparser.pid",
             "detail" => "",
             "required" => true
         ),
@@ -352,11 +379,14 @@ class System_Daemon
      */
     static public function start()
     {        
-        
         // Quickly initialize some defaults like usePEAR 
         // by adding the $premature flag
         self::_optionsInit(true);
-        
+
+        if (self::getOption("logPhpErrors")) {
+            set_error_handler(array('System_Daemon', 'phpErrors'), E_ALL);
+        }
+
         // To run as a part of PEAR
         if (self::getOption("usePEAR")) {
             // SPL's autoload will make sure classes are automatically loaded
@@ -548,7 +578,19 @@ class System_Daemon
         return self::$_optObj->getOptions();
     }//end setOptions()      
     
-    
+
+    static public function phpErrors($errno, $errstr, $errfile, $errline) {
+        if (empty(self::$_logPhpMapping[$errno])) {
+            self::log(self::LOG_WARNING, 'Unknown PHP errorno: '.$errno);
+            $lvl = self::LOG_ERR;
+        } else {
+            $lvl = self::$_logPhpMapping[$errno];
+        }
+
+        self::log($lvl, '[PHP Error] '.$errstr, $errfile, __CLASS__, __FUNCTION__, $errline);
+        return true;
+    }
+
     /**
      * Almost every deamon requires a log file, this function can
      * facilitate that. Also handles class-generated errors, chooses 
@@ -820,9 +862,8 @@ class System_Daemon
      */
     static protected function _summon()
     {
-
-        self::log(self::LOG_INFO, "starting ".self::getOption("appName").
-            " daemon, output in: ". 
+        self::log(self::LOG_INFO, "starting ".self::getOption("appName")." ".
+            "daemon, output in: ". 
             self::getOption("logLocation"), 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         
@@ -839,8 +880,8 @@ class System_Daemon
         
         // Allowed?
         if (self::isRunning()) {
-            self::log(self::LOG_EMERG, "".self::getOption("appName").
-                " daemon is still running. ".
+            self::log(self::LOG_EMERG, "".self::getOption("appName")." ".
+                "daemon is still running. ".
                 "exiting", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
@@ -853,63 +894,194 @@ class System_Daemon
         
         // Fork process!
         if (!self::_fork()) {
-            self::log(self::LOG_EMERG, "".self::getOption("appName").
-                " daemon was unable to fork", 
+            self::log(self::LOG_EMERG, "".self::getOption("appName")." ".
+                "daemon was unable to fork", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
         // Additional PID succeeded check
         if (!is_numeric(self::$_processId) || self::$_processId < 1) {
-            self::log(self::LOG_EMERG, "".self::getOption("appName").
-                " daemon didn't have a valid ".
+            self::log(self::LOG_EMERG, "".self::getOption("appName")." ".
+                "daemon didn't have a valid ".
                 "pid: '".self::$_processId."'",
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         }
 
+        // Change umask
+        @umask(0);
+
         // Write pidfile
-        if (!@file_put_contents(self::getOption("appPidLocation"),
-            self::$_processId)) {
-            self::log(self::LOG_EMERG, "".self::getOption("appName").
-                " daemon was unable ".
-                "to write to pidfile: ".self::getOption("appPidLocation")."",
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+        if (false === self::_writePid(self::getOption("appPidLocation"), self::$_processId)) {
+            self::log(self::LOG_EMERG, "".self::getOption("appName")." ".
+                "daemon was unable ".
+                "to write pid file");
         }
 
-        // Chown pidfile
-        // We have to change pidfile owner in case of identity change.
-        // This way we can remove the pidfile after even if we're not root anymore
-        if (self::getOption("appRunAsGID")) {
-            chgrp(self::getOption("appPidLocation"),
-                self::getOption("appRunAsGID"));
+        // Change identity. maybe
+        if (false === self::_changeIdentity(self::getOption("appRunAsGID"), self::getOption("appRunAsUID"))) {
+            // Die on fail?
+            $lvl = self::getOption("appDieOnIdentityCrisis") ? self::LOG_EMERG : self::LOG_CRIT;
+
+            self::log($lvl, "".self::getOption("appName")." ".
+                "daemon was unable ".
+                "to change identity");
         }
-        if (self::getOption("appRunAsUID")) {
-            chown(self::getOption("appPidLocation"),
-                self::getOption("appRunAsUID"));
+
+        // Change dir
+        @chdir(self::getOption("appDir"));
+        
+    }//end _summon()
+
+    /**
+     * Determine whether pidfilelocation is valid
+     *
+     * @param string  $pidFilePath Pid location
+     * @param boolean $log         Allow this function to log directly on error
+     *
+     * @return boolean
+     */
+    static protected function _isValidPidLocation($pidFilePath, $log = true) {
+        if (empty($pidFilePath)) {
+            self::log(self::LOG_ERR, "".self::getOption("appName")." ".
+                "daemon encountered ".
+                "an empty appPidLocation",
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false;
+        }
+
+        $pidDirPath = dirname($pidFilePath);
+
+        $parts = explode('/', $pidDirPath);
+        if (count($parts) <= 3) {
+            // like: /var/run/x.pid
+            self::log(self::LOG_ERR, "".
+                "Since version 0.6.3, the pidfile needs to be in it's own ".
+                "subdirectory like: ".$pidDirPath."/".self::getOption("appName").
+                "/".self::getOption("appName").".pid",
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false;
         }
         
-        // Assume specified identity (uid & gid)
-        if (!posix_setgid(self::getOption("appRunAsGID")) ||
-            !posix_setuid(self::getOption("appRunAsUID"))) {
-            $lvl = self::LOG_CRIT;
-            $swt = "off";
-            if (self::getOption("appDieOnIdentityCrisis")) {
-                $lvl = self::LOG_EMERG;
-                $swt = "on";
-            }
-            
-            self::log($lvl, "".self::getOption("appName").
-                " daemon was unable assume ".
-                "identity (uid=".self::getOption("appRunAsUID").", gid=".
-                self::getOption("appRunAsGID").") ".
-                "and appDieOnIdentityCrisis was ". $swt, 
+        return true;
+    }//end _isValidPidLocation
+
+    static protected function _writePid($pidFilePath = null, $pid = null) {
+        if (empty($pid)) {
+            self::log(self::LOG_ERR, "".self::getOption("appName")." ".
+                "daemon encountered ".
+                "an empty pid",
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false;
         }
 
-        // Change dir & umask
-        @chdir(self::getOption("appDir"));
-        @umask(0);
-    }//end _summon()
-    
+        if (!self::_isValidPidLocation($pidFilePath, true)) {
+            return false;
+        }
+        
+        $pidDirPath = dirname($pidFilePath);
+
+        if (!self::_mkdirr($pidDirPath, 0755)) {
+            self::log(self::LOG_ERR, "".self::getOption("appName")." ".
+                "daemon was unable ".
+                "to create directory: ".$pidDirPath);
+            return false;
+        }
+
+        if (!file_put_contents($pidFilePath, $pid)) {
+            self::log(self::LOG_ERR, "".self::getOption("appName")." ".
+                "daemon was unable ".
+                "to write to pidfile: ".self::getOption("appPidLocation")."",
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false;
+        }
+
+        if (!chmod($pidFilePath, 0644)) {
+            self::log(self::LOG_ERR, "".self::getOption("appName")." ".
+                "daemon was unable ".
+                "to chmod to pidfile: ".self::getOption("appPidLocation")." ".
+                "to umask: 0644",
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false;
+        }
+
+        return true;
+    }//end _writePid()
+
+    static protected function _mkdirr($dirPath, $mode) {
+        is_dir(dirname($dirPath)) || self::_mkdirr(dirname($dirPath), $mode);
+        return is_dir($dirPath) || @mkdir($dirPath, $mode);
+    }
+
+    /**
+     * Change identity of process & resources if needed.
+     *
+     * @param integer $gid Group identifier (number)
+     * @param integer $uid User identifier (number)
+     *
+     * @return boolean
+     */
+    static protected function _changeIdentity($gid = 0, $uid = 0) {
+
+        // What files need to be chowned?
+        $chownFiles   = array();
+        if (self::_isValidPidLocation(self::getOption("appPidLocation"), true)) {
+            $chownFiles[] = dirname(self::getOption("appPidLocation"));
+        }
+        $chownFiles[] = self::getOption("appPidLocation");
+        $chownFiles[] = self::getOption("logLocation");
+
+        // Chown pid- & log file
+        // We have to change owner in case of identity change.
+        // This way we can modify the files even after we're not root anymore
+        foreach ($chownFiles as $filePath) {
+            // Change File GID
+            $doGid = (fileowner($filePath) !== $gid ? $gid : false);
+            if (false !== $doGid && !@chgrp($filePath, $gid)) {
+                self::log(self::LOG_ERR, "".self::getOption("appName")." ".
+                    "daemon was unable ".
+                    "to change group of file: ".$filePath." ".
+                    "to: ".$gid,
+                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                return false;
+            }
+
+            // Change File UID
+            $doUid = (fileowner($filePath) !== $uid ? $uid : false);
+            if (false !== $doUid && !@chown($filePath, $uid)) {
+                self::log(self::LOG_ERR, "".self::getOption("appName")." ".
+                    "daemon was unable ".
+                    "to change user of file: ".$filePath." ".
+                    "to: ".$uid,
+                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+                return false;
+            }
+        }
+        
+        // Change Process GID
+        $doGid = (posix_getgid() !== $gid ? $gid : false);
+        if (false !== $doGid && !@posix_setgid($gid)) {
+            self::log(self::LOG_ERR, "".self::getOption("appName")." ".
+                "daemon was unable ".
+                "to change group of process ".
+                "to: ".$gid,
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false;
+        }
+
+        // Change Process UID
+        $doUid = (posix_getuid() !== $uid ? $uid : false);
+        if (false !== $doUid && !@posix_setuid($uid)) {
+            self::log(self::LOG_ERR, "".self::getOption("appName")." ".
+                "daemon was unable ".
+                "to change user of process ".
+                "to: ".$uid,
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false;
+        }
+
+        return true;
+    }//end _changeIdentity()
+
     /**
      * Fork process and kill parent process, the heart of the 'daemonization'
      *
@@ -956,6 +1128,7 @@ class System_Daemon
     /**
      * Sytem_Daemon::_die()
      * Kill the daemon
+     * Keep this function as independent from complex logic as possible
      *
      * @param boolean $restart Whether to restart after die
      *
@@ -965,16 +1138,17 @@ class System_Daemon
     {
         if (!self::isDying()) {
             self::$_isDying = true;
-            if (!self::isInBackground() || 
-                !file_exists(self::getOption("appPidLocation"))) {
+            // Following caused a bug if pid couldn't Sbe written because of privileges
+            // || !file_exists(self::getOption("appPidLocation"))
+            if (!self::isInBackground()) {
                 self::log(self::LOG_INFO, "Not stopping ".
                     self::getOption("appName").
                     ", daemon was not running",
                     __FILE__, __CLASS__, __FUNCTION__, __LINE__);
                 return false;
             }
-            
-            @unlink(self::getOption("appPidLocation"));
+
+            unlink(self::getOption("appPidLocation"));
 
             if ($restart) {
                 die(exec(join(' ', $GLOBALS['argv'])));

@@ -28,10 +28,10 @@ spawning standalone daemons, and for example includes:
   <active>yes</active>
  </lead>
  <date>2009-02-10</date>
- <time>21:17:31</time>
+ <time>21:17:56</time>
  <version>
-  <release>0.6.0</release>
-  <api>0.6.0</api>
+  <release>0.6.1</release>
+  <api>0.6.1</api>
  </version>
  <stability>
   <release>alpha</release>
@@ -135,8 +135,8 @@ spawning standalone daemons, and for example includes:
  <changelog>
   <release>
    <version>
-    <release>0.6.0</release>
-    <api>0.6.0</api>
+    <release>0.6.1</release>
+    <api>0.6.1</api>
    </version>
    <stability>
     <release>alpha</release>

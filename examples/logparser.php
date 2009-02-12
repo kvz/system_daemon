@@ -55,14 +55,16 @@ if ($runmode["help"] == true) {
     }
     die();
 }
-    
+
+// Make it possible to test in source directory
+// This is for PEAR developers only
+ini_set('include_path', ini_get('include_path').':..');
+
 // Include Class
 error_reporting(E_ALL);
 require_once "System/Daemon.php";
 
 // Setup
-
-
 $options = array(
     "appName" => "logparser",
     "appDir" => dirname(__FILE__),
@@ -71,7 +73,9 @@ $options = array(
     "authorEmail" => "kevin@vanzonneveld.net",
     "sysMaxExecutionTime" => "0",
     "sysMaxInputTime" => "0",
-    "sysMemoryLimit" => "1024M"
+    "sysMemoryLimit" => "1024M",
+    "appRunAsGID" => 1000,
+    "appRunAsUID" => 1000
 );
 
 System_Daemon::setOptions($options);

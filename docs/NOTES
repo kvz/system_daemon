@@ -1,2 +1,5 @@
-System_Daemon 0.6.1-alpha 2009-02-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
- * Change identity AFTER chowning pidfile & setting system settings
+System_Daemon 0.6.3-alpha 2009-02-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Revised changeIdentity system. Now also chowns logfile.
+ * Added new feature: Reroute PHP errors to log automatically
+ * Moved pidfile to own subdir, otherwise it can never be removed when user is not root anymore
+ * Fixed bug: _die Won't actually cause the daemon to die if there was a permission issue with writing pidfiles

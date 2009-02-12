@@ -22,7 +22,11 @@
  * /var/log/simple.log
  * 
  */
-    
+
+// Make it possible to test in source directory
+// This is for PEAR developers only
+ini_set('include_path', ini_get('include_path').':..');
+
 // Include Class
 error_reporting(E_ALL);
 require_once "System/Daemon.php";
