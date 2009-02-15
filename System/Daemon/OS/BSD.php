@@ -33,7 +33,7 @@ class System_Daemon_OS_BSD extends System_Daemon_OS
      *
      * @var string
      */
-    protected $autoRunTemplatePath = false;
+    protected $autoRunTemplatePath = '#datadir#/template_BSD';
     
     /**
      * Determines wether the system is compatible with this OS
@@ -49,47 +49,6 @@ class System_Daemon_OS_BSD extends System_Daemon_OS
         
         return true;
     }//end isInstalled
-    
-    /**
-     * Returns a template path to base the autuRun script on.
-     * Uses $autoRunTemplatePath if possible. 
-     *
-     * @return unknown
-     * @see autoRunTemplatePath
-     */
-    public function getAutoRunTemplatePath() 
-    {
-        $dir        = false;
-        $file       = "template_BSD";
-        $tried_dirs = array();
-        
-        if (class_exists("PEAR_Config", true)) {
-            $try_dir = realpath(PEAR_Config::singleton()->get("data_dir").
-                "/System_Daemon");
-            if (!is_dir($try_dir)) {
-                $tried_dirs[] = $try_dir;
-            } else {
-                $dir = $try_dir;
-            }
-        }
-        
-        if (!$dir) {
-            $try_dir = realpath(dirname(__FILE__)."../../../../data");
-            if (!is_dir($try_dir)) {
-                $tried_dirs[] = $try_dir;
-            } else {
-                $dir = $try_dir;
-            }
-        }
-        
-        if (!$dir) {
-            $this->errors[] = "No data dir found in either: ".
-                implode(" or ", $tried_dirs);
-            return false;
-        }
-                
-        return $dir."/".$file;
-    }//end getAutoRunTemplatePath        
     
 }//end class
 ?>

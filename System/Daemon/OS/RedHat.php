@@ -8,6 +8,7 @@
  * @category  System
  * @package   System_Daemon
  * @author    Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * @author    Igor Feghali <ifeghali@php.net>
  * @copyright 2008 Kevin van Zonneveld (http://kevin.vanzonneveld.net)
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
  * @version   SVN: Release: $Id$
@@ -34,6 +35,35 @@ class System_Daemon_OS_RedHat extends System_Daemon_OS_Linux
      * @var string
      */
     protected $osVersionFile = "/etc/redhat-release";
+
+    /**
+     * Path of init.d scripts
+     *
+     * @var string
+     */
+    protected $autoRunDir = '/etc/rc.d/init.d';
+
+    /**
+     * Template path
+     *
+     * @var string
+     */
+    protected $autoRunTemplatePath = '#datadir#/template_RedHat';
+
+    /**
+     * Replace the following keys with values to convert a template into
+     * a read autorun script
+     *
+     * @var array
+     */
+    protected $autoRunTemplateReplace = array(
+        '@name@'      => '{PROPERTIES.appName}',
+        '@desc@'      => '{PROPERTIES.appDescription}',
+        '@bin_file@'  => '{PROPERTIES.binFile}',
+        '@bin_name@'  => '{PROPERTIES.appExecutable}',
+        '@pid_file@'  => '{PROPERTIES.pidFile}',
+        '@chkconfig@' => '{PROPERTIES.chkconfig}',
+    );
     
 }//end class
 ?>

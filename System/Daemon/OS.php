@@ -193,10 +193,59 @@ class System_Daemon_OS
             $this->errors[] = "No autoRunTemplatePath found";
             return false;
         }
+
+        // Replace variable: #datadir#
+        // with actual package datadir
+        // this enables predefined templates for e.g. redhat & bsd
+        if (false !== strpos($this->autoRunTemplatePath, '#datadir#')) {
+            $dataDir = $this->getDataDir();
+            if (false === $dataDir) {
+                return false;
+            }
+            $this->autoRunTemplatePath = str_replace('#datadir#', $dataDir, $this->autoRunTemplatePath);
+        }
         
         return $this->autoRunTemplatePath; 
     }//end getAutoRunTemplatePath        
-    
+
+
+    public function getDataDir() {
+        $tried_dirs = array();
+
+        if (class_exists('PEAR_Config', true)) {
+            $config = PEAR_Config::singleton();
+            if (PEAR::isError($config)) {
+                $this->errors[] = $config->getMessage();
+                return false;
+            }
+
+            $try_dir = realpath($config->get('data_dir').
+                '/System_Daemon/data');
+            if (!is_dir($try_dir)) {
+                $tried_dirs[] = $try_dir;
+            } else {
+                $dir = $try_dir;
+            }
+        }
+
+        if (!$dir) {
+            $try_dir = realpath(dirname(__FILE__).'/../../data');
+            if (!is_dir($try_dir)) {
+                $tried_dirs[] = $try_dir;
+            } else {
+                $dir = $try_dir;
+            }
+        }
+
+        if (!$dir) {
+            $this->errors[] = 'No data dir found in either: '.
+                implode(' or ', $tried_dirs);
+            return false;
+        }
+
+        return $dir;
+    }
+
     /**
      * Returns OS specific path to autoRun file
      * 
