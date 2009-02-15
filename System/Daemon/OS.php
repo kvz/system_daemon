@@ -249,7 +249,7 @@ class System_Daemon_OS
             return false;
         }
         
-        return file_get_contents($this->autoRunTemplatePath);
+        return file_get_contents($path);
     }//end getAutoRunTemplate    
          
     /**
