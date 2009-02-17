@@ -367,11 +367,11 @@ class System_Daemon_Options
         if (isset($_allowedTypes["string"]) && !is_bool($value)) {
             // Replace variables
             $value = preg_replace_callback('/\{([^\{\}]+)\}/is', 
-                array("self", "_replaceVars"), $value);
+                array($this, "_replaceVars"), $value);
             
             // Replace functions
             $value = preg_replace_callback('/\@([\w_]+)\(([^\)]+)\)/is', 
-                array("self", "_replaceFuncs"), $value);
+                array($this, "_replaceFuncs"), $value);
         }
                         
         $this->_options[$name] = $value;
