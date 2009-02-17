@@ -42,17 +42,17 @@ class System_Daemon
     // Ensures compatibility while maintaining independency
     
     /**
-     * System is unusable
+     * System is unusable (will throw a System_Daemon_Exception as well)
      */
     const LOG_EMERG = 0;
     
     /**
-     * Immediate action required
+     * Immediate action required (will throw a System_Daemon_Exception as well)
      */ 
     const LOG_ALERT = 1;
     
     /**
-     * Critical conditions
+     * Critical conditions (will throw a System_Daemon_Exception as well)
      */
     const LOG_CRIT = 2;
     

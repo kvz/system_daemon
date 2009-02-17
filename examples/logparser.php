@@ -147,7 +147,7 @@ while (!System_Daemon::isDying() && $runningOkay && $cnt <=3) {
     // Level 4 would be fatal and shuts down the daemon immediately,
     // which in this case is handled by the while condition.
     if (!$runningOkay) {
-        System_Daemon::log(System_Daemon::LOG_CRITICAL, "parseLog() ".
+        System_Daemon::log(System_Daemon::LOG_ERR, "parseLog() ".
             "produced an error, ".
             "so this will be my last run");
     }
