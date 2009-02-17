@@ -695,7 +695,7 @@ class System_Daemon
         }
         
         // These are pretty serious errors
-        if ($level < self::LOG_WARNING) {
+        if ($level < self::LOG_ERR) {
             // So Throw an exception
             if (self::getOption("usePEAR")) {
                 throw new System_Daemon_Exception($log_line);
