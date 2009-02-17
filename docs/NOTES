@@ -1,5 +1,4 @@
 System_Daemon 0.6.9-alpha 2009-02-17 Kevin van Zonneveld <kevin@vanzonneveld.net>
- * Only have critical and above throw exceptions
  * Silence autoload include by first checking for fileExistsInPath
  * Fixed bug: Restart waits on child process & blocks parent
  * Serious tesing done by Arne Wieding. Thanks.
