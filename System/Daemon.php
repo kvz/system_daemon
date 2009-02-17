@@ -1193,7 +1193,11 @@ class System_Daemon
             unlink(self::getOption("appPidLocation"));
 
             if ($restart) {
-                die(exec(join(' ', $GLOBALS['argv'])));
+                // Following line blocks the exit. Leaving zombie processes:
+                //die(exec(join(' ', $GLOBALS['argv'])));
+
+                // So instead we should:
+                die(exec(join(' ', $GLOBALS['argv']) . ' > /dev/null &'));
             } else {
                 die();
             }
