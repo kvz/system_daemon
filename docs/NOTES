@@ -1,3 +1,2 @@
-System_Daemon 0.6.8-alpha 2009-02-17 Kevin van Zonneveld <kevin@vanzonneveld.net>
- * Pack and release r181 as 0.6.8-alpha
- * fixed notice: Non-static method System_Daemon_Options::_replaceVars() cannot be called statically
+System_Daemon 0.6.9-alpha 2009-02-17 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Only have critical and above throw exceptions

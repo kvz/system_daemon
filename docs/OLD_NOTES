@@ -1,3 +1,7 @@
+System_Daemon 0.6.8-alpha 2009-02-17 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Pack and release r181 as 0.6.8-alpha
+ * Only have critical and above throw exceptions
+
 System_Daemon 0.6.7-alpha 2009-02-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
  * Pack and release r179 as 0.6.7-alpha
  * fixed request #15895: Added RedHat support (thanks to Igor Feghali)
