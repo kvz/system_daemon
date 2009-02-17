@@ -27,21 +27,20 @@ spawning standalone daemons, and for example includes:
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
- <date>2009-02-15</date>
- <time>14:00:54</time>
+ <date>2009-02-17</date>
+ <time>14:55:37</time>
  <version>
-  <release>0.6.7</release>
-  <api>0.6.7</api>
+  <release>0.6.8</release>
+  <api>0.6.8</api>
  </version>
  <stability>
   <release>alpha</release>
   <api>alpha</api>
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
- <notes>System_Daemon 0.6.7-alpha 2009-02-10 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and release r179 as 0.6.7-alpha
- * fixed request #15895: Added RedHat support (thanks to Igor Feghali)
- * fixed bug #15894 getAutoRunTemplate reads wrong path (thanks to Igor Feghali)
+ <notes>System_Daemon 0.6.8-alpha 2009-02-17 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and release r181 as 0.6.8-alpha
+ * fixed notice: Non-static method System_Daemon_Options::_replaceVars() cannot be called statically
  </notes>
  <contents>
   <dir baseinstalldir="./" name="/">
@@ -56,6 +55,7 @@ spawning standalone daemons, and for example includes:
     <file name="MAPPING" role="doc" />
     <file name="NOTES" role="doc" />
     <file name="OLD_NOTES" role="doc" />
+    <file name="README" role="doc" />
     <file name="suggested_notes_format" role="doc" />
     <file name="SUMMARY" role="doc" />
     <file name="VERSION" role="doc" />
@@ -135,19 +135,18 @@ spawning standalone daemons, and for example includes:
  <changelog>
   <release>
    <version>
-    <release>0.6.7</release>
-    <api>0.6.7</api>
+    <release>0.6.8</release>
+    <api>0.6.8</api>
    </version>
    <stability>
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2009-02-15</date>
+   <date>2009-02-17</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
-   <notes>System_Daemon 0.6.7-alpha 2009-02-10 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and release r179 as 0.6.7-alpha
- * fixed request #15895: Added RedHat support (thanks to Igor Feghali)
- * fixed bug #15894 getAutoRunTemplate reads wrong path (thanks to Igor Feghali)
+   <notes>System_Daemon 0.6.8-alpha 2009-02-17 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and release r181 as 0.6.8-alpha
+ * fixed notice: Non-static method System_Daemon_Options::_replaceVars() cannot be called statically
    </notes>
   </release>
  </changelog>

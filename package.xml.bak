@@ -27,27 +27,27 @@ spawning standalone daemons, and for example includes:
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
- <date>2009-02-12</date>
- <time>13:21:02</time>
+ <date>2009-02-15</date>
+ <time>14:00:54</time>
  <version>
-  <release>0.6.3</release>
-  <api>0.6.3</api>
+  <release>0.6.7</release>
+  <api>0.6.7</api>
  </version>
  <stability>
   <release>alpha</release>
   <api>alpha</api>
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
- <notes>System_Daemon 0.6.3-alpha 2009-02-10 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Revised changeIdentity system. Now also chowns logfile.
- * Added new feature: Reroute PHP errors to log automatically
- * Moved pidfile to own subdir, otherwise it can never be removed when user is not root anymore
- * Fixed bug: _die Won&apos;t actually cause the daemon to die if there was a permission issue with writing pidfiles
+ <notes>System_Daemon 0.6.7-alpha 2009-02-10 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and release r179 as 0.6.7-alpha
+ * fixed request #15895: Added RedHat support (thanks to Igor Feghali)
+ * fixed bug #15894 getAutoRunTemplate reads wrong path (thanks to Igor Feghali)
  </notes>
  <contents>
   <dir baseinstalldir="./" name="/">
    <dir name="data">
     <file name="template_BSD" role="data" />
+    <file name="template_RedHat" role="data" />
    </dir> <!-- /data -->
    <dir name="docs">
     <file name="CHANGELOG" role="doc" />
@@ -135,20 +135,19 @@ spawning standalone daemons, and for example includes:
  <changelog>
   <release>
    <version>
-    <release>0.6.3</release>
-    <api>0.6.3</api>
+    <release>0.6.7</release>
+    <api>0.6.7</api>
    </version>
    <stability>
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2009-02-12</date>
+   <date>2009-02-15</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
-   <notes>System_Daemon 0.6.3-alpha 2009-02-10 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Revised changeIdentity system. Now also chowns logfile.
- * Added new feature: Reroute PHP errors to log automatically
- * Moved pidfile to own subdir, otherwise it can never be removed when user is not root anymore
- * Fixed bug: _die Won&apos;t actually cause the daemon to die if there was a permission issue with writing pidfiles
+   <notes>System_Daemon 0.6.7-alpha 2009-02-10 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and release r179 as 0.6.7-alpha
+ * fixed request #15895: Added RedHat support (thanks to Igor Feghali)
+ * fixed bug #15894 getAutoRunTemplate reads wrong path (thanks to Igor Feghali)
    </notes>
   </release>
  </changelog>

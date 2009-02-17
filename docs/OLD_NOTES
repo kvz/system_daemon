@@ -1,3 +1,8 @@
+System_Daemon 0.6.7-alpha 2009-02-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Pack and release r179 as 0.6.7-alpha
+ * fixed request #15895: Added RedHat support (thanks to Igor Feghali)
+ * fixed bug #15894 getAutoRunTemplate reads wrong path (thanks to Igor Feghali)
+
 System_Daemon 0.6.3-alpha 2009-02-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
  * Pack and release r174 as 0.6.3-alpha
  * Revised changeIdentity system. Now also chowns logfile.
