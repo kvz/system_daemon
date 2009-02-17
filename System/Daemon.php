@@ -691,7 +691,7 @@ class System_Daemon
         // Append to logfile
         if (!file_put_contents(self::getOption("logLocation"), 
             $log_line."\n", FILE_APPEND)) {
-            $log_succeeded = false;
+            $log_succeeded = false; 
         }
         
         // These are pretty serious errors
