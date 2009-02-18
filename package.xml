@@ -27,21 +27,22 @@ spawning standalone daemons, and for example includes:
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
- <date>2009-02-17</date>
- <time>14:55:37</time>
+ <date>2009-02-18</date>
+ <time>12:29:35</time>
  <version>
-  <release>0.6.8</release>
-  <api>0.6.8</api>
+  <release>0.6.9</release>
+  <api>0.6.9</api>
  </version>
  <stability>
   <release>alpha</release>
   <api>alpha</api>
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
- <notes>System_Daemon 0.6.8-alpha 2009-02-17 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and release r181 as 0.6.8-alpha
- * fixed notice: Non-static method System_Daemon_Options::_replaceVars() cannot be called statically
- </notes>
+ <notes>System_Daemon 0.6.9-alpha 2009-02-17 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and release r194 as 0.6.9-alpha
+ * Silence autoload include by first checking for fileExistsInPath
+ * Fixed bug: Restart waits on child process &amp; blocks parent
+ * Serious tesing done by Arne Wieding. Thanks.</notes>
  <contents>
   <dir baseinstalldir="./" name="/">
    <dir name="data">
@@ -135,19 +136,20 @@ spawning standalone daemons, and for example includes:
  <changelog>
   <release>
    <version>
-    <release>0.6.8</release>
-    <api>0.6.8</api>
+    <release>0.6.9</release>
+    <api>0.6.9</api>
    </version>
    <stability>
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2009-02-17</date>
+   <date>2009-02-18</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
-   <notes>System_Daemon 0.6.8-alpha 2009-02-17 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and release r181 as 0.6.8-alpha
- * fixed notice: Non-static method System_Daemon_Options::_replaceVars() cannot be called statically
-   </notes>
+   <notes>System_Daemon 0.6.9-alpha 2009-02-17 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and release r194 as 0.6.9-alpha
+ * Silence autoload include by first checking for fileExistsInPath
+ * Fixed bug: Restart waits on child process &amp; blocks parent
+ * Serious tesing done by Arne Wieding. Thanks.</notes>
   </release>
  </changelog>
 </package>

@@ -1,5 +1,10 @@
 2009-02-17 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
+        [r194] Restart waits on child process & blocks parent
+        [r189] Silence autoload include by checking fileExistsInPath
+        [r186] Only have critical and above throw exceptions
+        [r184] Fixed loglevels
+        [r182] Pack and release r181 as 0.6.8-alpha
         [r181] Fixed bug: Strict Standards: Non-static method System_Daemon_Options::_replaceVars() cannot be called statically
 
 2009-02-15 Kevin van Zonneveld <kevin@vanzonneveld.net>
