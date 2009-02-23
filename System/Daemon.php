@@ -994,7 +994,7 @@ class System_Daemon
         $pidDirPath = dirname($pidFilePath);
 
         $parts = explode('/', $pidDirPath);
-        if (count($parts) <= 3) {
+        if (count($parts) <= 3 || end($parts) != self::getOption("appName")) {
             // like: /var/run/x.pid
             self::log(self::LOG_ERR, "".
                 "Since version 0.6.3, the pidfile needs to be in it's own ".
