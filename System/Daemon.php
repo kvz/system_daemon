@@ -790,7 +790,7 @@ class System_Daemon
             break;
         case SIGCHLD:
             self::log(self::LOG_INFO, self::getOption("appName").
-                " daemon received signal: hold", 
+                " daemon received signal: child",
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             while (pcntl_wait($status, WNOHANG OR WUNTRACED) > 0) {
                 usleep(1000);
