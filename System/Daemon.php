@@ -789,6 +789,7 @@ class System_Daemon
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             break;
         case SIGCHLD:
+            // A child process has died
             self::log(self::LOG_INFO, self::getOption("appName").
                 " daemon received signal: child",
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
