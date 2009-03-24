@@ -250,7 +250,20 @@ class System_Daemon
             "detail" => "",
             "required" => true
         ),
-        
+        "logFilePosition" => array(
+            "type" => "boolean",
+            "default" => false,
+            "punch" => "Show file in which the log message was generated",
+            "detail" => "",
+            "required" => true
+        ),
+        "logLinePosition" => array(
+            "type" => "boolean",
+            "default" => true,
+            "punch" => "Show the line number in which the log message was generated",
+            "detail" => "",
+            "required" => true
+        ),
         "appRunAsUID" => array(
             "type" => "number/0-65000",
             "default" => 0,
@@ -658,7 +671,12 @@ class System_Daemon
         $str_level = str_pad(self::$_logLevels[$level]."", 8, " ", STR_PAD_LEFT);
         $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
         if ($level < self::LOG_NOTICE) {
-            $log_line .= " [l:".$line."]"; 
+            if (self::getOption("logFilePosition")) {
+                $log_line .= " [f:".$file."]";
+            }
+            if (self::getOption("logLinePosition")) {
+                $log_line .= " [l:".$line."]";
+            }
         }
         
         $non_debug     = ($level < self::LOG_DEBUG);
