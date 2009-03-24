@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.7.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+<package packagerversion="1.7.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
     http://pear.php.net/dtd/tasks-1.0.xsd
     http://pear.php.net/dtd/package-2.0
     http://pear.php.net/dtd/package-2.0.xsd">
@@ -27,22 +27,21 @@ spawning standalone daemons, and for example includes:
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
- <date>2009-02-18</date>
- <time>12:29:35</time>
+ <date>2009-03-24</date>
+ <time>11:29:29</time>
  <version>
-  <release>0.6.9</release>
-  <api>0.6.9</api>
+  <release>0.7.0</release>
+  <api>0.7.0</api>
  </version>
  <stability>
   <release>alpha</release>
   <api>alpha</api>
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
- <notes>System_Daemon 0.6.9-alpha 2009-02-17 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and release r194 as 0.6.9-alpha
- * Silence autoload include by first checking for fileExistsInPath
- * Fixed bug: Restart waits on child process &amp; blocks parent
- * Serious tesing done by Arne Wieding. Thanks.</notes>
+ <notes>System_Daemon 0.7.0-alpha 2009-03-24 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and release r200 as 0.7.0-alpha
+ * Added: optionally show the file where log() was called
+ </notes>
  <contents>
   <dir baseinstalldir="./" name="/">
    <dir name="data">
@@ -62,6 +61,8 @@ spawning standalone daemons, and for example includes:
     <file name="VERSION" role="doc" />
    </dir> <!-- /docs -->
    <dir name="examples">
+    <file name="bug_test_a.php" role="doc" />
+    <file name="bug_test_b.php" role="doc" />
     <file name="devtest.php" role="doc" />
     <file name="logparser.php" role="doc" />
     <file name="nopear.php" role="doc" />
@@ -136,20 +137,19 @@ spawning standalone daemons, and for example includes:
  <changelog>
   <release>
    <version>
-    <release>0.6.9</release>
-    <api>0.6.9</api>
+    <release>0.7.0</release>
+    <api>0.7.0</api>
    </version>
    <stability>
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2009-02-18</date>
+   <date>2009-03-24</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
-   <notes>System_Daemon 0.6.9-alpha 2009-02-17 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and release r194 as 0.6.9-alpha
- * Silence autoload include by first checking for fileExistsInPath
- * Fixed bug: Restart waits on child process &amp; blocks parent
- * Serious tesing done by Arne Wieding. Thanks.</notes>
+   <notes>System_Daemon 0.7.0-alpha 2009-03-24 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and release r200 as 0.7.0-alpha
+ * Added: optionally show the file where log() was called
+   </notes>
   </release>
  </changelog>
 </package>

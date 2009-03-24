@@ -28,7 +28,7 @@ spawning standalone daemons, and for example includes:
   <active>yes</active>
  </lead>
  <date>2009-03-24</date>
- <time>11:29:29</time>
+ <time>11:31:43</time>
  <version>
   <release>0.7.0</release>
   <api>0.7.0</api>
@@ -41,6 +41,7 @@ spawning standalone daemons, and for example includes:
  <notes>System_Daemon 0.7.0-alpha 2009-03-24 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
  * Pack and release r200 as 0.7.0-alpha
  * Added: optionally show the file where log() was called
+ * Added: end-user documentation @ pear.php.net
  </notes>
  <contents>
   <dir baseinstalldir="./" name="/">
@@ -149,6 +150,7 @@ spawning standalone daemons, and for example includes:
    <notes>System_Daemon 0.7.0-alpha 2009-03-24 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
  * Pack and release r200 as 0.7.0-alpha
  * Added: optionally show the file where log() was called
+ * Added: end-user documentation @ pear.php.net
    </notes>
   </release>
  </changelog>
