@@ -1,3 +1,9 @@
+System_Daemon 0.6.9-alpha 2009-02-17 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Pack and release r194 as 0.6.9-alpha
+ * Silence autoload include by first checking for fileExistsInPath
+ * Fixed bug: Restart waits on child process & blocks parent
+ * Serious tesing done by Arne Wieding. Thanks.
+
 System_Daemon 0.6.8-alpha 2009-02-17 Kevin van Zonneveld <kevin@vanzonneveld.net>
  * Pack and release r181 as 0.6.8-alpha
  * Only have critical and above throw exceptions
