@@ -1,3 +1,20 @@
+2009-02-27 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r199] Explain SIGCHLD
+        [r198] CHLD != HLD
+
+2009-02-23 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r197] Added additional check to see if pidfile is in it's own directory
+
+2009-02-22 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r196] Added bug_tests
+
+2009-02-18 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r195] Packed 0.6.9
+
 2009-02-17 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
         [r194] Restart waits on child process & blocks parent
