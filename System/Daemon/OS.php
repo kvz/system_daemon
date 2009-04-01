@@ -318,6 +318,9 @@ class System_Daemon_OS
         if (!$this->autoRunTemplateReplace 
             || !is_array($this->autoRunTemplateReplace)
             || !count($this->autoRunTemplateReplace)) {
+
+            $this->errors[] = "No autoRunTemplateReplace found";
+
             return false;
         }
         
