@@ -15,26 +15,26 @@
  */
 
 /**
- * A System_Daemon_OS driver for RedHat based Operating Systems
+ * A System_Daemon_OS driver for Fedora based Operating Systems
  *
  * @category  System
  * @package   System_Daemon
  * @author    Kevin van Zonneveld <kevin@vanzonneveld.net>
- * @author    Igor Feghali <ifeghali@php.net>
+ * @author    Jukka Similä <jukka@datapolis.fi>
  * @copyright 2008 Kevin van Zonneveld (http://kevin.vanzonneveld.net)
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
  * @version   SVN: Release: $Id$
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * *
  */
-class System_Daemon_OS_RedHat extends System_Daemon_OS_Linux
+class System_Daemon_OS_Fedora extends System_Daemon_OS_Linux
 {
     /**
      * On Linux, a distro-specific version file is often telling us enough
      *
      * @var string
      */
-    protected $osVersionFile = "/etc/redhat-release";
+    protected $osVersionFile = "/etc/fedora-release";
 
     /**
      * Path of init.d scripts
@@ -48,7 +48,7 @@ class System_Daemon_OS_RedHat extends System_Daemon_OS_Linux
      *
      * @var string
      */
-    protected $autoRunTemplatePath = '#datadir#/template_RedHat';
+    protected $autoRunTemplatePath = '#datadir#/template_Fedora';
 
     /**
      * Replace the following keys with values to convert a template into

@@ -288,6 +288,12 @@ class System_Daemon
             "detail" => "",
             "required" => true
         ),
+        "appChkConfig" => array(
+             "type" => "string",
+             "default" => "- 99 0",
+             "punch" => "chkconfig parameters for init.d",
+             "detail" => "runlevel startpriority stoppriority"
+         ),        
         "appDieOnIdentityCrisis" => array(
             "type" => "boolean",
             "default" => true,
