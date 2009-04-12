@@ -294,9 +294,9 @@ class System_Daemon_OS
     public static function isWritable($path) {
         if ($path{strlen($path)-1}=='/') {
             //// recursively return a temporary file path
-            return is__writable($path.uniqid(mt_rand()).'.tmp');
+            return self::isWritable($path.uniqid(mt_rand()).'.tmp');
         } else if (is_dir($path)) {
-            return is__writable($path.'/'.uniqid(mt_rand()).'.tmp');
+            return self::isWritable($path.'/'.uniqid(mt_rand()).'.tmp');
         }
         // check tmp file for read/write capabilities
         $rm = file_exists($path);
