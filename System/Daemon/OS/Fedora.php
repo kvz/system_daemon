@@ -27,7 +27,7 @@
  * @link      http://trac.plutonia.nl/projects/system_daemon
  * *
  */
-class System_Daemon_OS_Fedora extends System_Daemon_OS_Linux
+class System_Daemon_OS_Fedora extends System_Daemon_OS_RedHat
 {
     /**
      * On Linux, a distro-specific version file is often telling us enough
