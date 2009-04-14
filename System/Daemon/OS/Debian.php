@@ -55,6 +55,7 @@ class System_Daemon_OS_Debian extends System_Daemon_OS_Linux
         "Example" => "{PROPERTIES.appName}",
         "skeleton" => "{PROPERTIES.appName}",
         "/usr/sbin/\$NAME" => "{PROPERTIES.appDir}/{PROPERTIES.appExecutable}",
+        "/var/run/\$NAME.pid" => "{PROPERTIES.appPidLocation}",
         "Description of the service"=> "{PROPERTIES.appDescription}",
         " --name \$NAME" => "",
         "--options args" => "",
