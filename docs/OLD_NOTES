@@ -1,3 +1,8 @@
+System_Daemon 0.7.0-alpha 2009-03-24 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Pack and release r200 as 0.7.0-alpha
+ * Added: optionally show the file where log() was called
+ * Added: end-user documentation @ pear.php.net
+
 System_Daemon 0.6.9-alpha 2009-02-17 Kevin van Zonneveld <kevin@vanzonneveld.net>
  * Pack and release r194 as 0.6.9-alpha
  * Silence autoload include by first checking for fileExistsInPath

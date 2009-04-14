@@ -1,4 +1,4 @@
-System_Daemon 0.7.0-alpha 2009-03-24 Kevin van Zonneveld <kevin@vanzonneveld.net>
- * Pack and release r200 as 0.7.0-alpha
- * Added: optionally show the file where log() was called
- * Added: end-user documentation @ pear.php.net
+System_Daemon 0.7.1-alpha xxxx-xx-xx Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Pack and release rxxx as 0.7.1-alpha
+ * Fixed bug: Wrong PID location in debian/ubuntu skeleton
+ * Added support for: Fedora
