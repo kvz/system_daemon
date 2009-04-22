@@ -20,7 +20,7 @@ spl_autoload_register(array("System_Daemon", "autoload"));
 
 /**
  * System_Daemon. Create daemons with practicle functions 
- * like $daemon->start()
+ * like System_Daemon::start()
  *
  * Requires PHP build with --enable-cli --with-pcntl.
  * Only runs on *NIX systems, because Windows lacks of the pcntl ext.
