@@ -5,7 +5,7 @@
  * Script to generate changelog file
  *
  * Relies on svn2cl
- * Echo's on STDOUT
+ * Echoes on STDOUT
  * 
  * PHP version 5 
  * 
@@ -40,6 +40,13 @@ if (isset($argv[1]) && is_numeric($argv[1])) {
 }
 
 // collect data
+$cmd  = "";
+$cmd .= "svn up ".$workspace_dir;
+exec($cmd, $o, $r);
+if ($r) {
+    die("Executing: ".$cmd." failed miserably\n");
+}
+
 $cmd  = "";
 $cmd .= "svn2cl -i --stdout --group-by-day ".$rev." --linelen=90000 ".$workspace_dir;
 exec($cmd, $o, $r);

@@ -28,7 +28,7 @@ spawning standalone daemons, and for example includes:
   <active>yes</active>
  </lead>
  <date>2009-04-25</date>
- <time>11:53:43</time>
+ <time>12:26:28</time>
  <version>
   <release>0.8.0</release>
   <api>0.8.0</api>
@@ -39,8 +39,9 @@ spawning standalone daemons, and for example includes:
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
  <notes>System_Daemon 0.8.0-alpha 2009-04-25 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and releas r214 as 0.8.0-alpha
+ * Pack and releas r217 as 0.8.0-alpha
  * Added support for: Fedora
+ * Added feature: iterate() which could prevent ugly bugs by clearing unreliable information in statcache
  * fix bug #16136: Wrong PID location in debian/ubuntu skeleton
  * add req #16135: Suppressed errors get logged
  * add req #15991: Ignore SIGPIPE signal
@@ -154,8 +155,9 @@ spawning standalone daemons, and for example includes:
    <date>2009-04-25</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
    <notes>System_Daemon 0.8.0-alpha 2009-04-25 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and releas r214 as 0.8.0-alpha
+ * Pack and releas r217 as 0.8.0-alpha
  * Added support for: Fedora
+ * Added feature: iterate() which could prevent ugly bugs by clearing unreliable information in statcache
  * fix bug #16136: Wrong PID location in debian/ubuntu skeleton
  * add req #16135: Suppressed errors get logged
  * add req #15991: Ignore SIGPIPE signal
