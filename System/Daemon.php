@@ -599,6 +599,12 @@ class System_Daemon
     
 
     static public function phpErrors($errno, $errstr, $errfile, $errline) {
+        // Ignore suppressed errors
+        if (error_reporting() == 0) {
+			return;
+        }
+
+        // Map PHP error level to System_Daemon log level
         if (empty(self::$_logPhpMapping[$errno])) {
             self::log(self::LOG_WARNING, 'Unknown PHP errorno: '.$errno);
             $lvl = self::LOG_ERR;
@@ -606,6 +612,7 @@ class System_Daemon
             $lvl = self::$_logPhpMapping[$errno];
         }
 
+        // Log it
         self::log($lvl, '[PHP Error] '.$errstr, $errfile, __CLASS__, __FUNCTION__, $errline);
         return true;
     }
