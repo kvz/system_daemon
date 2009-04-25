@@ -153,7 +153,9 @@ while (!System_Daemon::isDying() && $runningOkay && $cnt <=3) {
     }
     
     // Relax the system by sleeping for a little bit
-    sleep(2);
+    // iterate also clears statcache
+    System_Daemon::iterate(2);
+
     $cnt++;
 }
 

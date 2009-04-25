@@ -392,6 +392,7 @@ class System_Daemon
      * Spawn daemon process.
      * 
      * @return boolean
+     * @see iterate()
      * @see stop()
      * @see autoload()
      * @see _optionsInit()
@@ -479,7 +480,27 @@ class System_Daemon
         return true;
 
     }//end start()
-    
+
+    /**
+     * Protects your daemon by e.g. clearing statcache. Can optionally
+     * be used as a replacement for usleep as well.
+     *
+     * @param integer $sleepSeconds
+     *
+     * @return void
+     * @see start()
+     * @see stop()
+     */
+    static public function iterate($sleepSeconds = 0)
+    {
+        if ($usleep !== 0) {
+            sleep($sleepSeconds);
+        }
+
+        clearstatcache();
+        return true;
+    }//end iterate()
+
     /**
      * Stop daemon process.
      *

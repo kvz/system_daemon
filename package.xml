@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.7.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+<package packagerversion="1.7.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
     http://pear.php.net/dtd/tasks-1.0.xsd
     http://pear.php.net/dtd/package-2.0
     http://pear.php.net/dtd/package-2.0.xsd">
@@ -27,26 +27,31 @@ spawning standalone daemons, and for example includes:
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
- <date>2009-03-24</date>
- <time>11:31:43</time>
+ <date>2009-04-25</date>
+ <time>11:53:43</time>
  <version>
-  <release>0.7.0</release>
-  <api>0.7.0</api>
+  <release>0.8.0</release>
+  <api>0.8.0</api>
  </version>
  <stability>
   <release>alpha</release>
   <api>alpha</api>
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
- <notes>System_Daemon 0.7.0-alpha 2009-03-24 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and release r200 as 0.7.0-alpha
- * Added: optionally show the file where log() was called
- * Added: end-user documentation @ pear.php.net
+ <notes>System_Daemon 0.8.0-alpha 2009-04-25 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and releas r214 as 0.8.0-alpha
+ * Added support for: Fedora
+ * fix bug #16136: Wrong PID location in debian/ubuntu skeleton
+ * add req #16135: Suppressed errors get logged
+ * add req #15991: Ignore SIGPIPE signal
+ * Improved isWritable mechanism
+ * Fixed minor issues
  </notes>
  <contents>
   <dir baseinstalldir="./" name="/">
    <dir name="data">
     <file name="template_BSD" role="data" />
+    <file name="template_Fedora" role="data" />
     <file name="template_RedHat" role="data" />
    </dir> <!-- /data -->
    <dir name="docs">
@@ -80,6 +85,7 @@ spawning standalone daemons, and for example includes:
       <file name="BSD.php" role="php" />
       <file name="Debian.php" role="php" />
       <file name="Exception.php" role="php" />
+      <file name="Fedora.php" role="php" />
       <file name="Linux.php" role="php" />
       <file name="RedHat.php" role="php" />
       <file name="Ubuntu.php" role="php" />
@@ -138,19 +144,23 @@ spawning standalone daemons, and for example includes:
  <changelog>
   <release>
    <version>
-    <release>0.7.0</release>
-    <api>0.7.0</api>
+    <release>0.8.0</release>
+    <api>0.8.0</api>
    </version>
    <stability>
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2009-03-24</date>
+   <date>2009-04-25</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
-   <notes>System_Daemon 0.7.0-alpha 2009-03-24 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and release r200 as 0.7.0-alpha
- * Added: optionally show the file where log() was called
- * Added: end-user documentation @ pear.php.net
+   <notes>System_Daemon 0.8.0-alpha 2009-04-25 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and releas r214 as 0.8.0-alpha
+ * Added support for: Fedora
+ * fix bug #16136: Wrong PID location in debian/ubuntu skeleton
+ * add req #16135: Suppressed errors get logged
+ * add req #15991: Ignore SIGPIPE signal
+ * Improved isWritable mechanism
+ * Fixed minor issues
    </notes>
   </release>
  </changelog>

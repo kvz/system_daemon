@@ -1,3 +1,27 @@
+2009-04-22 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r212] Outdated comment
+
+2009-04-14 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r211] Fixed bug: Wrong PID location in debian/ubuntu skeleton
+
+2009-04-12 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r209] Fixed isWritable
+        [r208] Setup for a Fedora driver
+        [r206] Improved is_writable function to avoid:
+        [r206] Directory: '/etc/init.d' is not writable. Maybe run as root?
+
+2009-04-01 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r205] Added missing error
+
+2009-03-24 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r204] Pack and release r200 as 0.7.0-alpha
+        [r200] Added: optionally show file where log() was called
+
 2009-02-27 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
         [r199] Explain SIGCHLD

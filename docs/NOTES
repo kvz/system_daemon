@@ -1,4 +1,9 @@
-System_Daemon 0.7.1-alpha xxxx-xx-xx Kevin van Zonneveld <kevin@vanzonneveld.net>
- * Pack and release rxxx as 0.7.1-alpha
- * Fixed bug: Wrong PID location in debian/ubuntu skeleton
+System_Daemon 0.8.0-alpha 2009-04-25 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Pack and releas r214 as 0.8.0-alpha
  * Added support for: Fedora
+ * Added feature: iterate() which could prevent ugly bugs by clearing unreliable information in statcache
+ * fix bug #16136: Wrong PID location in debian/ubuntu skeleton
+ * add req #16135: Suppressed errors get logged
+ * add req #15991: Ignore SIGPIPE signal
+ * Improved isWritable mechanism
+ * Fixed minor issues
