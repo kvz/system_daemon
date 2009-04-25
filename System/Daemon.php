@@ -337,7 +337,8 @@ class System_Daemon
         SIGTERM => array("System_Daemon", "defaultSigHandler"),
         SIGHUP => array("System_Daemon", "defaultSigHandler"),
         SIGUSR1 => array("System_Daemon", "defaultSigHandler"),
-        SIGCHLD => array("System_Daemon", "defaultSigHandler")
+        SIGCHLD => array("System_Daemon", "defaultSigHandler"),
+        SIGPIPE => SIG_IGN,
     );
     
 
@@ -520,8 +521,8 @@ class System_Daemon
     {
         if (!isset(self::$_sigHandlers[$signal])) {
             // The signal should be defined already
-            self::log(self::LOG_NOTICE, "You can only overrule a ".
-                "handler that has been defined already.", 
+            self::log(self::LOG_NOTICE, "You can only overrule one ".
+                "of these handlers: ".implode(', ', self::$_sigHandlers),
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             return false;
         }
