@@ -971,7 +971,7 @@ class System_Daemon
      */
     static protected function _summon()
     {
-        self::log(self::LOG_INFO, "starting ".self::getOption("appName")." ".
+        self::log(self::LOG_NOTICE, "starting ".self::getOption("appName")." ".
             "daemon, output in: ". 
             self::getOption("logLocation"), 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
