@@ -47,6 +47,7 @@ foreach ($cmd_reqs as $cmd=>$package) {
 }
 
 $cmd = "phpcs --standard=PEAR ".$workspace_dir."/System";
+// 2>&1 |grep -v 'underscore' -B2
 @exe($cmd, $lines);
 echo implode("\n", $lines); 
 

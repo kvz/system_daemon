@@ -380,7 +380,7 @@ class System_Daemon
         if (is_file(dirname(__FILE__).'/'.$path) === true) {
             // Check standard file locations based on class name.
             include dirname(__FILE__).'/'.$path;
-        } else if(self::fileExistsInPath($path)) {
+        } else if (self::fileExistsInPath($path)) {
             // Everything else.
             include $path;
         }
@@ -485,7 +485,7 @@ class System_Daemon
      * Protects your daemon by e.g. clearing statcache. Can optionally
      * be used as a replacement for usleep as well.
      *
-     * @param integer $sleepSeconds
+     * @param integer $sleepSeconds Optionally put your daemon to rest for X s.
      *
      * @return void
      * @see start()
@@ -619,11 +619,21 @@ class System_Daemon
         return self::$_optObj->getOptions();
     }//end setOptions()      
     
-
-    static public function phpErrors($errno, $errstr, $errfile, $errline) {
+    /**
+     * Catches PHP Errors and forwards them to log function
+     *
+     * @param integer $errno   Level
+     * @param string  $errstr  Error
+     * @param string  $errfile File
+     * @param integer $errline Line
+     *
+     * @return boolean
+     */
+    static public function phpErrors($errno, $errstr, $errfile, $errline)
+    {
         // Ignore suppressed errors
         if (error_reporting() == 0) {
-			return;
+            return;
         }
 
         // Map PHP error level to System_Daemon log level
@@ -635,7 +645,9 @@ class System_Daemon
         }
 
         // Log it
-        self::log($lvl, '[PHP Error] '.$errstr, $errfile, __CLASS__, __FUNCTION__, $errline);
+        self::log($lvl, '[PHP Error] '.$errstr, $errfile, __CLASS__,
+            __FUNCTION__, $errline);
+
         return true;
     }
 
@@ -884,11 +896,12 @@ class System_Daemon
      *
      * From kvzlib.net
      *
-     * @param string $file
+     * @param string $file Filename to test
      *
      * @return boolean
      */
-    static public function fileExistsInPath($file){
+    static public function fileExistsInPath($file)
+    {
         // Using explode on the include_path is three times faster than using fopen
 
         // no file requested?
@@ -1007,16 +1020,19 @@ class System_Daemon
         @umask(0);
 
         // Write pidfile
-        if (false === self::_writePid(self::getOption("appPidLocation"), self::$_processId)) {
+        if (false === self::_writePid(self::getOption("appPidLocation"),
+                self::$_processId)) {
             self::log(self::LOG_EMERG, "".self::getOption("appName")." ".
                 "daemon was unable ".
                 "to write pid file");
         }
 
         // Change identity. maybe
-        if (false === self::_changeIdentity(self::getOption("appRunAsGID"), self::getOption("appRunAsUID"))) {
+        if (false === self::_changeIdentity(self::getOption("appRunAsGID"),
+                self::getOption("appRunAsUID"))) {
             // Die on fail?
-            $lvl = self::getOption("appDieOnIdentityCrisis") ? self::LOG_EMERG : self::LOG_CRIT;
+            $lvl = self::getOption("appDieOnIdentityCrisis") ?
+                self::LOG_EMERG : self::LOG_CRIT;
 
             self::log($lvl, "".self::getOption("appName")." ".
                 "daemon was unable ".
@@ -1036,7 +1052,8 @@ class System_Daemon
      *
      * @return boolean
      */
-    static protected function _isValidPidLocation($pidFilePath, $log = true) {
+    static protected function _isValidPidLocation($pidFilePath, $log = true)
+    {
         if (empty($pidFilePath)) {
             self::log(self::LOG_ERR, "".self::getOption("appName")." ".
                 "daemon encountered ".
@@ -1061,7 +1078,16 @@ class System_Daemon
         return true;
     }//end _isValidPidLocation
 
-    static protected function _writePid($pidFilePath = null, $pid = null) {
+    /**
+     * Creates pid dir and writes process id to pid file
+     *
+     * @param string  $pidFilePath PID File path
+     * @param integer $pid         PID
+     *
+     * @return boolean
+     */
+    static protected function _writePid($pidFilePath = null, $pid = null)
+    {
         if (empty($pid)) {
             self::log(self::LOG_ERR, "".self::getOption("appName")." ".
                 "daemon encountered ".
@@ -1103,7 +1129,16 @@ class System_Daemon
         return true;
     }//end _writePid()
 
-    static protected function _mkdirr($dirPath, $mode) {
+    /**
+     * Recursive alternative to mkdir
+     *
+     * @param string  $dirPath Directory to create
+     * @param integer $mode    Umask
+     *
+     * @return boolean
+     */
+    static protected function _mkdirr($dirPath, $mode)
+    {
         is_dir(dirname($dirPath)) || self::_mkdirr(dirname($dirPath), $mode);
         return is_dir($dirPath) || @mkdir($dirPath, $mode);
     }
@@ -1116,10 +1151,10 @@ class System_Daemon
      *
      * @return boolean
      */
-    static protected function _changeIdentity($gid = 0, $uid = 0) {
-
+    static protected function _changeIdentity($gid = 0, $uid = 0)
+    {
         // What files need to be chowned?
-        $chownFiles   = array();
+        $chownFiles = array();
         if (self::_isValidPidLocation(self::getOption("appPidLocation"), true)) {
             $chownFiles[] = dirname(self::getOption("appPidLocation"));
         }
@@ -1234,7 +1269,8 @@ class System_Daemon
     {
         if (!self::isDying()) {
             self::$_isDying = true;
-            // Following caused a bug if pid couldn't Sbe written because of privileges
+            // Following caused a bug if pid couldn't Sbe written because of
+            // privileges
             // || !file_exists(self::getOption("appPidLocation"))
             if (!self::isInBackground()) {
                 self::log(self::LOG_INFO, "Not stopping ".

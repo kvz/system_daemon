@@ -202,14 +202,21 @@ class System_Daemon_OS
             if (false === $dataDir) {
                 return false;
             }
-            $this->autoRunTemplatePath = str_replace('#datadir#', $dataDir, $this->autoRunTemplatePath);
+            $this->autoRunTemplatePath = str_replace('#datadir#', $dataDir,
+                $this->autoRunTemplatePath);
         }
 
         return $this->autoRunTemplatePath;
     }//end getAutoRunTemplatePath
 
-
-    public function getDataDir() {
+    /**
+     * Returns the directory where data is stored (like init.d templates)
+     * Could be PEAR's data directory but could also be a local one.
+     *
+     * @return string
+     */
+    public function getDataDir()
+    {
         $tried_dirs = array();
 
         if (class_exists('PEAR_Config', true)) {
@@ -287,11 +294,12 @@ class System_Daemon_OS
      * see http://bugs.php.net/bug.php?id=27609
      * see http://bugs.php.net/bug.php?id=30931
      *
-     * @param string $path
+     * @param string $path Path to test
      * 
      * @return boolean
      */
-    public static function isWritable($path) {
+    public static function isWritable($path)
+    {
         if ($path{strlen($path)-1}=='/') {
             //// recursively return a temporary file path
             return self::isWritable($path.uniqid(mt_rand()).'.tmp');
@@ -300,8 +308,8 @@ class System_Daemon_OS
         }
         // check tmp file for read/write capabilities
         $rm = file_exists($path);
-        $f = @fopen($path, 'a');
-        if ($f===false) {
+        $f  = @fopen($path, 'a');
+        if ($f === false) {
             return false;
         }
         fclose($f);
