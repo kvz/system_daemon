@@ -27,26 +27,20 @@ spawning standalone daemons, and for example includes:
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
- <date>2009-04-25</date>
- <time>12:29:10</time>
+ <date>2009-05-08</date>
+ <time>00:42:47</time>
  <version>
-  <release>0.8.0</release>
-  <api>0.8.0</api>
+  <release>0.8.1</release>
+  <api>0.8.1</api>
  </version>
  <stability>
   <release>alpha</release>
   <api>alpha</api>
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
- <notes>System_Daemon 0.8.0-alpha 2009-04-25 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and release r217 as 0.8.0-alpha
- * Added support for: Fedora
- * Added feature: iterate() which could prevent ugly bugs by clearing unreliable information in statcache
- * fix bug #16136: Wrong PID location in debian/ubuntu skeleton
- * add req #16135: Suppressed errors get logged
- * add req #15991: Ignore SIGPIPE signal
- * Improved isWritable mechanism
- * Fixed minor issues
+ <notes>System_Daemon 0.8.1-alpha 2009-05-08 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and release r219 as 0.8.1-alpha
+ * fix bug: usleep should be sleep
  </notes>
  <contents>
   <dir baseinstalldir="./" name="/">
@@ -145,24 +139,18 @@ spawning standalone daemons, and for example includes:
  <changelog>
   <release>
    <version>
-    <release>0.8.0</release>
-    <api>0.8.0</api>
+    <release>0.8.1</release>
+    <api>0.8.1</api>
    </version>
    <stability>
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2009-04-25</date>
+   <date>2009-05-08</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
-   <notes>System_Daemon 0.8.0-alpha 2009-04-25 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and release r217 as 0.8.0-alpha
- * Added support for: Fedora
- * Added feature: iterate() which could prevent ugly bugs by clearing unreliable information in statcache
- * fix bug #16136: Wrong PID location in debian/ubuntu skeleton
- * add req #16135: Suppressed errors get logged
- * add req #15991: Ignore SIGPIPE signal
- * Improved isWritable mechanism
- * Fixed minor issues
+   <notes>System_Daemon 0.8.1-alpha 2009-05-08 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and release r219 as 0.8.1-alpha
+ * fix bug: usleep should be sleep
    </notes>
   </release>
  </changelog>

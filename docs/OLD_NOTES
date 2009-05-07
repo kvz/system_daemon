@@ -1,3 +1,13 @@
+System_Daemon 0.8.0-alpha 2009-04-25 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Pack and release r217 as 0.8.0-alpha
+ * Added support for: Fedora
+ * Added feature: iterate() which could prevent ugly bugs by clearing unreliable information in statcache
+ * fix bug #16136: Wrong PID location in debian/ubuntu skeleton
+ * add req #16135: Suppressed errors get logged
+ * add req #15991: Ignore SIGPIPE signal
+ * Improved isWritable mechanism
+ * Fixed minor issues
+
 System_Daemon 0.7.0-alpha 2009-03-24 Kevin van Zonneveld <kevin@vanzonneveld.net>
  * Pack and release r200 as 0.7.0-alpha
  * Added: optionally show the file where log() was called

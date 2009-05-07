@@ -483,7 +483,7 @@ class System_Daemon
 
     /**
      * Protects your daemon by e.g. clearing statcache. Can optionally
-     * be used as a replacement for usleep as well.
+     * be used as a replacement for sleep as well.
      *
      * @param integer $sleepSeconds Optionally put your daemon to rest for X s.
      *
@@ -493,7 +493,7 @@ class System_Daemon
      */
     static public function iterate($sleepSeconds = 0)
     {
-        if ($usleep !== 0) {
+        if ($sleepSeconds !== 0) {
             sleep($sleepSeconds);
         }
 

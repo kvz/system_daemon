@@ -1,5 +1,7 @@
 2009-04-25 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
+        [r219] Changed daemon starting message from info > notice as requested by Igor Moiseev
+        [r218] Pack and releas r217 as 0.8.0-alpha
         [r217] Fixed PHPCS issues
         [r216] Pack and releas r214 as 0.8.0-alpha
         [r215] Added feature: iterate() which could prevent ugly bugs by clearing unreliable information in statcache
