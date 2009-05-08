@@ -144,7 +144,10 @@ class System_Daemon
         E_COMPILE_WARNING => self::LOG_WARNING,
         E_USER_ERROR => self::LOG_ERR,
         E_USER_WARNING => self::LOG_WARNING,
-        E_USER_NOTICE => self::LOG_DEBUG
+        E_USER_NOTICE => self::LOG_DEBUG,
+        E_RECOVERABLE_ERROR => self::LOG_CRIT,
+        E_DEPRECATED => self::LOG_NOTICE,
+        E_USER_DEPRECATED  => self::LOG_NOTICE,
     );
 
 
