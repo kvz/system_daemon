@@ -324,7 +324,17 @@ class System_Daemon
             "default" => "128M",
             "punch" => "Maximum amount of memory a script may consume",
             "detail" => "0 is infinite"
-        ),        
+        ),
+
+        "runTemplateLocation" => array(
+            "type" => "string/existing_filepath",
+            "default" => false,
+            "punch" => "The filepath to a custom autorun Template",
+            "example" => "/etc/init.d/skeleton",
+            "detail" => "Sometimes it's better to stick with the OS default,
+                and use something like /etc/default/<name> for customization",
+        ),
+
     );
     
     /**
@@ -802,7 +812,7 @@ class System_Daemon
         
         // Get daemon properties
         $options = self::getOptions();
-        
+
         // Try to write init.d 
         if (($res = self::$_osObj->writeAutoRun($options, $overwrite)) === false) {
             if (is_array(self::$_osObj->errors)) {
@@ -820,7 +830,7 @@ class System_Daemon
             self::log(self::LOG_NOTICE, "Startup written to ".$res."");
         }
         
-        return true;
+        return $res;
     }//end writeAutoRun()       
     
     /**
