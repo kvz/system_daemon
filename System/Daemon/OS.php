@@ -36,13 +36,12 @@ class System_Daemon_OS
     public $errors = array();
 
 
-
     /**
      * Template path
      *
      * @var string
      */
-    protected $autoRunTemplatePath = "";
+    protected $_autoRunTemplatePath = "";
 
     /**
      * Replace the following keys with values to convert a template into
@@ -50,9 +49,14 @@ class System_Daemon_OS
      *
      * @var array
      */
-    protected $autoRunTemplateReplace = array();
+    protected $_autoRunTemplateReplace = array();
 
-
+    /**
+     * Path of init.d scripts
+     *
+     * @var string
+     */
+    protected $_autoRunDir;
 
     /**
      * Hold OS information
@@ -187,9 +191,15 @@ class System_Daemon_OS
      * @return unknown
      * @see autoRunTemplatePath
      */
-    public function getAutoRunTemplatePath()
+    public function getAutoRunTemplatePath($properties)
     {
-        if (!$this->autoRunTemplatePath) {
+        $path = $this->_autoRunTemplatePath;
+
+        if (!empty($properties['runTemplateLocation'])) {
+            $path = $properties['runTemplateLocation'];
+        }
+
+        if (!$path) {
             $this->errors[] = "No autoRunTemplatePath found";
             return false;
         }
@@ -197,16 +207,15 @@ class System_Daemon_OS
         // Replace variable: #datadir#
         // with actual package datadir
         // this enables predefined templates for e.g. redhat & bsd
-        if (false !== strpos($this->autoRunTemplatePath, '#datadir#')) {
+        if (false !== strpos($path, '#datadir#')) {
             $dataDir = $this->getDataDir();
             if (false === $dataDir) {
                 return false;
             }
-            $this->autoRunTemplatePath = str_replace('#datadir#', $dataDir,
-                $this->autoRunTemplatePath);
+            $path = str_replace('#datadir#', $dataDir, $path);
         }
 
-        return $this->autoRunTemplatePath;
+        return $path;
     }//end getAutoRunTemplatePath
 
     /**
@@ -262,12 +271,12 @@ class System_Daemon_OS
      */
     public function getAutoRunPath($appName)
     {
-        if (!$this->autoRunDir) {
+        if (empty($this->_autoRunDir)) {
             $this->errors[] = "autoRunDir is not set";
             return false;
         }
 
-        $path = $this->autoRunDir."/".$appName;
+        $path = $this->_autoRunDir."/".$appName;
 
         // Path exists
         if (!is_dir($dir = dirname($path))) {
@@ -326,9 +335,9 @@ class System_Daemon_OS
      * @return unknown
      * @see autoRunTemplatePath
      */
-    public function getAutoRunTemplate()
+    public function getAutoRunTemplate($properties)
     {
-        if (($path = $this->getAutoRunTemplatePath()) === false) {
+        if (($path = $this->getAutoRunTemplatePath($properties)) === false) {
             return false;
         }
 
@@ -352,12 +361,12 @@ class System_Daemon_OS
     {
 
         // All data in place?
-        if (($template = $this->getAutoRunTemplate()) === false) {
+        if (($template = $this->getAutoRunTemplate($properties)) === false) {
             return false;
         }
-        if (!$this->autoRunTemplateReplace
-            || !is_array($this->autoRunTemplateReplace)
-            || !count($this->autoRunTemplateReplace)) {
+        if (!$this->_autoRunTemplateReplace
+            || !is_array($this->_autoRunTemplateReplace)
+            || !count($this->_autoRunTemplateReplace)) {
 
             $this->errors[] = "No autoRunTemplateReplace found";
 
@@ -365,8 +374,8 @@ class System_Daemon_OS
         }
 
         // Replace System specific keywords with Universal placeholder keywords
-        $script = str_replace(array_keys($this->autoRunTemplateReplace),
-            array_values($this->autoRunTemplateReplace),
+        $script = str_replace(array_keys($this->_autoRunTemplateReplace),
+            array_values($this->_autoRunTemplateReplace),
             $template);
 
         // Replace Universal placeholder keywords with Daemon specific properties
