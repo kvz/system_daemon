@@ -34,21 +34,21 @@ class System_Daemon_OS_Fedora extends System_Daemon_OS_RedHat
      *
      * @var string
      */
-    protected $osVersionFile = "/etc/fedora-release";
+    protected $_osVersionFile = "/etc/fedora-release";
 
     /**
      * Path of init.d scripts
      *
      * @var string
      */
-    protected $autoRunDir = '/etc/rc.d/init.d';
+    protected $_autoRunDir = '/etc/rc.d/init.d';
 
     /**
      * Template path
      *
      * @var string
      */
-    protected $autoRunTemplatePath = '#datadir#/template_Fedora';
+    protected $_autoRunTemplatePath = '#datadir#/template_Fedora';
 
     /**
      * Replace the following keys with values to convert a template into
@@ -56,7 +56,9 @@ class System_Daemon_OS_Fedora extends System_Daemon_OS_RedHat
      *
      * @var array
      */
-    protected $autoRunTemplateReplace = array(
+    protected $_autoRunTemplateReplace = array(
+        "@author_name@"  => "{PROPERTIES.authorName}",
+        "@author_email@" => "{PROPERTIES.authorEmail}",
         '@name@'      => '{PROPERTIES.appName}',
         '@desc@'      => '{PROPERTIES.appDescription}',
         '@bin_file@'  => '{PROPERTIES.appDir}/{PROPERTIES.appExecutable}',

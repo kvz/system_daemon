@@ -33,7 +33,7 @@ class System_Daemon_OS_BSD extends System_Daemon_OS
      *
      * @var string
      */
-    protected $autoRunTemplatePath = '#datadir#/template_BSD';
+    protected $_autoRunTemplatePath = '#datadir#/template_BSD';
     
     /**
      * Determines wether the system is compatible with this OS

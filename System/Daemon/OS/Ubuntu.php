@@ -33,7 +33,7 @@ class System_Daemon_OS_Ubuntu extends System_Daemon_OS_Debian
      *
      * @var string
      */
-    protected $osVersionFile = "/etc/lsb-release";
+    protected $_osVersionFile = "/etc/lsb-release";
     
 }//end class
 ?>

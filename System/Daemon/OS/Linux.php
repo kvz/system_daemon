@@ -33,14 +33,14 @@ class System_Daemon_OS_Linux extends System_Daemon_OS
      *
      * @var string
      */
-    protected $osVersionFile = "";
+    protected $_osVersionFile = "";
     
     /**
      * Path to autoRun script
      *
      * @var string
      */
-    protected $autoRunDir = "/etc/init.d";    
+    protected $_autoRunDir = "/etc/init.d";
     
     
     
@@ -58,8 +58,8 @@ class System_Daemon_OS_Linux extends System_Daemon_OS
         // Find out more specific
         // This is used by extended classes that inherit
         // this function
-        if ($this->osVersionFile) {
-            if (!file_exists($this->osVersionFile)) {
+        if ($this->_osVersionFile) {
+            if (!file_exists($this->_osVersionFile)) {
                 return false;
             } 
         } 

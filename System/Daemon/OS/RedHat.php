@@ -34,21 +34,21 @@ class System_Daemon_OS_RedHat extends System_Daemon_OS_Linux
      *
      * @var string
      */
-    protected $osVersionFile = "/etc/redhat-release";
+    protected $_osVersionFile = "/etc/redhat-release";
 
     /**
      * Path of init.d scripts
      *
      * @var string
      */
-    protected $autoRunDir = '/etc/rc.d/init.d';
+    protected $_autoRunDir = '/etc/rc.d/init.d';
 
     /**
      * Template path
      *
      * @var string
      */
-    protected $autoRunTemplatePath = '#datadir#/template_RedHat';
+    protected $_autoRunTemplatePath = '#datadir#/template_RedHat';
 
     /**
      * Replace the following keys with values to convert a template into
@@ -56,13 +56,15 @@ class System_Daemon_OS_RedHat extends System_Daemon_OS_Linux
      *
      * @var array
      */
-    protected $autoRunTemplateReplace = array(
-        '@name@'      => '{PROPERTIES.appName}',
-        '@desc@'      => '{PROPERTIES.appDescription}',
-        '@bin_file@'  => '{PROPERTIES.appDir}/{PROPERTIES.appExecutable}',
-        '@bin_name@'  => '{PROPERTIES.appExecutable}',
-        '@pid_file@'  => '{PROPERTIES.appPidLocation}',
-        '@chkconfig@' => '{PROPERTIES.appChkConfig}',
+    protected $_autoRunTemplateReplace = array(
+        "@author_name@"  => "{PROPERTIES.authorName}",
+        "@author_email@" => "{PROPERTIES.authorEmail}",
+        '@name@'         => '{PROPERTIES.appName}',
+        '@desc@'         => '{PROPERTIES.appDescription}',
+        '@bin_file@'     => '{PROPERTIES.appDir}/{PROPERTIES.appExecutable}',
+        '@bin_name@'     => '{PROPERTIES.appExecutable}',
+        '@pid_file@'     => '{PROPERTIES.appPidLocation}',
+        '@chkconfig@'    => '{PROPERTIES.appChkConfig}',
     );
 
 }//end class

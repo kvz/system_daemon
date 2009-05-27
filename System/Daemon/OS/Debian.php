@@ -33,34 +33,30 @@ class System_Daemon_OS_Debian extends System_Daemon_OS_Linux
      *
      * @var string
      */
-    protected $osVersionFile = "/etc/debian_version";
+    protected $_osVersionFile = "/etc/debian_version";
     
     /**
      * Template path
      *
      * @var string
      */
-    protected $autoRunTemplatePath = "/etc/init.d/skeleton";    
-    
+    protected $_autoRunTemplatePath = '#datadir#/template_Debian';
+
     /**
      * Replace the following keys with values to convert a template into
      * a read autorun script
      *
      * @var array
-     */    
-    protected $autoRunTemplateReplace = array(
-        "Foo Bar" => "{PROPERTIES.authorName}",
-        "foobar@baz.org" => "{PROPERTIES.authorEmail}",
-        "daemonexecutablename" => "{PROPERTIES.appName}",
-        "Example" => "{PROPERTIES.appName}",
-        "skeleton" => "{PROPERTIES.appName}",
-        "/usr/sbin/\$NAME" => "{PROPERTIES.appDir}/{PROPERTIES.appExecutable}",
-        "/var/run/\$NAME.pid" => "{PROPERTIES.appPidLocation}",
-        "Description of the service"=> "{PROPERTIES.appDescription}",
-        " --name \$NAME" => "",
-        "--options args" => "",
-        "# Please remove the \"Author\" lines above and replace them" => "",
-        "# with your own name if you copy and modify this script." => ""
+     */
+    protected $_autoRunTemplateReplace = array(
+        "@author_name@"  => "{PROPERTIES.authorName}",
+        "@author_email@" => "{PROPERTIES.authorEmail}",
+        '@name@'         => '{PROPERTIES.appName}',
+        '@desc@'         => '{PROPERTIES.appDescription}',
+        '@bin_file@'     => '{PROPERTIES.appDir}/{PROPERTIES.appExecutable}',
+        '@bin_name@'     => '{PROPERTIES.appExecutable}',
+        '@pid_file@'     => '{PROPERTIES.appPidLocation}',
+        '@chkconfig@'    => '{PROPERTIES.appChkConfig}',
     );
     
 }//end class
