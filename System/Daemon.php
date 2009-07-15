@@ -1181,7 +1181,7 @@ class System_Daemon
         // This way we can modify the files even after we're not root anymore
         foreach ($chownFiles as $filePath) {
             // Change File GID
-            $doGid = (fileowner($filePath) !== $gid ? $gid : false);
+            $doGid = (fileowner($filePath) != $gid ? $gid : false);
             if (false !== $doGid && !@chgrp($filePath, $gid)) {
                 self::log(self::LOG_ERR, "".self::getOption("appName")." ".
                     "daemon was unable ".
@@ -1192,7 +1192,7 @@ class System_Daemon
             }
 
             // Change File UID
-            $doUid = (fileowner($filePath) !== $uid ? $uid : false);
+            $doUid = (fileowner($filePath) != $uid ? $uid : false);
             if (false !== $doUid && !@chown($filePath, $uid)) {
                 self::log(self::LOG_ERR, "".self::getOption("appName")." ".
                     "daemon was unable ".
