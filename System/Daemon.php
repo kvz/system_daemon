@@ -694,13 +694,6 @@ class System_Daemon
     static public function log($level, $str, $file = false, $class = false, 
         $function = false, $line = false)
     {
-        $dummy = ($level === null);
-
-        if ($dummy) {
-            echo "ESCAPING\n";
-            return true;
-        }
-
         // If verbosity level is not matched, don't do anything        
         if (self::getOption("logVerbosity") === null 
             || self::getOption("logVerbosity") === false) {
@@ -857,7 +850,6 @@ class System_Daemon
     {
         // Must be public or else will throw a 
         // fatal error: Call to protected method
-        echo "Received $signo\n";
         self::log(self::LOG_DEBUG, self::getOption("appName").
             " daemon received signal: ".$signo, 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
