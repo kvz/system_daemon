@@ -1,5 +1,6 @@
 2009-08-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
+        [r232] Fixed Bug #16511 Strange behaviour
         [r231] Fixed Bug #16500 and release version 0.90
 
 2009-07-15 Kevin van Zonneveld <kevin@vanzonneveld.net>
