@@ -1,3 +1,7 @@
+2009-08-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r230] Fixed Bug #16500 and release version 0.90
+
 2009-07-15 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
         [r229] Fixed bug: Unable to have unequal UID & GID (thanks: Travis Austin)
