@@ -2,3 +2,4 @@ System_Daemon 0.9.0-beta xxxx-xx-xx Kevin van Zonneveld <kevin@vanzonneveld.net>
  * Pack and release rxxx as 0.9.0-beta
  * PHP 5.3 compatibility
  * Fixed bug: Unable to have unequal UID & GID (thanks: Travis Austin)
+ * Fixed bug: Daemon cannot be killed when not writing to log (#16500) (thanks: John Jackson)

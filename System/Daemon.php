@@ -414,7 +414,8 @@ class System_Daemon
      * @see _summon()
      */
     static public function start()
-    {        
+    {
+
         // Quickly initialize some defaults like usePEAR 
         // by adding the $premature flag
         self::_optionsInit(true);
@@ -488,10 +489,9 @@ class System_Daemon
                 trigger_error($msg, E_USER_ERROR);
             } 
         }
-                
         // Become daemon
         self::_summon();
-        
+
         return true;
 
     }//end start()
@@ -508,6 +508,7 @@ class System_Daemon
      */
     static public function iterate($sleepSeconds = 0)
     {
+        self::_optionObjSetup();
         if ($sleepSeconds !== 0) {
             sleep($sleepSeconds);
         }
@@ -666,6 +667,7 @@ class System_Daemon
         return true;
     }
 
+
     /**
      * Almost every deamon requires a log file, this function can
      * facilitate that. Also handles class-generated errors, chooses 
@@ -692,6 +694,13 @@ class System_Daemon
     static public function log($level, $str, $file = false, $class = false, 
         $function = false, $line = false)
     {
+        $dummy = ($level === null);
+
+        if ($dummy) {
+            echo "ESCAPING\n";
+            return true;
+        }
+
         // If verbosity level is not matched, don't do anything        
         if (self::getOption("logVerbosity") === null 
             || self::getOption("logVerbosity") === false) {
@@ -848,7 +857,7 @@ class System_Daemon
     {
         // Must be public or else will throw a 
         // fatal error: Call to protected method
-         
+        echo "Received $signo\n";
         self::log(self::LOG_DEBUG, self::getOption("appName").
             " daemon received signal: ".$signo, 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
@@ -991,17 +1000,6 @@ class System_Daemon
             self::getOption("logLocation"), 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         
-        // Important for daemons
-        // See http://nl2.php.net/manual/en/function.pcntl-signal.php
-        declare(ticks = 1);
-        
-        // Setup signal handlers
-        // Handlers for individual signals can be overrulled with
-        // setSigHandler()
-        foreach (self::$_sigHandlers as $signal=>$handler) {
-            pcntl_signal($signal, $handler);
-        }
-        
         // Allowed?
         if (self::isRunning()) {
             self::log(self::LOG_EMERG, "".self::getOption("appName")." ".
@@ -1054,9 +1052,26 @@ class System_Daemon
                 "to change identity");
         }
 
+        // Important for daemons
+        // See http://www.php.net/manual/en/function.pcntl-signal.php
+        declare(ticks = 1);
+
+        // Setup signal handlers
+        // Handlers for individual signals can be overrulled with
+        // setSigHandler()
+        foreach (self::$_sigHandlers as $signal=>$handler) {
+            if (!pcntl_signal($signal, $handler)) {
+                self::log(self::LOG_EMERG, "".self::getOption("appName")." ".
+                    "daemon was unable ".
+                    "to reroute signal handler ".$signal);
+                return false;
+            }
+        }
+
         // Change dir
         @chdir(self::getOption("appDir"));
         
+        return true;
     }//end _summon()
 
     /**
