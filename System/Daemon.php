@@ -148,11 +148,6 @@ class System_Daemon
         E_RECOVERABLE_ERROR => self::LOG_CRIT,
     );
 
-// Only as of PHP 5.3:
-//        E_DEPRECATED => self::LOG_NOTICE,
-//        E_USER_DEPRECATED  => self::LOG_NOTICE,
-
-
     /**
      * Holds Option Object
      * 
@@ -415,6 +410,12 @@ class System_Daemon
      */
     static public function start()
     {
+        // Add conditional loglevel mappings
+        // Only as of PHP 5.3:
+        if (defined('E_DEPRECATED')) {
+            self::$_logPhpMapping[E_DEPRECATED] = self::LOG_NOTICE;
+            self::$_logPhpMapping[E_USER_DEPRECATED] = self::LOG_NOTICE;
+        }
 
         // Quickly initialize some defaults like usePEAR 
         // by adding the $premature flag
