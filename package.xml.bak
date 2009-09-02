@@ -27,22 +27,20 @@ spawning standalone daemons, and for example includes:
   <email>kevin@vanzonneveld.net</email>
   <active>yes</active>
  </lead>
- <date>2009-08-10</date>
- <time>23:50:08</time>
+ <date>2009-08-11</date>
+ <time>01:11:04</time>
  <version>
-  <release>0.9.0</release>
-  <api>0.9.0</api>
+  <release>0.9.1</release>
+  <api>0.9.1</api>
  </version>
  <stability>
   <release>beta</release>
   <api>beta</api>
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
- <notes>System_Daemon 0.9.0-beta 2009-08-10 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and release r231 as 0.9.0-beta
- * PHP 5.3 compatibility
- * Fixed bug: Unable to have unequal UID &amp; GID (thanks: Travis Austin)
- * Fixed bug: Daemon cannot be killed when not writing to log (#16500) (thanks: John Jackson)
+ <notes>System_Daemon 0.9.1-beta 2009-08-11 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and release r233 as 0.9.1-beta
+ * Fixed bug: Strange behaviour (#16511) (thanks: John Jackson)
  </notes>
  <contents>
   <dir baseinstalldir="./" name="/">
@@ -145,20 +143,18 @@ spawning standalone daemons, and for example includes:
  <changelog>
   <release>
    <version>
-    <release>0.9.0</release>
-    <api>0.9.0</api>
+    <release>0.9.1</release>
+    <api>0.9.1</api>
    </version>
    <stability>
     <release>beta</release>
     <api>beta</api>
    </stability>
-   <date>2009-08-10</date>
+   <date>2009-08-11</date>
    <license uri="http://opensource.org/licenses/bsd-license.php">New BSD License</license>
-   <notes>System_Daemon 0.9.0-beta 2009-08-10 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
- * Pack and release r231 as 0.9.0-beta
- * PHP 5.3 compatibility
- * Fixed bug: Unable to have unequal UID &amp; GID (thanks: Travis Austin)
- * Fixed bug: Daemon cannot be killed when not writing to log (#16500) (thanks: John Jackson)
+   <notes>System_Daemon 0.9.1-beta 2009-08-11 Kevin van Zonneveld &lt;kevin@vanzonneveld.net&gt;
+ * Pack and release r233 as 0.9.1-beta
+ * Fixed bug: Strange behaviour (#16511) (thanks: John Jackson)
    </notes>
   </release>
  </changelog>

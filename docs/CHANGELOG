@@ -1,5 +1,10 @@
+2009-09-02 Kevin van Zonneveld <kevin@vanzonneveld.net>
+
+        [r235] Conditionally add >= PHP5.3 specific loglevel mappings
+
 2009-08-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
 
+        [r233] * Pack and release r233 as 0.9.1-beta
         [r232] Fixed Bug #16511 Strange behaviour
         [r231] Fixed Bug #16500 and release version 0.90
 

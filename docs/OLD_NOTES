@@ -1,3 +1,7 @@
+System_Daemon 0.9.1-beta 2009-08-11 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Pack and release r233 as 0.9.1-beta
+ * Fixed bug: Strange behaviour (#16511) (thanks: John Jackson)
+
 System_Daemon 0.9.0-beta 2009-08-10 Kevin van Zonneveld <kevin@vanzonneveld.net>
  * Pack and release r231 as 0.9.0-beta
  * PHP 5.3 compatibility
