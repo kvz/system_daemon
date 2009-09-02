@@ -130,6 +130,9 @@ class System_Daemon
 
     /**
      * Available PHP error levels and their meaning in POSIX loglevel terms
+     * Some ERROR constants are not supported in all PHP versions
+     * and will conditionally be translated from strings to constants,
+     * or else: removed from this mapping at start().
      *
      * @var array
      */
@@ -146,6 +149,8 @@ class System_Daemon
         E_USER_WARNING => self::LOG_WARNING,
         E_USER_NOTICE => self::LOG_DEBUG,
         E_RECOVERABLE_ERROR => self::LOG_CRIT,
+        'E_DEPRECATED' => self::LOG_NOTICE,
+        'E_USER_DEPRECATED' => self::LOG_NOTICE,
     );
 
     /**
@@ -410,11 +415,15 @@ class System_Daemon
      */
     static public function start()
     {
-        // Add conditional loglevel mappings
-        // Only as of PHP 5.3:
-        if (defined('E_DEPRECATED')) {
-            self::$_logPhpMapping[E_DEPRECATED] = self::LOG_NOTICE;
-            self::$_logPhpMapping[E_USER_DEPRECATED] = self::LOG_NOTICE;
+        // Conditionally add loglevel mappings that are not supported in all PHP versions.
+        // They will be in string representation and have to be converted & unset
+        foreach (self::$_logPhpMapping as $phpConstant => $sysDaemLevel) {
+            if (!is_numeric($phpConstant)) {
+                if (defined($phpConstant)) {
+                    self::$_logPhpMapping[constant($phpConstant)] = $sysDaemLevel;
+                }
+                unset(self::$_logPhpMapping[$phpConstant]);
+            }
         }
 
         // Quickly initialize some defaults like usePEAR 
