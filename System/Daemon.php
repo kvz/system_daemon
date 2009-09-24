@@ -341,21 +341,56 @@ class System_Daemon
      * Available signal handlers
      * setSigHandler can overwrite these values individually.
      *
+     * Available POSIX SIGNALS and their PHP handler functions.
+     * Some SIGNALS constants are not supported in all PHP versions
+     * and will conditionally be translated from strings to constants,
+     * or else: removed from this mapping at start().
      * @var array
      * @see setSigHandler()
      */
     static protected $_sigHandlers = array(
-        SIGCONT => array("System_Daemon", "defaultSigHandler"),
-        SIGALRM => array("System_Daemon", "defaultSigHandler"),
-        SIGINT => array("System_Daemon", "defaultSigHandler"),
-        SIGABRT => array("System_Daemon", "defaultSigHandler"),
-        SIGTERM => array("System_Daemon", "defaultSigHandler"),
+        SIG_IGN => array("System_Daemon", "defaultSigHandler"),
+        SIG_DFL => array("System_Daemon", "defaultSigHandler"),
+        SIG_ERR => array("System_Daemon", "defaultSigHandler"),
         SIGHUP => array("System_Daemon", "defaultSigHandler"),
+        SIGINT => array("System_Daemon", "defaultSigHandler"),
+        SIGQUIT => array("System_Daemon", "defaultSigHandler"),
+        SIGILL => array("System_Daemon", "defaultSigHandler"),
+        SIGTRAP => array("System_Daemon", "defaultSigHandler"),
+        SIGABRT => array("System_Daemon", "defaultSigHandler"),
+        'SIGIOT' => array("System_Daemon", "defaultSigHandler"),
+        SIGBUS => array("System_Daemon", "defaultSigHandler"),
+        SIGFPE => array("System_Daemon", "defaultSigHandler"),
+        SIGKILL => array("System_Daemon", "defaultSigHandler"),
         SIGUSR1 => array("System_Daemon", "defaultSigHandler"),
-        SIGCHLD => array("System_Daemon", "defaultSigHandler"),
+        SIGSEGV => array("System_Daemon", "defaultSigHandler"),
+        SIGUSR2 => array("System_Daemon", "defaultSigHandler"),
         SIGPIPE => SIG_IGN,
+        SIGALRM => array("System_Daemon", "defaultSigHandler"),
+        SIGTERM => array("System_Daemon", "defaultSigHandler"),
+        'SIGSTKFLT' => array("System_Daemon", "defaultSigHandler"),
+        'SIGCLD' => array("System_Daemon", "defaultSigHandler"),
+        'SIGCHLD' => array("System_Daemon", "defaultSigHandler"),
+        SIGCONT => array("System_Daemon", "defaultSigHandler"),
+        SIGSTOP => array("System_Daemon", "defaultSigHandler"),
+        SIGTSTP => array("System_Daemon", "defaultSigHandler"),
+        SIGTTIN => array("System_Daemon", "defaultSigHandler"),
+        SIGTTOU => array("System_Daemon", "defaultSigHandler"),
+        SIGURG => array("System_Daemon", "defaultSigHandler"),
+        SIGXCPU => array("System_Daemon", "defaultSigHandler"),
+        SIGXFSZ => array("System_Daemon", "defaultSigHandler"),
+        SIGVTALRM => array("System_Daemon", "defaultSigHandler"),
+        SIGPROF => array("System_Daemon", "defaultSigHandler"),
+        SIGWINCH => array("System_Daemon", "defaultSigHandler"),
+        'SIGPOLL' => array("System_Daemon", "defaultSigHandler"),
+        SIGIO => array("System_Daemon", "defaultSigHandler"),
+        'SIGPWR' => array("System_Daemon", "defaultSigHandler"),
+        'SIGSYS' => array("System_Daemon", "defaultSigHandler"),
+        SIGBABY => array("System_Daemon", "defaultSigHandler"),
+        'SIG_BLOCK' => array("System_Daemon", "defaultSigHandler"),
+        'SIG_UNBLOCK' => array("System_Daemon", "defaultSigHandler"),
+        'SIG_SETMASK' => array("System_Daemon", "defaultSigHandler"),
     );
-    
 
     
     /**
@@ -423,6 +458,16 @@ class System_Daemon
                     self::$_logPhpMapping[constant($phpConstant)] = $sysDaemLevel;
                 }
                 unset(self::$_logPhpMapping[$phpConstant]);
+            }
+        }
+        // Conditionally add SIGNAL mappings that are not supported in all PHP versions.
+        // They will be in string representation and have to be converted & unset
+        foreach (self::$_sigHandlers as $phpConstant => $sysDaemLevel) {
+            if (!is_numeric($phpConstant)) {
+                if (defined($phpConstant)) {
+                    self::$_sigHandlers[constant($phpConstant)] = $sysDaemLevel;
+                }
+                unset(self::$_sigHandlers[$phpConstant]);
             }
         }
 
