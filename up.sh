@@ -1,4 +1,5 @@
 #!/bin/bash
+git st
 if [ -z "${1}" ]; then
 	PREV_COMMENT=""
 	[ -f gitup.dat ] && PREV_COMMENT=$(cat gitup.dat)
