@@ -336,7 +336,8 @@ class System_Daemon
         ),
 
     );
-    
+
+
     /**
      * Available signal handlers
      * setSigHandler can overwrite these values individually.
@@ -345,6 +346,26 @@ class System_Daemon
      * Some SIGNALS constants are not supported in all PHP versions
      * and will conditionally be translated from strings to constants,
      * or else: removed from this mapping at start().
+     *
+     * 'kill -l' gives you a list of signals available on your UNIX. Eg. Redhat Linux:
+     *
+     *  1) SIGHUP      2) SIGINT      3) SIGQUIT      4) SIGILL
+     *  5) SIGTRAP      6) SIGABRT      7) SIGBUS      8) SIGFPE
+     *  9) SIGKILL    10) SIGUSR1    11) SIGSEGV    12) SIGUSR2
+     * 13) SIGPIPE    14) SIGALRM    15) SIGTERM    17) SIGCHLD
+     * 18) SIGCONT    19) SIGSTOP    20) SIGTSTP    21) SIGTTIN
+     * 22) SIGTTOU    23) SIGURG      24) SIGXCPU    25) SIGXFSZ
+     * 26) SIGVTALRM  27) SIGPROF    28) SIGWINCH    29) SIGIO
+     * 30) SIGPWR      31) SIGSYS      33) SIGRTMIN    34) SIGRTMIN+1
+     * 35) SIGRTMIN+2  36) SIGRTMIN+3  37) SIGRTMIN+4  38) SIGRTMIN+5
+     * 39) SIGRTMIN+6  40) SIGRTMIN+7  41) SIGRTMIN+8  42) SIGRTMIN+9
+     * 43) SIGRTMIN+10 44) SIGRTMIN+11 45) SIGRTMIN+12 46) SIGRTMIN+13
+     * 47) SIGRTMIN+14 48) SIGRTMIN+15 49) SIGRTMAX-15 50) SIGRTMAX-14
+     * 51) SIGRTMAX-13 52) SIGRTMAX-12 53) SIGRTMAX-11 54) SIGRTMAX-10
+     * 55) SIGRTMAX-9  56) SIGRTMAX-8  57) SIGRTMAX-7  58) SIGRTMAX-6
+     * 59) SIGRTMAX-5  60) SIGRTMAX-4  61) SIGRTMAX-3  62) SIGRTMAX-2
+     * 63) SIGRTMAX-1  64) SIGRTMAX
+     * 
      * @var array
      * @see setSigHandler()
      */
@@ -361,7 +382,6 @@ class System_Daemon
         'SIGIOT' => array("System_Daemon", "defaultSigHandler"),
         SIGBUS => array("System_Daemon", "defaultSigHandler"),
         SIGFPE => array("System_Daemon", "defaultSigHandler"),
-        SIGKILL => array("System_Daemon", "defaultSigHandler"),
         SIGUSR1 => array("System_Daemon", "defaultSigHandler"),
         SIGSEGV => array("System_Daemon", "defaultSigHandler"),
         SIGUSR2 => array("System_Daemon", "defaultSigHandler"),
@@ -372,7 +392,6 @@ class System_Daemon
         'SIGCLD' => array("System_Daemon", "defaultSigHandler"),
         'SIGCHLD' => array("System_Daemon", "defaultSigHandler"),
         SIGCONT => array("System_Daemon", "defaultSigHandler"),
-        SIGSTOP => array("System_Daemon", "defaultSigHandler"),
         SIGTSTP => array("System_Daemon", "defaultSigHandler"),
         SIGTTIN => array("System_Daemon", "defaultSigHandler"),
         SIGTTOU => array("System_Daemon", "defaultSigHandler"),
