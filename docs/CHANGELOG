@@ -1,1 +1,12 @@
-Executing: svn2cl -i --stdout --group-by-day  --linelen=90000 /home/kevin/workspace/system_daemon failed miserably
+ * Updated submodule vendors/scm
+ * Updated submodule vendors/eggshell
+ * removed up
+ * Updated submodule vendors/scm
+ * Moved scm to own repo
+ * Updated submodule vendors/scm
+ * pcntl_signal wont assign KILL and STOP
+ * Ignore some unimportant files
+ * Added support for all available POSIX SIGNALS, as requested in #16638
+ * Test twitter account
+ * Taking out the trash
+ * Moving System_Daemon to github
