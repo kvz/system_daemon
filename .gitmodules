@@ -1,0 +1,3 @@
+[submodule "vendors/scm"]
+	path = vendors/scm
+	url = git://github.com/kvz/scm.git
