@@ -939,13 +939,13 @@ class System_Daemon
             break;
         case SIGHUP:
             // Handle restart tasks
-            self::log(self::LOG_INFO, self::getOption("appName").
+            self::log(self::LOG_DEBUG, self::getOption("appName").
                 " daemon received signal: restart", 
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             break;
         case SIGCHLD:
             // A child process has died
-            self::log(self::LOG_INFO, self::getOption("appName").
+            self::log(self::LOG_DEBUG, self::getOption("appName").
                 " daemon received signal: child",
                 __FILE__, __CLASS__, __FUNCTION__, __LINE__);
             while (pcntl_wait($status, WNOHANG OR WUNTRACED) > 0) {
