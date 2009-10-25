@@ -604,7 +604,7 @@ class System_Daemon
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         self::_die(false);
     }//end stop()
-    
+
     /**
      * Restart daemon process.
      *
@@ -1363,30 +1363,35 @@ class System_Daemon
      */
     static protected function _die($restart = false)
     {
-        if (!self::isDying()) {
-            self::$_isDying = true;
-            // Following caused a bug if pid couldn't Sbe written because of
-            // privileges
-            // || !file_exists(self::getOption("appPidLocation"))
-            if (!self::isInBackground()) {
-                self::log(self::LOG_INFO, "Not stopping ".
-                    self::getOption("appName").
-                    ", daemon was not running",
-                    __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-                return false;
-            }
+        if (self::isDying()) {
+            return null;
+        }
+        
+        self::$_isDying = true;
+        // Following caused a bug if pid couldn't be written because of
+        // privileges
+        // || !file_exists(self::getOption("appPidLocation"))
+        if (!self::isInBackground()) {
+            self::log(self::LOG_INFO, "Not stopping ".
+                self::getOption("appName").
+                ", daemon was not running",
+                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return false;
+        }
 
-            unlink(self::getOption("appPidLocation"));
+        $pid = file_get_contents(
+            System_Daemon::getOption("appPidLocation") );
+        @unlink(self::getOption("appPidLocation"));
 
-            if ($restart) {
-                // Following line blocks the exit. Leaving zombie processes:
-                //die(exec(join(' ', $GLOBALS['argv'])));
+        if ($restart) {
+            // Following line blocks the exit. Leaving zombie processes:
+            //die(exec(join(' ', $GLOBALS['argv'])));
 
-                // So instead we should:
-                die(exec(join(' ', $GLOBALS['argv']) . ' > /dev/null &'));
-            } else {
-                die();
-            }
+            // So instead we should:
+            die(exec(join(' ', $GLOBALS['argv']) . ' > /dev/null &'));
+        } else {
+            passthru("kill -9 {$pid}");
+            die();
         }
     }//end _die()
     
