@@ -1255,7 +1255,9 @@ class System_Daemon
             $chownFiles[] = dirname(self::getOption("appPidLocation"));
         }
         $chownFiles[] = self::getOption("appPidLocation");
-        $chownFiles[] = self::getOption("logLocation");
+        if (!is_object(self::getOption("usePEARLogInstance"))) {
+            $chownFiles[] = self::getOption("logLocation");
+        }
 
         // Chown pid- & log file
         // We have to change owner in case of identity change.
