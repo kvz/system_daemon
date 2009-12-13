@@ -1,15 +1,6 @@
- * Updated submodule vendors/scm
+ * Fixed #16883. You don't have to specify a logLocation when using PEAR Log
  * Updated submodule vendors/eggshell
- * Releasing v0.9.3-beta
- * Updated submodule vendors/scm
+ * Dont chown logfile if PEAR loginstance is used (Mario Wolff)
  * Updated submodule vendors/eggshell
- * removed up
- * Updated submodule vendors/scm
- * Moved scm to own repo
- * Updated submodule vendors/scm
- * pcntl_signal wont assign KILL and STOP
- * Ignore some unimportant files
- * Added support for all available POSIX SIGNALS, as requested in #16638
- * Test twitter account
- * Taking out the trash
- * Moving System_Daemon to github
+ * Change signal logs to debug
+ * A better die() by Thiago Paes
