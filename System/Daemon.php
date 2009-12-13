@@ -246,7 +246,7 @@ class System_Daemon
             "punch" => "The log filepath",
             "example" => "/var/log/logparser_daemon.log",
             "detail" => "",
-            "required" => true
+            "required" => false
         ),
         "logPhpErrors" => array(
             "type" => "boolean",
@@ -830,7 +830,12 @@ class System_Daemon
             $log_echoed = true;
             // but still try to also log to file for future reference
         } 
-        
+
+        if (!self::getOption("logLocation")) {
+            throw new System_Daemon_Exception('Either use PEAR Log or specify '.
+                'a logLocation');
+        }
+
         // 'Touch' logfile 
         if (!file_exists(self::getOption("logLocation"))) {
             file_put_contents(self::getOption("logLocation"), "");
