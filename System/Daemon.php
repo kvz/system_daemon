@@ -613,7 +613,7 @@ class System_Daemon
      */
     static public function restart()
     {
-        self::log(self::LOG_INFO, "restarting ".
+        self::log(self::LOG_INFO, "Restarting ".
             self::getOption("appName")." daemon",
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         self::_die(true);
@@ -1066,7 +1066,7 @@ class System_Daemon
      */
     static protected function _summon()
     {
-        self::log(self::LOG_NOTICE, "starting ".self::getOption("appName")." ".
+        self::log(self::LOG_NOTICE, "Starting ".self::getOption("appName")." ".
             "daemon, output in: ". 
             self::getOption("logLocation"), 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
