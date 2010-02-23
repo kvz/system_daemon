@@ -334,7 +334,6 @@ class System_Daemon
             "detail" => "Sometimes it's better to stick with the OS default,
                 and use something like /etc/default/<name> for customization",
         ),
-
     );
 
 
