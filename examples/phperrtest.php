@@ -61,4 +61,3 @@ foreach($x as $k=>$v) {
 // still run.
 
 System_Daemon::stop();
-?>

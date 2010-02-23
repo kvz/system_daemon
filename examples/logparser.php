@@ -162,4 +162,3 @@ while (!System_Daemon::isDying() && $runningOkay && $cnt <=3) {
 // Shut down the daemon nicely
 // This is ignored if the class is actually running in the foreground
 System_Daemon::stop();
-?>

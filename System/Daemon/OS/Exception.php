@@ -30,4 +30,3 @@ class System_Daemon_OS_Exception extends PEAR_Exception
 {
 
 }//end class
-?>

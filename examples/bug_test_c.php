@@ -80,4 +80,3 @@ while (!System_Daemon::isDying() && $runningOkay) {
 // still run.
 
 System_Daemon::stop();
-?>

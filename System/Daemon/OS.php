@@ -576,4 +576,3 @@ class System_Daemon_OS
     }//end _getAncestors
 
 }//end class
-?>

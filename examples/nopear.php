@@ -52,4 +52,3 @@ System_Daemon::log(System_Daemon::LOG_INFO, "Daemon: '".
 // still run.
 
 System_Daemon::stop();
-?>

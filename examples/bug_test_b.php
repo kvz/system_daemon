@@ -34,4 +34,3 @@ System_Daemon::setSigHandler(SIGCONT, array("System_Daemon", "defaultSigHandler"
 System_Daemon::start();
 System_Daemon::restart();
 System_Daemon::stop();
-?>

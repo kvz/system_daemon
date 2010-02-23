@@ -45,4 +45,3 @@ System_Daemon::start();
 
 
 System_Daemon::stop();
-?>

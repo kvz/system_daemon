@@ -68,4 +68,3 @@ class System_Daemon_OS_RedHat extends System_Daemon_OS_Linux
     );
 
 }//end class
-?>

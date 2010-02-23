@@ -1462,4 +1462,3 @@ class System_Daemon
     }//end _optionsInit()   
 
 }//end class
-?>

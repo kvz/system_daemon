@@ -530,4 +530,3 @@ class System_Daemon_Options
     }//end strToUnix()
         
 }//end class
-?>

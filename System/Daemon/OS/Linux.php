@@ -68,4 +68,3 @@ class System_Daemon_OS_Linux extends System_Daemon_OS
     }//end isInstalled 
     
 }//end class
-?>

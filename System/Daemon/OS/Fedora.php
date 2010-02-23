@@ -68,4 +68,3 @@ class System_Daemon_OS_Fedora extends System_Daemon_OS_RedHat
     );
 
 }//end class
-?>

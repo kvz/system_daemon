@@ -9,5 +9,3 @@ $os = System_Daemon_OS::factory();
 $details = $os->getDetails();
 
 echo count($details);
-
-?>
