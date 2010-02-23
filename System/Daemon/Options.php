@@ -84,7 +84,7 @@ class System_Daemon_Options
             return null;
         }
         return $this->_options[$name];
-    }//end getOption()    
+    }
     
     /**
      * Gets an array of options found in $_definitions
@@ -94,7 +94,7 @@ class System_Daemon_Options
     public function getOptions()
     {
         return $this->_options;
-    }//end getOptions()    
+    }
     
     /**
      * Sets any option found in $_definitions
@@ -116,7 +116,7 @@ class System_Daemon_Options
         
         $this->_options[$name] = $value;
         return $success;
-    }//end setOption()
+    }
         
     /**
      * Sets an array of options found in $_definitions
@@ -134,7 +134,7 @@ class System_Daemon_Options
             }
         }
         return $success;
-    }//end setOptions()
+    }
     
     /**
      * Wether options are initialized
@@ -144,7 +144,7 @@ class System_Daemon_Options
     public function isInitialized()
     {
         return $this->_isInitialized;
-    }//end isInitialized()        
+    }
     
     /**
      * Checks if all the required options are set & met.
@@ -188,7 +188,7 @@ class System_Daemon_Options
         
         return $options_met;
         
-    }//end init()       
+    }
     
     
     
@@ -335,7 +335,7 @@ class System_Daemon_Options
         }
         
         return true;
-    }//end _validate()    
+    }
 
     /**
      * Sets any option found in $_definitions to its default value
@@ -376,7 +376,7 @@ class System_Daemon_Options
                         
         $this->_options[$name] = $value;
         return true;
-    }//end _setDefault()    
+    }
     
     /**
      * Callback function to replace variables in defaults
@@ -439,7 +439,7 @@ class System_Daemon_Options
         }        
         
         return $var_use;        
-    }//end _replaceVars()
+    }
     
     /**
      * Callback function to replace function calls in defaults
@@ -465,7 +465,7 @@ class System_Daemon_Options
         }
         
         return call_user_func_array($function, $arguments);
-    }//end _replaceFuncs()
+    }
 
     /**
      * Compile array of allowed types
@@ -501,7 +501,7 @@ class System_Daemon_Options
     protected function strIsUnixFile( $str )
     {
         return preg_match('/^[a-z0-9_\.\/\-]+$/', $str);
-    }//end strIsUnixFile()
+    }
     
     /**
      * Check if a string has a unix proof format (stripped spaces, 
@@ -514,7 +514,7 @@ class System_Daemon_Options
     protected function strIsUnix( $str )
     {
         return preg_match('/^[a-z0-9_]+$/', $str);
-    }//end strIsUnix()
+    }
 
     /**
      * Convert a string to a unix proof format (strip spaces, 
@@ -527,6 +527,5 @@ class System_Daemon_Options
     protected function strToUnix( $str )
     {
         return preg_replace('/[^0-9a-z_]/', '', strtolower($str));
-    }//end strToUnix()
-        
-}//end class
+    }
+}

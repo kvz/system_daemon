@@ -48,6 +48,6 @@ class System_Daemon_OS_BSD extends System_Daemon_OS
         }
         
         return true;
-    }//end isInstalled
+    }
     
-}//end class
+}

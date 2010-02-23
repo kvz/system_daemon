@@ -452,7 +452,7 @@ class System_Daemon
             include $path;
         }
 
-    }//end autoload()
+    }
     
     
     /**
@@ -566,7 +566,7 @@ class System_Daemon
 
         return true;
 
-    }//end start()
+    }
 
     /**
      * Protects your daemon by e.g. clearing statcache. Can optionally
@@ -587,7 +587,7 @@ class System_Daemon
 
         clearstatcache();
         return true;
-    }//end iterate()
+    }
 
     /**
      * Stop daemon process.
@@ -601,7 +601,7 @@ class System_Daemon
             self::getOption("appName")." daemon", 
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         self::_die(false);
-    }//end stop()
+    }
 
     /**
      * Restart daemon process.
@@ -615,7 +615,7 @@ class System_Daemon
             self::getOption("appName")." daemon",
             __FILE__, __CLASS__, __FUNCTION__, __LINE__);
         self::_die(true);
-    }//end stop()
+    }
     
     /**
      * Overrule or add signal handlers.
@@ -639,7 +639,7 @@ class System_Daemon
         // Overwrite on existance
         self::$_sigHandlers[$signal] = $handler;
         return true;
-    }//end setSigHandler()
+    }
 
     /**
      * Sets any option found in $_optionDefinitions
@@ -657,7 +657,7 @@ class System_Daemon
         }
                 
         return self::$_optObj->setOption($name, $value);
-    }//end setOption()    
+    }
     
     /**
      * Sets an array of options found in $_optionDefinitions
@@ -674,7 +674,7 @@ class System_Daemon
         }
         
         return self::$_optObj->setOptions($use_options);
-    }//end setOptions()    
+    }
     
     /**
      * Gets any option found in $_optionDefinitions
@@ -691,7 +691,7 @@ class System_Daemon
         }
                 
         return self::$_optObj->getOption($name);
-    }//end getOption()    
+    }
 
     /**
      * Gets an array of options found
@@ -705,7 +705,7 @@ class System_Daemon
         }
         
         return self::$_optObj->getOptions();
-    }//end setOptions()      
+    }
     
     /**
      * Catches PHP Errors and forwards them to log function
@@ -868,7 +868,7 @@ class System_Daemon
         
         return $log_succeeded;
         
-    }//end log()    
+    }
 
     /**
      * Uses OS class to write an: 'init.d' script on the filesystem
@@ -910,7 +910,7 @@ class System_Daemon
         }
         
         return $res;
-    }//end writeAutoRun()       
+    }
     
     /**
      * Default signal handler.
@@ -959,7 +959,7 @@ class System_Daemon
             // Handle all other signals
             break;
         }
-    }//end defaultSigHandler()
+    }
 
     /**
      * Wether the class is already running in the background
@@ -969,7 +969,7 @@ class System_Daemon
     static public function isInBackground()
     {
         return self::$_processIsChild;
-    }//end isInBackground()
+    }
     
     /**
      * Wether the our daemon is being killed, you might 
@@ -980,7 +980,7 @@ class System_Daemon
     static public function isDying()
     {
         return self::$_isDying;
-    }//end isDying() 
+    }
 
     /**
      * file_exists does not check the include paths. This function does.
@@ -1023,7 +1023,7 @@ class System_Daemon
 
         // never found it
         return false;
-    }//end isDying()
+    }
 
     /**
      * Check if a previous process with same pidfile was already running
@@ -1053,7 +1053,7 @@ class System_Daemon
         } else {
             return false;
         }
-    }//end isRunning()
+    }
 
     
     
@@ -1141,7 +1141,7 @@ class System_Daemon
         @chdir(self::getOption("appDir"));
         
         return true;
-    }//end _summon()
+    }
 
     /**
      * Determine whether pidfilelocation is valid
@@ -1175,7 +1175,7 @@ class System_Daemon
         }
         
         return true;
-    }//end _isValidPidLocation
+    }
 
     /**
      * Creates pid dir and writes process id to pid file
@@ -1226,7 +1226,7 @@ class System_Daemon
         }
 
         return true;
-    }//end _writePid()
+    }
 
     /**
      * Recursive alternative to mkdir
@@ -1312,7 +1312,7 @@ class System_Daemon
         }
 
         return true;
-    }//end _changeIdentity()
+    }
 
     /**
      * Fork process and kill parent process, the heart of the 'daemonization'
@@ -1345,7 +1345,7 @@ class System_Daemon
             self::$_processId      = posix_getpid();
             return true;
         }
-    }//end _fork()
+    }
 
     /**
      * Return what the current process is: child or parent
@@ -1355,7 +1355,7 @@ class System_Daemon
     static protected function _whatIAm()
     {
         return (self::isInBackground()?"child":"parent");
-    }//end _whatIAm()
+    }
 
     /**
      * Sytem_Daemon::_die()
@@ -1398,7 +1398,7 @@ class System_Daemon
             passthru("kill -9 {$pid}");
             die();
         }
-    }//end _die()
+    }
     
     
     /**
@@ -1459,6 +1459,5 @@ class System_Daemon
         }
         
         return self::$_optObj->init($premature);        
-    }//end _optionsInit()   
-
-}//end class
+    }
+}

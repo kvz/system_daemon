@@ -159,7 +159,7 @@ class System_Daemon_OS
         }
 
         return $obj;
-    }//end &factory()
+    }
 
 
 
@@ -172,7 +172,7 @@ class System_Daemon_OS
     {
         $this->errors[] = "Not implemented for OS";
         return false;
-    }//end isInstalled
+    }
 
     /**
      * Returns array with all the specific details of the loaded OS
@@ -182,7 +182,7 @@ class System_Daemon_OS
     public function getDetails()
     {
         return $this->_osDetails;
-    }//end getDetails
+    }
 
     /**
      * Returns a template path to base the autuRun script on.
@@ -216,7 +216,7 @@ class System_Daemon_OS
         }
 
         return $path;
-    }//end getAutoRunTemplatePath
+    }
 
     /**
      * Returns the directory where data is stored (like init.d templates)
@@ -293,7 +293,7 @@ class System_Daemon_OS
         }
 
         return $path;
-    }//end getAutoRunPath
+    }
     
     /**
      * A 'better' is_writable. Taken from PHP.NET comments:
@@ -326,7 +326,7 @@ class System_Daemon_OS
             unlink($path);
         }
         return true;
-    } //end isWritable
+    }
 
     /**
      * Returns a template to base the autuRun script on.
@@ -348,7 +348,7 @@ class System_Daemon_OS
         }
 
         return file_get_contents($path);
-    }//end getAutoRunTemplate
+    }
 
     /**
      * Uses properties to enrich the autuRun Template
@@ -395,7 +395,7 @@ class System_Daemon_OS
         }
 
         return $script;
-    }//end getAutoRunScript()
+    }
 
     /**
      * Writes an: 'init.d' script on the filesystem
@@ -454,7 +454,7 @@ class System_Daemon_OS
 
 
         return $path;
-    }//end writeAutoRun()
+    }
 
 
 
@@ -510,7 +510,7 @@ class System_Daemon_OS
 
         return $success;
 
-    } //end _testAutoRunProperties
+    }
 
     /**
      * Determines how specific an operating system is.
@@ -529,7 +529,7 @@ class System_Daemon_OS
         arsort($weights);
         $fattest = reset(array_keys($weights));
         return $fattest;
-    }//end _mostSpecific
+    }
 
     /**
      * Extracts last part of a classname. e.g. System_Daemon_OS_Ubuntu -> Ubuntu
@@ -545,7 +545,7 @@ class System_Daemon_OS
         }
         $parts = explode("_", $class);
         return end($parts);
-    } //end _getShortHand
+    }
 
     /**
      * Get the total parent count of a class
@@ -557,7 +557,7 @@ class System_Daemon_OS
     protected function _getAncestorCount($class)
     {
         return count(System_Daemon_OS::_getAncestors($class));
-    }//end _getAncestorCount
+    }
 
     /**
      * Get an array of parent classes
@@ -573,6 +573,6 @@ class System_Daemon_OS
             $classes[] = $class;
         }
         return $classes;
-    }//end _getAncestors
+    }
 
-}//end class
+}
