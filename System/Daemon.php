@@ -370,7 +370,6 @@ class System_Daemon
      * @see setSigHandler()
      */
     static protected $_sigHandlers = array(
-        SIG_IGN => array("System_Daemon", "defaultSigHandler"),
         SIG_DFL => array("System_Daemon", "defaultSigHandler"),
         SIG_ERR => array("System_Daemon", "defaultSigHandler"),
         SIGHUP => array("System_Daemon", "defaultSigHandler"),
