@@ -184,8 +184,6 @@ Class Release extends EggShell {
         $opts = $this->_opts($tag);
         $e = $this->Pack->setOptions($opts);
 
-        pr(compact('tag'));
-
         // Oddly enough, this is a PHP source code package...
         $this->Pack->setPackageType('php');
         // Package name, summary and longer description
