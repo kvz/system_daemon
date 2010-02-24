@@ -181,8 +181,6 @@ Class Release extends EggShell {
     }
 
     public function updateXML($tag, $firsttime = false) {
-        pr(compact('tag', 'firsttime'));
-
         $opts = $this->_opts($tag);
         $e = $this->Pack->setOptions($opts);
 
@@ -234,8 +232,6 @@ Class Release extends EggShell {
         $description = $this->_histFile('docs/DESCRIPTION', $tag);
         $notes       = $this->_histFile('docs/NOTES', $tag, true);
         $notes       = $this->name.' ' . $tag . ' ' . "\n".$notes;
-
-        pr(compact('notes', 'tag'));
 
         $maintainers = explode("\n", $this->read($this->dir.'/docs/MAINTAINERS'));
 
@@ -297,12 +293,12 @@ Class Release extends EggShell {
         @unlink($this->dir.'/package.xml');
         $firsttime = true;
         $tags = $this->Scm->tags();
-        pr(compact('tags'));
+        usort($tags, 'version_compare');
+
         foreach($this->Scm->tags() as $tag) {
             $this->updateXML($tag, $firsttime);
             $firsttime = false;
         }
-
         
         $this->exe('cd %s && pear package && mv *.tgz ./packages/', $this->dir);
         $this->exe('cd %s && git add ./packages/*.tgz', $this->dir);
