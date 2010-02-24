@@ -1148,9 +1148,9 @@ class System_Daemon
      */
     static public function isInBackground()
     {
-        return self::$_processIsChild;
+        return self::$_processIsChild && self::isRunning();
     }
-    
+
     /**
      * Whether the our daemon is being killed, you might
      * want to include this in your loop
@@ -1454,6 +1454,8 @@ class System_Daemon
         $pid = file_get_contents(
             System_Daemon::getOption('appPidLocation') );
         @unlink(self::opt('appPidLocation'));
+
+
 
         if ($restart) {
             // So instead we should:
