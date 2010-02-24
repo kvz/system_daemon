@@ -7,3 +7,17 @@
 # Build a new version.
 ./release.php bake v0.9.3-beta
 # You get 5s to hit CTRL+C if you didn't make the NOTES list 
+
+
+# Build package
+# Adds everything to git
+# Creates a new tag with the version you've given.
+
+
+
+# Test package with:
+cd packages
+pear install -O System_Daemon-0.10.0.tgz 
+
+# Upload it at
+# http://pear.php.net/release-upload.php
