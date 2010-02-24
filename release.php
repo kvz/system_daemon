@@ -115,7 +115,7 @@ Class Release extends EggShell {
     public function setVersion($version) {
         $this->version = $version;
         // Own starts here
-        if (!$this->version || false === strpos($this->version, '-')) {
+        if (!$this->version || false === strpos($this->version, '-') || false === strpos($this->version, 'v')) {
             return $this->err('Need to specify a release like: v0.9.2-beta');
         }
         list($this->apiVersion, $this->apiStability) = explode('-', $this->version);
@@ -332,8 +332,8 @@ switch(@$argv[1]) {
             $Release->err('No tags specified?');
             exit(1);
         }
-
-        foreach($tags as $tag) {
+        
+        foreach ($tags as $tag) {
             $Release->setVersion($tag);
 
             if (!method_exists($Release, @$argv[1])) {
