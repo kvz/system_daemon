@@ -37,6 +37,7 @@ System_Daemon::setOption('authorEmail', 'kevin@vanzonneveld.net');
 System_Daemon::setOption('logLocation', '/var/log/sysdaemon.devtest.log');
 System_Daemon::setOption('logFilePosition', true);
 
+System_Daemon::warning('{appName} daemon encountered an empty appPidLocation');
 System_Daemon::err('{appName} daemon encountered an empty appPidLocation');
 
 die();
