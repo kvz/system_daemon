@@ -288,7 +288,8 @@ Class Release extends EggShell {
 
         // Make tag now so updateXML can find it
         // just don't push yet
-        $this->Scm->makeTag($this->version, '', 'Released new version', false);
+        $this->exe('cd %s && git commit -am "Preparing to release %s" ', $this->dir, $this->version);
+        $this->Scm->makeTag($this->version, 'HEAD', 'Released new version', false);
 
         @unlink($this->dir.'/package.xml');
         $firsttime = true;
