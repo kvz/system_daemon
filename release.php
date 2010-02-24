@@ -124,7 +124,7 @@ Class Release extends EggShell {
 
 
     public function changelog() {
-        $after = $this->_after('HEAD');
+        $after = $this->_tagBefore($tag);
 
         $scmOptions = array(
             'duplicates' => false,
@@ -146,12 +146,16 @@ Class Release extends EggShell {
         echo $cl;
     }
 
-    protected function _after() {
+    protected function _tagBefore($leadTag = null) {
+        if ($leadTag === null) {
+            $leadTag = $this->version;
+        }
+
         $tags   = $this->Scm->tags();
         // Use last tag as starting point
         $after = end($tags);
-        foreach($tags as $i=>$tag) {
-            if ($tag === $this->version) {
+        foreach ($tags as $i=>$tag) {
+            if ($tag === $leadTag) {
                 // Tag already exist? Use tag before That, as starting point
                 if (isset($tags[($i-1)])) {
                     $after = $tags[($i-1)];
@@ -177,7 +181,9 @@ Class Release extends EggShell {
     }
 
     public function updateXML($tag, $firsttime = false) {
-        $opts   = $this->_opts($tag);
+        pr(compact('tag', 'firsttime'));
+
+        $opts = $this->_opts($tag);
         $e = $this->Pack->setOptions($opts);
 
         // Oddly enough, this is a PHP source code package...
@@ -279,10 +285,10 @@ Class Release extends EggShell {
 
     public function bake($sleep = true) {
         $this->changelog();
-        if ($sleep) {
-            $this->info('Press CTRL+C Now! if you didn\'t make a bullet list in docs/NOTES');
-            sleep(5);
-        }
+//        if ($sleep) {
+//            $this->info('Press CTRL+C Now! if you didn\'t make a bullet list in docs/NOTES');
+//            sleep(5);
+//        }
 
         // Make tag now so updateXML can find it
         // just don't push yet
@@ -291,10 +297,12 @@ Class Release extends EggShell {
         @unlink($this->dir.'/package.xml');
         $firsttime = true;
         $tags = $this->Scm->tags();
+        pr(compact('tags'));
         foreach($this->Scm->tags() as $tag) {
             $this->updateXML($tag, $firsttime);
             $firsttime = false;
         }
+
         
         $this->exe('cd %s && pear package && mv *.tgz ./packages/', $this->dir);
         $this->exe('cd %s && git add ./packages/*.tgz', $this->dir);

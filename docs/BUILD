@@ -6,8 +6,6 @@
 
 # Build a new version.
 ./release.php bake v0.9.3-beta
-# You get 5s to hit CTRL+C if you didn't make the NOTES list 
-
 
 # Build package
 # Adds everything to git
