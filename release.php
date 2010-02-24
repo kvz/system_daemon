@@ -124,7 +124,7 @@ Class Release extends EggShell {
 
 
     public function changelog() {
-        $after = $this->_tagBefore($tag);
+        $after = $this->_tagBefore($this->version);
 
         $scmOptions = array(
             'duplicates' => false,
