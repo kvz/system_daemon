@@ -164,15 +164,9 @@ class System_Daemon_Options
         $options_met = 0;
         
         foreach ($this->_definitions as $name=>$definition) {
-            // Skip non-required options
-            if (!isset($definition["required"]) 
-                || $definition["required"] !== true ) {
-                continue;
-            }
-            
             // Required options remain
-            if (!isset($this->_options[$name])) {                
-                if (!$this->_setDefault($name) && !$premature) {
+            if (!isset($this->_options[$name])) {
+                if (!$this->_setDefault($name) && !$premature && @$definition["required"]) {
                     $this->errors[] = "Required option: ".$name. 
                         " not set. No default value available either.";
                     return false;
