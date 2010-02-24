@@ -229,6 +229,8 @@ Class Release extends EggShell {
         $notes       = $this->_histFile('docs/NOTES', $tag, true);
         $notes       = $this->name.' ' . $tag . ' ' . "\n".$notes;
 
+        pr(compact('notes', 'tag'));
+
         $maintainers = explode("\n", $this->read($this->dir.'/docs/MAINTAINERS'));
 
         $options = array(
