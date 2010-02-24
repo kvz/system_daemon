@@ -1,3 +1,8 @@
+ * Update docs
+ * Made it clear that you've changed identify, hopefully avoiding some headaches
+ * Updated docs
+ * Applied updated coding standards
+ * Even set defaults for options that are not required (also has to do with #16883)
  * isInBackground now also checks if pidfile is being used correctly
  * Fixed bug where current process wouldn't _die if it wasn't daemoninzed yet
  * Adding more shortcuts to reduce verbosity
