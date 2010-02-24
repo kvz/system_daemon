@@ -290,9 +290,9 @@ class System_Daemon_OS
         }
 
         // Is writable?
-        if (!self::isWritable($dir.'/')) {
+        if (!self::isWritable($dir)) {
             $this->errors[] = "Directory: '".$dir."' is not writable. ".
-                "Maybe run as root?";
+                "Maybe run as root (now: " . getmyuid() . ")?";
             return false;
         }
 
@@ -313,19 +313,23 @@ class System_Daemon_OS
      */
     public static function isWritable($path)
     {
-        if ($path{strlen($path)-1}=='/') {
+        if ($path{strlen($path)-1} === '/') {
             //// recursively return a temporary file path
             return self::isWritable($path.uniqid(mt_rand()).'.tmp');
         } else if (is_dir($path)) {
             return self::isWritable($path.'/'.uniqid(mt_rand()).'.tmp');
         }
         // check tmp file for read/write capabilities
-        $rm = file_exists($path);
-        $f  = @fopen($path, 'a');
+        if (($rm = file_exists($path))) {
+            $f = fopen($path, 'a');
+        } else {
+            $f = fopen($path, 'w');
+        }
         if ($f === false) {
+            print_r($path);
             return false;
         }
-        fclose($f);
+        @fclose($f);
         if (!$rm) {
             unlink($path);
         }

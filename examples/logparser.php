@@ -75,7 +75,7 @@ $options = array(
     "sysMaxInputTime" => "0",
     "sysMemoryLimit" => "1024M",
     "appRunAsGID" => 1000,
-    "appRunAsUID" => 1000
+    "appRunAsUID" => 1000,
 );
 
 System_Daemon::setOptions($options);

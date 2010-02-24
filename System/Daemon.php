@@ -1435,7 +1435,14 @@ class System_Daemon
             return self::err('Unable to change user of process to %s', $uid);
         }
 
-        return true;
+        $group = posix_getgrgid($gid);
+        $user  = posix_getpwuid($uid);
+        
+        return self::info(
+            'Changed identify to %s:%s',
+            $group['name'],
+            $user['name']
+        );
     }
 
     /**
