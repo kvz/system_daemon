@@ -297,8 +297,8 @@ Class Release extends EggShell {
         $firsttime = true;
         $tags = $this->Scm->tags();
         usort($tags, 'version_compare');
-
-        foreach($this->Scm->tags() as $tag) {
+        
+        foreach($tags as $tag) {
             $this->updateXML($tag, $firsttime);
             $firsttime = false;
         }
