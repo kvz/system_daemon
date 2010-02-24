@@ -1046,10 +1046,6 @@ class System_Daemon
         
         // These are pretty serious errors
         if ($level < self::LOG_ERR) {
-            // So Throw an exception
-            if (self::opt('usePEAR')) {
-                throw new System_Daemon_Exception($log_line);
-            }
             // An emergency logentry is reason for the deamon to 
             // die immediately 
             if ($level == self::LOG_EMERG) {
@@ -1450,8 +1446,9 @@ class System_Daemon
         // privileges
         // || !file_exists(self::opt('appPidLocation'))
         if (!self::isInBackground()) {
-            self::info('Not stopping {appName}. Process was not daemonized yet');
-            return false;
+            self::info('Process was not daemonized yet, ' .
+                'just halting current process');
+            die();
         }
 
         $pid = file_get_contents(
