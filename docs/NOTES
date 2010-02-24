@@ -8,3 +8,4 @@ System_Daemon 0.10.0-beta 2009-02-24 Kevin van Zonneveld <kevin@vanzonneveld.net
  * Improved PHP originated error handling
  * Fixed a number of bugs
  * More robust _die handling
+ * Better feedback on identity change
