@@ -191,7 +191,7 @@ class System_Daemon_OS
      * @return unknown
      * @see autoRunTemplatePath
      */
-    public function getAutoRunTemplatePath($properties)
+    public function getAutoRunTemplatePath($properties = array())
     {
         $path = $this->_autoRunTemplatePath;
 

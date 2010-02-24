@@ -175,164 +175,171 @@ class System_Daemon
      * @see getOption()
      */
     static protected $_optionDefinitions = array(
-        "usePEAR" => array(
-            "type" => "boolean",
-            "default" => true,
-            "punch" => "Wether to run this class using PEAR",
-            "detail" => "Will run standalone when false",
-            "required" => true 
+        'usePEAR' => array(
+            'type' => 'boolean',
+            'default' => true,
+            'punch' => 'Wether to run this class using PEAR',
+            'detail' => 'Will run standalone when false',
+            'required' => true,
         ),
-        "usePEARLogInstance" => array(
-            "type" => "boolean|object",
-            "default" => false,
-            "punch" => "Accepts a PEAR_Log instance to handle all logging",
-            "detail" => "This will replace System_Daemon's own logging facility",
-            "required" => true
-        ),
-        
-        "authorName" => array(
-            "type" => "string/0-50",
-            "punch" => "Author name",
-            "example" => "Kevin van zonneveld",   
-            "detail" => "Required for forging init.d script"
-        ),
-        "authorEmail" => array(
-            "type" => "string/email",
-            "punch" => "Author e-mail",
-            "example" => "kevin@vanzonneveld.net",
-            "detail" => "Required for forging init.d script"
-        ),
-        "appName" => array(
-            "type" => "string/unix",
-            "punch" => "The application name",
-            "example" => "logparser",
-            "detail" => "Must be UNIX-proof; Required for running daemon",
-            "required" => true
-        ),
-        "appDescription" => array(
-            "type" => "string",
-            "punch" => "Daemon description",
-            "example" => "Parses logfiles of vsftpd and stores them in MySQL",
-            "detail" => "Required for forging init.d script"
-        ),
-        "appDir" => array(
-            "type" => "string/existing_dirpath",
-            "default" => "@dirname({SERVER.SCRIPT_NAME})",
-            "punch" => "The home directory of the daemon",
-            "example" => "/usr/local/logparser",
-            "detail" => "Highly recommended to set this yourself",
-            "required" => true
-        ),
-        "appExecutable" => array(
-            "type" => "string/existing_filepath",
-            "default" => "@basename({SERVER.SCRIPT_NAME})",
-            "punch" => "The executable daemon file",
-            "example" => "logparser.php",
-            "detail" => "Recommended to set this yourself; Required for init.d",
-            "required" => true
+        'usePEARLogInstance' => array(
+            'type' => 'boolean|object',
+            'default' => false,
+            'punch' => 'Accepts a PEAR_Log instance to handle all logging',
+            'detail' => 'This will replace System_Daemon\'s own logging facility',
+            'required' => true,
         ),
         
-        "logVerbosity" => array(
-            "type" => "number/0-7",
-            "default" => self::LOG_INFO,
-            "punch" => "Messages below this log level are ignored",
-            "example" => "",
-            "detail" => "Not written to logfile; not displayed on screen",
-            "required" => true
+        'authorName' => array(
+            'type' => 'string/0-50',
+            'punch' => 'Author name',
+            'example' => 'Kevin van zonneveld',
+            'detail' => 'Required for forging init.d script',
         ),
-        "logLocation" => array(
-            "type" => "string/creatable_filepath",
-            "default" => "/var/log/{OPTIONS.appName}.log",
-            "punch" => "The log filepath",
-            "example" => "/var/log/logparser_daemon.log",
-            "detail" => "",
-            "required" => false
+        'authorEmail' => array(
+            'type' => 'string/email',
+            'punch' => 'Author e-mail',
+            'example' => 'kevin@vanzonneveld.net',
+            'detail' => 'Required for forging init.d script',
         ),
-        "logPhpErrors" => array(
-            "type" => "boolean",
-            "default" => true,
-            "punch" => "Reroute PHP errors to log function",
-            "detail" => "",
-            "required" => true
+        'appName' => array(
+            'type' => 'string/unix',
+            'punch' => 'The application name',
+            'example' => 'logparser',
+            'detail' => 'Must be UNIX-proof; Required for running daemon',
+            'required' => true,
         ),
-        "logFilePosition" => array(
-            "type" => "boolean",
-            "default" => false,
-            "punch" => "Show file in which the log message was generated",
-            "detail" => "",
-            "required" => true
+        'appDescription' => array(
+            'type' => 'string',
+            'punch' => 'Daemon description',
+            'example' => 'Parses logfiles of vsftpd and stores them in MySQL',
+            'detail' => 'Required for forging init.d script',
         ),
-        "logLinePosition" => array(
-            "type" => "boolean",
-            "default" => true,
-            "punch" => "Show the line number in which the log message was generated",
-            "detail" => "",
-            "required" => true
+        'appDir' => array(
+            'type' => 'string/existing_dirpath',
+            'default' => '@dirname({SERVER.SCRIPT_NAME})',
+            'punch' => 'The home directory of the daemon',
+            'example' => '/usr/local/logparser',
+            'detail' => 'Highly recommended to set this yourself',
+            'required' => true,
         ),
-        "appRunAsUID" => array(
-            "type" => "number/0-65000",
-            "default" => 0,
-            "punch" => "The user id under which to run the process",
-            "example" => "1000",
-            "detail" => "Defaults to root which is insecure!",
-            "required" => true
+        'appExecutable' => array(
+            'type' => 'string/existing_filepath',
+            'default' => '@basename({SERVER.SCRIPT_NAME})',
+            'punch' => 'The executable daemon file',
+            'example' => 'logparser.php',
+            'detail' => 'Recommended to set this yourself; Required for init.d',
+            'required' => true
         ),
-        "appRunAsGID" => array(
-            "type" => "number/0-65000",
-            "default" => 0,
-            "punch" => "The group id under which to run the process",
-            "example" => "1000",
-            "detail" => "Defaults to root which is insecure!",
-            "required" => true
+        
+        'logVerbosity' => array(
+            'type' => 'number/0-7',
+            'default' => self::LOG_INFO,
+            'punch' => 'Messages below this log level are ignored',
+            'example' => '',
+            'detail' => 'Not written to logfile; not displayed on screen',
+            'required' => true,
         ),
-        "appPidLocation" => array(
-            "type" => "string/unix_filepath",
-            "default" => "/var/run/{OPTIONS.appName}/{OPTIONS.appName}.pid",
-            "punch" => "The pid filepath",
-            "example" => "/var/run/logparser/logparser.pid",
-            "detail" => "",
-            "required" => true
+        'logLocation' => array(
+            'type' => 'string/creatable_filepath',
+            'default' => '/var/log/{OPTIONS.appName}.log',
+            'punch' => 'The log filepath',
+            'example' => '/var/log/logparser_daemon.log',
+            'detail' => '',
+            'required' => false,
         ),
-        "appChkConfig" => array(
-             "type" => "string",
-             "default" => "- 99 0",
-             "punch" => "chkconfig parameters for init.d",
-             "detail" => "runlevel startpriority stoppriority"
+        'logPhpErrors' => array(
+            'type' => 'boolean',
+            'default' => true,
+            'punch' => 'Reroute PHP errors to log function',
+            'detail' => '',
+            'required' => true,
+        ),
+        'logFilePosition' => array(
+            'type' => 'boolean',
+            'default' => false,
+            'punch' => 'Show file in which the log message was generated',
+            'detail' => '',
+            'required' => true,
+        ),
+        'logTrimAppDir' => array(
+            'type' => 'boolean',
+            'default' => true,
+            'punch' => 'Strip the application dir from file positions in log msgs',
+            'detail' => '',
+            'required' => true,
+        ),
+        'logLinePosition' => array(
+            'type' => 'boolean',
+            'default' => true,
+            'punch' => 'Show the line number in which the log message was generated',
+            'detail' => '',
+            'required' => true,
+        ),
+        'appRunAsUID' => array(
+            'type' => 'number/0-65000',
+            'default' => 0,
+            'punch' => 'The user id under which to run the process',
+            'example' => '1000',
+            'detail' => 'Defaults to root which is insecure!',
+            'required' => true,
+        ),
+        'appRunAsGID' => array(
+            'type' => 'number/0-65000',
+            'default' => 0,
+            'punch' => 'The group id under which to run the process',
+            'example' => '1000',
+            'detail' => 'Defaults to root which is insecure!',
+            'required' => true,
+        ),
+        'appPidLocation' => array(
+            'type' => 'string/unix_filepath',
+            'default' => '/var/run/{OPTIONS.appName}/{OPTIONS.appName}.pid',
+            'punch' => 'The pid filepath',
+            'example' => '/var/run/logparser/logparser.pid',
+            'detail' => '',
+            'required' => true,
+        ),
+        'appChkConfig' => array(
+             'type' => 'string',
+             'default' => '- 99 0',
+             'punch' => 'chkconfig parameters for init.d',
+             'detail' => 'runlevel startpriority stoppriority',
          ),        
-        "appDieOnIdentityCrisis" => array(
-            "type" => "boolean",
-            "default" => true,
-            "punch" => "Kill daemon if it cannot assume the identity",
-            "detail" => "",
-            "required" => true
+        'appDieOnIdentityCrisis' => array(
+            'type' => 'boolean',
+            'default' => true,
+            'punch' => 'Kill daemon if it cannot assume the identity',
+            'detail' => '',
+            'required' => true,
         ),
 
-        "sysMaxExecutionTime" => array(
-            "type" => "number",
-            "default" => 0,
-            "punch" => "Maximum execution time of each script in seconds",
-            "detail" => "0 is infinite"
+        'sysMaxExecutionTime' => array(
+            'type' => 'number',
+            'default' => 0,
+            'punch' => 'Maximum execution time of each script in seconds',
+            'detail' => '0 is infinite',
         ),
-        "sysMaxInputTime" => array(
-            "type" => "number",
-            "default" => 0,
-            "punch" => "Maximum time to spend parsing request data",
-            "detail" => "0 is infinite"
+        'sysMaxInputTime' => array(
+            'type' => 'number',
+            'default' => 0,
+            'punch' => 'Maximum time to spend parsing request data',
+            'detail' => '0 is infinite',
         ),
-        "sysMemoryLimit" => array(
-            "type" => "string",
-            "default" => "128M",
-            "punch" => "Maximum amount of memory a script may consume",
-            "detail" => "0 is infinite"
+        'sysMemoryLimit' => array(
+            'type' => 'string',
+            'default' => '128M',
+            'punch' => 'Maximum amount of memory a script may consume',
+            'detail' => '0 is infinite',
         ),
 
-        "runTemplateLocation" => array(
-            "type" => "string/existing_filepath",
-            "default" => false,
-            "punch" => "The filepath to a custom autorun Template",
-            "example" => "/etc/init.d/skeleton",
-            "detail" => "Sometimes it's better to stick with the OS default,
-                and use something like /etc/default/<name> for customization",
+        'runTemplateLocation' => array(
+            'type' => 'string/existing_filepath',
+            'default' => false,
+            'punch' => 'The filepath to a custom autorun Template',
+            'example' => '/etc/init.d/skeleton',
+            'detail' => 'Sometimes it\'s better to stick with the OS default,
+                and use something like /etc/default/<name> for customization',
         ),
     );
 
@@ -369,44 +376,44 @@ class System_Daemon
      * @see setSigHandler()
      */
     static protected $_sigHandlers = array(
-        SIG_DFL => array("System_Daemon", "defaultSigHandler"),
-        SIG_ERR => array("System_Daemon", "defaultSigHandler"),
-        SIGHUP => array("System_Daemon", "defaultSigHandler"),
-        SIGINT => array("System_Daemon", "defaultSigHandler"),
-        SIGQUIT => array("System_Daemon", "defaultSigHandler"),
-        SIGILL => array("System_Daemon", "defaultSigHandler"),
-        SIGTRAP => array("System_Daemon", "defaultSigHandler"),
-        SIGABRT => array("System_Daemon", "defaultSigHandler"),
-        'SIGIOT' => array("System_Daemon", "defaultSigHandler"),
-        SIGBUS => array("System_Daemon", "defaultSigHandler"),
-        SIGFPE => array("System_Daemon", "defaultSigHandler"),
-        SIGUSR1 => array("System_Daemon", "defaultSigHandler"),
-        SIGSEGV => array("System_Daemon", "defaultSigHandler"),
-        SIGUSR2 => array("System_Daemon", "defaultSigHandler"),
+        SIG_DFL => array('System_Daemon', 'defaultSigHandler'),
+        SIG_ERR => array('System_Daemon', 'defaultSigHandler'),
+        SIGHUP => array('System_Daemon', 'defaultSigHandler'),
+        SIGINT => array('System_Daemon', 'defaultSigHandler'),
+        SIGQUIT => array('System_Daemon', 'defaultSigHandler'),
+        SIGILL => array('System_Daemon', 'defaultSigHandler'),
+        SIGTRAP => array('System_Daemon', 'defaultSigHandler'),
+        SIGABRT => array('System_Daemon', 'defaultSigHandler'),
+        'SIGIOT' => array('System_Daemon', 'defaultSigHandler'),
+        SIGBUS => array('System_Daemon', 'defaultSigHandler'),
+        SIGFPE => array('System_Daemon', 'defaultSigHandler'),
+        SIGUSR1 => array('System_Daemon', 'defaultSigHandler'),
+        SIGSEGV => array('System_Daemon', 'defaultSigHandler'),
+        SIGUSR2 => array('System_Daemon', 'defaultSigHandler'),
         SIGPIPE => SIG_IGN,
-        SIGALRM => array("System_Daemon", "defaultSigHandler"),
-        SIGTERM => array("System_Daemon", "defaultSigHandler"),
-        'SIGSTKFLT' => array("System_Daemon", "defaultSigHandler"),
-        'SIGCLD' => array("System_Daemon", "defaultSigHandler"),
-        'SIGCHLD' => array("System_Daemon", "defaultSigHandler"),
-        SIGCONT => array("System_Daemon", "defaultSigHandler"),
-        SIGTSTP => array("System_Daemon", "defaultSigHandler"),
-        SIGTTIN => array("System_Daemon", "defaultSigHandler"),
-        SIGTTOU => array("System_Daemon", "defaultSigHandler"),
-        SIGURG => array("System_Daemon", "defaultSigHandler"),
-        SIGXCPU => array("System_Daemon", "defaultSigHandler"),
-        SIGXFSZ => array("System_Daemon", "defaultSigHandler"),
-        SIGVTALRM => array("System_Daemon", "defaultSigHandler"),
-        SIGPROF => array("System_Daemon", "defaultSigHandler"),
-        SIGWINCH => array("System_Daemon", "defaultSigHandler"),
-        'SIGPOLL' => array("System_Daemon", "defaultSigHandler"),
-        SIGIO => array("System_Daemon", "defaultSigHandler"),
-        'SIGPWR' => array("System_Daemon", "defaultSigHandler"),
-        'SIGSYS' => array("System_Daemon", "defaultSigHandler"),
-        SIGBABY => array("System_Daemon", "defaultSigHandler"),
-        'SIG_BLOCK' => array("System_Daemon", "defaultSigHandler"),
-        'SIG_UNBLOCK' => array("System_Daemon", "defaultSigHandler"),
-        'SIG_SETMASK' => array("System_Daemon", "defaultSigHandler"),
+        SIGALRM => array('System_Daemon', 'defaultSigHandler'),
+        SIGTERM => array('System_Daemon', 'defaultSigHandler'),
+        'SIGSTKFLT' => array('System_Daemon', 'defaultSigHandler'),
+        'SIGCLD' => array('System_Daemon', 'defaultSigHandler'),
+        'SIGCHLD' => array('System_Daemon', 'defaultSigHandler'),
+        SIGCONT => array('System_Daemon', 'defaultSigHandler'),
+        SIGTSTP => array('System_Daemon', 'defaultSigHandler'),
+        SIGTTIN => array('System_Daemon', 'defaultSigHandler'),
+        SIGTTOU => array('System_Daemon', 'defaultSigHandler'),
+        SIGURG => array('System_Daemon', 'defaultSigHandler'),
+        SIGXCPU => array('System_Daemon', 'defaultSigHandler'),
+        SIGXFSZ => array('System_Daemon', 'defaultSigHandler'),
+        SIGVTALRM => array('System_Daemon', 'defaultSigHandler'),
+        SIGPROF => array('System_Daemon', 'defaultSigHandler'),
+        SIGWINCH => array('System_Daemon', 'defaultSigHandler'),
+        'SIGPOLL' => array('System_Daemon', 'defaultSigHandler'),
+        SIGIO => array('System_Daemon', 'defaultSigHandler'),
+        'SIGPWR' => array('System_Daemon', 'defaultSigHandler'),
+        'SIGSYS' => array('System_Daemon', 'defaultSigHandler'),
+        SIGBABY => array('System_Daemon', 'defaultSigHandler'),
+        'SIG_BLOCK' => array('System_Daemon', 'defaultSigHandler'),
+        'SIG_UNBLOCK' => array('System_Daemon', 'defaultSigHandler'),
+        'SIG_SETMASK' => array('System_Daemon', 'defaultSigHandler'),
     );
 
     
@@ -739,6 +746,122 @@ class System_Daemon
         return true;
     }
 
+    /**
+     * Abbreviate a string. e.g: Kevin van zonneveld -> Kevin van Z...
+     *
+     * @param string  $str
+     * @param integer $cutAt
+     * @param string  $suffix
+     *
+     * @return string
+     */
+    public function abbr($str, $cutAt = 30, $suffix = '...') {
+        if (strlen($str) <= 30) {
+            return $str;
+        }
+
+        $canBe = $cutAt - strlen($suffix);
+
+        return substr($str, 0, $canBe). $suffix;
+    }
+
+    /**
+     * Tries to return the most significant information as a string
+     * based on any given argument.
+     *
+     * @param mixed $arguments
+     *
+     * @return string
+     */
+    public function semantify($arguments) {
+        if (is_object($arguments)) {
+            return get_class($arguments);
+        }
+        if (!is_array($arguments)) {
+            if (!is_numeric($arguments) && !is_bool($arguments)) {
+                $arguments = "'".$arguments."'";
+            }
+            return $arguments;
+        }
+        $arr = array();
+        foreach($arguments as $key=>$val) {
+            if (is_array($val)) {
+                $val = json_encode($val);
+            } elseif (!is_numeric($val) && !is_bool($val)) {
+                $val = "'".$val."'";
+            }
+
+            $val = self::abbr($val);
+
+            $arr[] = $key.': '.$val;
+        }
+        return join(', ', $arr);
+    }
+
+    /**
+     * Logging shortcut
+     *
+     * @return boolean
+     */
+    public static function err() {
+        $arguments = func_get_args(); array_unshift($arguments, self::LOG_ERR);
+        call_user_func_array(array('System_Daemon', '_ilog'), $arguments);
+        return false;
+    }
+
+    /**
+     * Logging shortcut
+     *
+     * @return boolean
+     */
+    public static function info() {
+        $arguments = func_get_args(); array_unshift($arguments, self::LOG_INFO);
+        call_user_func_array(array('System_Daemon', '_ilog'), $arguments);
+        return true;
+    }
+
+    /**
+     * Internal logging function. Bridge between shortcuts like:
+     * err(), warning(), info() and the actual log() function
+     *
+     * @param <type> $level
+     * @param <type> $str
+     * @return <type>
+     */
+    protected static function _ilog($level, $str) {
+        $arguments = func_get_args();
+        $level     = $arguments[0];
+        $format    = $arguments[1];
+        
+        if (isset($alias[$level])) {
+            $level = $alias[$level];
+        }
+
+        unset($arguments[0]);
+        unset($arguments[1]);
+
+        $str = $format;
+        if (count($arguments)) {
+            foreach ($arguments as $k => $v) {
+                $arguments[$k] = self::humanFormat($v);
+            }
+            $str = vsprintf($str, $arguments);
+        }
+
+        self::_optionObjSetup();
+        $str = preg_replace_callback('/\{([^\{\}]+)\}/is',
+            array(self::$_optObj, "replaceVars"), $str);
+
+
+        $history  = 2;
+        $dbg_bt   = @debug_backtrace();
+        $class    = (string)@$dbg_bt[($history-1)]['class'];
+        $function = (string)@$dbg_bt[($history-1)]['function'];
+        $file     = (string)@$dbg_bt[$history]['file'];
+        $line     = (string)@$dbg_bt[$history]['line'];
+
+        return self::log($level, $str, $file, $class, $function, $line);
+    }
 
     /**
      * Almost every deamon requires a log file, this function can
@@ -767,51 +890,54 @@ class System_Daemon
         $function = false, $line = false)
     {
         // If verbosity level is not matched, don't do anything        
-        if (self::getOption("logVerbosity") === null 
-            || self::getOption("logVerbosity") === false) {
+        if (self::getOption('logVerbosity') === null
+            || self::getOption('logVerbosity') === false) {
             // Somebody is calling log before launching daemon..
             // fair enough, but we have to init some log options
             self::_optionsInit(true);
         }
         
-        if (!self::getOption("appName")) {
+        if (!self::getOption('appName')) {
             // Not logging for anything without a name
             return false;
         }
         
-        if ($level > self::getOption("logVerbosity")) {
+        if ($level > self::getOption('logVerbosity')) {
             return true;
         }
         
         // Make use of a PEAR_Log() instance
-        if (self::getOption("usePEARLogInstance") !== false) {
-            self::getOption("usePEARLogInstance")->log($str, $level);
+        if (self::getOption('usePEARLogInstance') !== false) {
+            self::getOption('usePEARLogInstance')->log($str, $level);
             return true;
         }
         
         // Save resources if arguments are passed.
         // But by falling back to debug_backtrace() it still works 
         // if someone forgets to pass them.
-        if (function_exists("debug_backtrace") && ($file == false 
-            || $class == false || $function == false || $line == false)) {
+        if (function_exists('debug_backtrace') && (!$file || !$line)) {
             $dbg_bt   = @debug_backtrace();
-            $class    = (isset($dbg_bt[1]["class"])?$dbg_bt[1]["class"]:"");
-            $function = (isset($dbg_bt[1]["function"])?$dbg_bt[1]["function"]:"");
-            $file     = $dbg_bt[0]["file"];
-            $line     = $dbg_bt[0]["line"];
+            $class    = (isset($dbg_bt[1]['class'])?$dbg_bt[1]['class']:'');
+            $function = (isset($dbg_bt[1]['function'])?$dbg_bt[1]['function']:'');
+            $file     = $dbg_bt[0]['file'];
+            $line     = $dbg_bt[0]['line'];
         }
 
         // Determine what process the log is originating from and forge a logline
-        //$str_ident = "@".substr(self::_whatIAm(), 0, 1)."-".posix_getpid();
-        $str_date  = "[".date("M d H:i:s")."]"; 
-        $str_level = str_pad(self::$_logLevels[$level]."", 8, " ", STR_PAD_LEFT);
-        $log_line  = $str_date." ".$str_level.": ".$str; // $str_ident
+        //$str_ident = '@'.substr(self::_whatIAm(), 0, 1).'-'.posix_getpid();
+        $str_date  = '['.date('M d H:i:s').']';
+        $str_level = str_pad(self::$_logLevels[$level].'', 8, ' ', STR_PAD_LEFT);
+        $log_line  = $str_date.' '.$str_level.': '.$str; // $str_ident
         if ($level < self::LOG_NOTICE) {
-            if (self::getOption("logFilePosition")) {
-                $log_line .= " [f:".$file."]";
+            if (self::getOption('logFilePosition')) {
+                if (self::getOption('logTrimAppDir')) {
+                    $file = substr($file, strlen(self::getOption('appDir')));
+                }
+
+                $log_line .= ' [f:'.$file.']';
             }
-            if (self::getOption("logLinePosition")) {
-                $log_line .= " [l:".$line."]";
+            if (self::getOption('logLinePosition')) {
+                $log_line .= ' [l:'.$line.']';
             }
         }
         
@@ -824,39 +950,39 @@ class System_Daemon
             // Maybe the command to write an init.d file was issued.
             // In such a case it's important to echo failures to the 
             // STDOUT
-            echo $log_line."\n";
+            echo $log_line . "\n";
             $log_echoed = true;
             // but still try to also log to file for future reference
         } 
 
-        if (!self::getOption("logLocation")) {
+        if (!self::getOption('logLocation')) {
             throw new System_Daemon_Exception('Either use PEAR Log or specify '.
                 'a logLocation');
         }
 
         // 'Touch' logfile 
-        if (!file_exists(self::getOption("logLocation"))) {
-            file_put_contents(self::getOption("logLocation"), "");
+        if (!file_exists(self::getOption('logLocation'))) {
+            file_put_contents(self::getOption('logLocation'), '');
         }
         
         // Not writable even after touch? Allowed to echo again!!
-        if (!is_writable(self::getOption("logLocation")) 
+        if (!is_writable(self::getOption('logLocation'))
             && $non_debug && !$log_echoed) { 
-            echo $log_line."\n";
+            echo $log_line . "\n";
             $log_echoed    = true;
             $log_succeeded = false;
         } 
         
         // Append to logfile
-        if (!file_put_contents(self::getOption("logLocation"), 
-            $log_line."\n", FILE_APPEND)) {
+        if (!file_put_contents(self::getOption('logLocation'),
+            $log_line . "\n", FILE_APPEND)) {
             $log_succeeded = false; 
         }
         
         // These are pretty serious errors
         if ($level < self::LOG_ERR) {
             // So Throw an exception
-            if (self::getOption("usePEAR")) {
+            if (self::getOption('usePEAR')) {
                 throw new System_Daemon_Exception($log_line);
             }
             // An emergency logentry is reason for the deamon to 
@@ -867,7 +993,6 @@ class System_Daemon
         }
         
         return $log_succeeded;
-        
     }
 
     /**
@@ -1154,10 +1279,7 @@ class System_Daemon
     static protected function _isValidPidLocation($pidFilePath, $log = true)
     {
         if (empty($pidFilePath)) {
-            self::log(self::LOG_ERR, "".self::getOption("appName")." ".
-                "daemon encountered ".
-                "an empty appPidLocation",
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
+            return self::err('${appName} daemon encountered an empty appPidLocation');
             return false;
         }
 
@@ -1166,12 +1288,8 @@ class System_Daemon
         $parts = explode('/', $pidDirPath);
         if (count($parts) <= 3 || end($parts) != self::getOption("appName")) {
             // like: /var/run/x.pid
-            self::log(self::LOG_ERR, "".
-                "Since version 0.6.3, the pidfile needs to be in it's own ".
-                "subdirectory like: ".$pidDirPath."/".self::getOption("appName").
-                "/".self::getOption("appName").".pid",
-                __FILE__, __CLASS__, __FUNCTION__, __LINE__);
-            return false;
+            return self::err('Since version 0.6.3, the pidfile needs to be ' .
+                'in it\'s own subdirectory like: %s/{appName}/{appName}.pid');
         }
         
         return true;

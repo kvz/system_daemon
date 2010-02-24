@@ -367,11 +367,11 @@ class System_Daemon_Options
         if (isset($_allowedTypes["string"]) && !is_bool($value)) {
             // Replace variables
             $value = preg_replace_callback('/\{([^\{\}]+)\}/is', 
-                array($this, "_replaceVars"), $value);
+                array($this, "replaceVars"), $value);
             
             // Replace functions
             $value = preg_replace_callback('/\@([\w_]+)\(([^\)]+)\)/is', 
-                array($this, "_replaceFuncs"), $value);
+                array($this, "replaceFuncs"), $value);
         }
                         
         $this->_options[$name] = $value;
@@ -385,23 +385,31 @@ class System_Daemon_Options
      * 
      * @return string
      */
-    protected function _replaceVars($matches)
+    public function replaceVars($matches)
     {
         // Init
         $allowedVars = array(
             "SERVER.SCRIPT_NAME", 
-            "OPTIONS.*"
+            "OPTIONS.*",
         );
         $filterVars  = array(
-            "SERVER.SCRIPT_NAME"=>array("realpath")
+            "SERVER.SCRIPT_NAME" => array(
+                "realpath",
+            ),
         );
         
         $fullmatch          = array_shift($matches);
         $fullvar            = array_shift($matches);
-        $parts              = explode(".", $fullvar);
-        list($source, $var) = $parts;
+
+        if (false === strpos($fullvar, '.')) {
+            $source = 'OPTIONS';
+            $var    = $fullvar;
+        } else {
+            $parts              = explode(".", $fullvar);
+            list($source, $var) = $parts;
+        }
         $var_use            = false;
-        $var_key            = $source.".".$var; 
+        $var_key            = $source.".".$var;
         
         // Allowed
         if (!in_array($var_key, $allowedVars) 
@@ -448,9 +456,12 @@ class System_Daemon_Options
      * 
      * @return string
      */
-    protected function _replaceFuncs($matches)
+    public function replaceFuncs($matches)
     {
-        $allowedFunctions = array("basename", "dirname");
+        $allowedFunctions = array(
+            "basename",
+            "dirname",
+        );
         
         $fullmatch = array_shift($matches);
         $function  = array_shift($matches);
