@@ -188,6 +188,8 @@ class System_Daemon_OS
      * Returns a template path to base the autuRun script on.
      * Uses $autoRunTemplatePath if possible.
      *
+     * @param array $properties Additional properties
+     *
      * @return unknown
      * @see autoRunTemplatePath
      */
@@ -235,8 +237,10 @@ class System_Daemon_OS
                 return false;
             }
 
-            $try_dir = realpath($config->get('data_dir').
-                '/System_Daemon/data');
+            $try_dir = realpath(
+                $config->get('data_dir').
+                '/System_Daemon/data'
+            );
             if (!is_dir($try_dir)) {
                 $tried_dirs[] = $try_dir;
             } else {
@@ -332,6 +336,8 @@ class System_Daemon_OS
      * Returns a template to base the autuRun script on.
      * Uses $autoRunTemplatePath if possible.
      *
+     * @param array $properties Contains the daemon properties
+     *
      * @return unknown
      * @see autoRunTemplatePath
      */
@@ -366,17 +372,18 @@ class System_Daemon_OS
         }
         if (!$this->_autoRunTemplateReplace
             || !is_array($this->_autoRunTemplateReplace)
-            || !count($this->_autoRunTemplateReplace)) {
-
+            || !count($this->_autoRunTemplateReplace)
+        ) {
             $this->errors[] = "No autoRunTemplateReplace found";
-
             return false;
         }
 
         // Replace System specific keywords with Universal placeholder keywords
-        $script = str_replace(array_keys($this->_autoRunTemplateReplace),
+        $script = str_replace(
+            array_keys($this->_autoRunTemplateReplace),
             array_values($this->_autoRunTemplateReplace),
-            $template);
+            $template
+        );
 
         // Replace Universal placeholder keywords with Daemon specific properties
         if (!preg_match_all('/(\{PROPERTIES([^\}]+)\})/is', $script, $r)) {
@@ -467,8 +474,14 @@ class System_Daemon_OS
      */
     protected function _testAutoRunProperties($properties = false)
     {
-        $required_props = array("appName", "appExecutable",
-            "appDescription", "appDir", "authorName", "authorEmail");
+        $required_props = array(
+            "appName",
+            "appExecutable",
+            "appDescription", 
+            "appDir",
+            "authorName",
+            "authorEmail"
+        );
 
         // Valid array?
         if (!is_array($properties) || !count($properties)) {
@@ -490,7 +503,8 @@ class System_Daemon_OS
         }
 
         // Path to daemon
-        $daemon_filepath = $properties["appDir"]."/".$properties["appExecutable"];
+        $daemon_filepath = $properties["appDir"] . "/" .
+            $properties["appExecutable"];
 
         // Path to daemon exists?
         if (!file_exists($daemon_filepath)) {
@@ -524,8 +538,10 @@ class System_Daemon_OS
      */
     protected function _mostSpecific($classes)
     {
-        $weights = array_map(array("System_Daemon_OS", "_getAncestorCount"),
-            $classes);
+        $weights = array_map(
+            array("System_Daemon_OS", "_getAncestorCount"),
+            $classes
+        );
         arsort($weights);
         $fattest = reset(array_keys($weights));
         return $fattest;
@@ -574,5 +590,4 @@ class System_Daemon_OS
         }
         return $classes;
     }
-
 }

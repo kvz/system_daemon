@@ -166,9 +166,12 @@ class System_Daemon_Options
         foreach ($this->_definitions as $name=>$definition) {
             // Required options remain
             if (!isset($this->_options[$name])) {
-                if (!$this->_setDefault($name) && !$premature && @$definition["required"]) {
-                    $this->errors[] = "Required option: ".$name. 
-                        " not set. No default value available either.";
+                if (!$this->_setDefault($name)
+                    && !$premature
+                    && @$definition['required']
+                ) {
+                    $this->errors[] = 'Required option: '.$name.
+                        ' not set. No default value available either.';
                     return false;
                 } 
             }
@@ -184,7 +187,7 @@ class System_Daemon_Options
         
     }
     
-    
+
     
     /**
      * Validates any option found in $_definitions
@@ -267,22 +270,26 @@ class System_Daemon_Options
                             break;
                         case "creatable_filepath":
                             if (is_dir(dirname($value)) 
-                                && is_writable(dirname($value))) {
+                                && is_writable(dirname($value))
+                            ) {
                                 $type_valid = true;
                             }
                             break;
                         case "normal":
                         default: 
                             // String?
-                            if (!is_resource($value) && !is_array($value) 
-                                && !is_object($value)) {
+                            if (!is_resource($value)
+                                && !is_array($value)
+                                && !is_object($value)
+                            ) {
                                 // Range?
                                 if ($from === false && $to === false) {
                                     $type_valid = true;
                                 } else {
                                     // Enfore range as well
                                     if (strlen($value) >= $from 
-                                        && strlen($value) <= $to) {
+                                        && strlen($value) <= $to
+                                    ) {
                                         $type_valid = true;
                                     }
                                 }
@@ -360,14 +367,20 @@ class System_Daemon_Options
 
         if (isset($_allowedTypes["string"]) && !is_bool($value)) {
             // Replace variables
-            $value = preg_replace_callback('/\{([^\{\}]+)\}/is', 
-                array($this, "replaceVars"), $value);
+            $value = preg_replace_callback(
+                '/\{([^\{\}]+)\}/is',
+                array($this, "replaceVars"), 
+                $value
+            );
             
             // Replace functions
-            $value = preg_replace_callback('/\@([\w_]+)\(([^\)]+)\)/is', 
-                array($this, "replaceFuncs"), $value);
+            $value = preg_replace_callback(
+                '/\@([\w_]+)\(([^\)]+)\)/is',
+                array($this, "replaceFuncs"), 
+                $value
+            );
         }
-                        
+        
         $this->_options[$name] = $value;
         return true;
     }
@@ -407,7 +420,8 @@ class System_Daemon_Options
         
         // Allowed
         if (!in_array($var_key, $allowedVars) 
-            && !in_array($source.".*", $allowedVars)) {
+            && !in_array($source.".*", $allowedVars)
+        ) {
             return "FORBIDDEN_VAR_".$var_key;
         }
         

@@ -245,8 +245,8 @@ class System_Daemon
             'default' => '/var/log/{OPTIONS.appName}.log',
             'punch' => 'The log filepath',
             'example' => '/var/log/logparser_daemon.log',
-            'detail' => '',
-            'required' => true,
+            'detail' => 'Not applicable if you use PEAR Log',
+            'required' => false,
         ),
         'logPhpErrors' => array(
             'type' => 'boolean',
@@ -353,7 +353,8 @@ class System_Daemon
      * and will conditionally be translated from strings to constants,
      * or else: removed from this mapping at start().
      *
-     * 'kill -l' gives you a list of signals available on your UNIX. Eg. Redhat Linux:
+     * 'kill -l' gives you a list of signals available on your UNIX.
+     * Eg. Redhat Linux:
      *
      *  1) SIGHUP      2) SIGINT      3) SIGQUIT      4) SIGILL
      *  5) SIGTRAP      6) SIGABRT      7) SIGBUS      8) SIGFPE
@@ -473,22 +474,24 @@ class System_Daemon
      */
     static public function start()
     {
-        // Conditionally add loglevel mappings that are not supported in all PHP versions.
-        // They will be in string representation and have to be converted & unset
-        foreach (self::$_logPhpMapping as $phpConstant => $sysDaemLevel) {
+        // Conditionally add loglevel mappings that are not supported in
+        // all PHP versions.
+        // They will be in string representation and have to be
+        // converted & unset
+        foreach (self::$_logPhpMapping as $phpConstant => $sdLevel) {
             if (!is_numeric($phpConstant)) {
                 if (defined($phpConstant)) {
-                    self::$_logPhpMapping[constant($phpConstant)] = $sysDaemLevel;
+                    self::$_logPhpMapping[constant($phpConstant)] = $sdLevel;
                 }
                 unset(self::$_logPhpMapping[$phpConstant]);
             }
         }
-        // Conditionally add SIGNAL mappings that are not supported in all PHP versions.
-        // They will be in string representation and have to be converted & unset
-        foreach (self::$_sigHandlers as $phpConstant => $sysDaemLevel) {
+        // Same goes for POSIX signals. Not all Constants are available on
+        // all platforms.
+        foreach (self::$_sigHandlers as $phpConstant => $sdLevel) {
             if (!is_numeric($phpConstant)) {
                 if (defined($phpConstant)) {
-                    self::$_sigHandlers[constant($phpConstant)] = $sysDaemLevel;
+                    self::$_sigHandlers[constant($phpConstant)] = $sdLevel;
                 }
                 unset(self::$_sigHandlers[$phpConstant]);
             }
@@ -632,8 +635,10 @@ class System_Daemon
     {
         if (!isset(self::$_sigHandlers[$signal])) {
             // The signal should be defined already
-            self::notice('Can only overrule on of these signal handlers: %s', 
-                join(', ', self::$_sigHandlers));
+            self::notice(
+                'Can only overrule on of these signal handlers: %s',
+                join(', ', self::$_sigHandlers)
+            );
             return false;
         }
         
@@ -677,7 +682,15 @@ class System_Daemon
         return self::$_optObj->setOptions($use_options);
     }
 
-    static public function opt($name) {
+    /**
+     * Shortcut for getOption & setOption
+     * 
+     * @param string $name Option to set or get
+     *
+     * @return mixed
+     */
+    static public function opt($name)
+    {
         $args = func_get_args();
         if (count($args) > 1) {
             return self::setOption($name, $args[1]);
@@ -745,8 +758,10 @@ class System_Daemon
 
         // Log it
         // No shortcuts this time!
-        self::log($lvl, '[PHP Error] '.$errstr, $errfile, __CLASS__,
-            __FUNCTION__, $errline);
+        self::log(
+            $lvl, '[PHP Error] '.$errstr, $errfile, __CLASS__,
+            __FUNCTION__, $errline
+        );
 
         return true;
     }
@@ -754,13 +769,14 @@ class System_Daemon
     /**
      * Abbreviate a string. e.g: Kevin van zonneveld -> Kevin van Z...
      *
-     * @param string  $str
-     * @param integer $cutAt
-     * @param string  $suffix
+     * @param string  $str    Data
+     * @param integer $cutAt  Where to cut
+     * @param string  $suffix Suffix with something?
      *
      * @return string
      */
-    public function abbr($str, $cutAt = 30, $suffix = '...') {
+    public function abbr($str, $cutAt = 30, $suffix = '...')
+    {
         if (strlen($str) <= 30) {
             return $str;
         }
@@ -774,11 +790,12 @@ class System_Daemon
      * Tries to return the most significant information as a string
      * based on any given argument.
      *
-     * @param mixed $arguments
+     * @param mixed $arguments Any type of variable
      *
      * @return string
      */
-    public function semantify($arguments) {
+    public function semantify($arguments)
+    {
         if (is_object($arguments)) {
             return get_class($arguments);
         }
@@ -789,7 +806,7 @@ class System_Daemon
             return $arguments;
         }
         $arr = array();
-        foreach($arguments as $key=>$val) {
+        foreach ($arguments as $key=>$val) {
             if (is_array($val)) {
                 $val = json_encode($val);
             } elseif (!is_numeric($val) && !is_bool($val)) {
@@ -808,7 +825,8 @@ class System_Daemon
      *
      * @return boolean
      */
-    public static function emerg() {
+    public static function emerg()
+    {
         $arguments = func_get_args(); array_unshift($arguments, __FUNCTION__);
         call_user_func_array(array('System_Daemon', '_ilog'), $arguments);
         return false;
@@ -819,7 +837,8 @@ class System_Daemon
      *
      * @return boolean
      */
-    public static function crit() {
+    public static function crit()
+    {
         $arguments = func_get_args(); array_unshift($arguments, __FUNCTION__);
         call_user_func_array(array('System_Daemon', '_ilog'), $arguments);
         return false;
@@ -830,7 +849,8 @@ class System_Daemon
      *
      * @return boolean
      */
-    public static function err() {
+    public static function err()
+    {
         $arguments = func_get_args(); array_unshift($arguments, __FUNCTION__);
         call_user_func_array(array('System_Daemon', '_ilog'), $arguments);
         return false;
@@ -841,7 +861,8 @@ class System_Daemon
      *
      * @return boolean
      */
-    public static function warning() {
+    public static function warning()
+    {
         $arguments = func_get_args(); array_unshift($arguments, __FUNCTION__);
         call_user_func_array(array('System_Daemon', '_ilog'), $arguments);
         return false;
@@ -852,7 +873,8 @@ class System_Daemon
      *
      * @return boolean
      */
-    public static function notice() {
+    public static function notice()
+    {
         $arguments = func_get_args(); array_unshift($arguments, __FUNCTION__);
         call_user_func_array(array('System_Daemon', '_ilog'), $arguments);
         return true;
@@ -863,7 +885,8 @@ class System_Daemon
      *
      * @return boolean
      */
-    public static function info() {
+    public static function info()
+    {
         $arguments = func_get_args(); array_unshift($arguments, __FUNCTION__);
         call_user_func_array(array('System_Daemon', '_ilog'), $arguments);
         return true;
@@ -874,7 +897,8 @@ class System_Daemon
      *
      * @return boolean
      */
-    public static function debug() {
+    public static function debug()
+    {
         $arguments = func_get_args(); array_unshift($arguments, __FUNCTION__);
         call_user_func_array(array('System_Daemon', '_ilog'), $arguments);
         return true;
@@ -884,12 +908,13 @@ class System_Daemon
      * Internal logging function. Bridge between shortcuts like:
      * err(), warning(), info() and the actual log() function
      *
-     * @param <type> $level
-     * @param <type> $str
+     * @param mixed $level As string or constant
+     * @param mixed $str   Message
      *
      * @return boolean
      */
-    protected static function _ilog($level, $str) {
+    protected static function _ilog($level, $str)
+    {
         $arguments = func_get_args();
         $level     = $arguments[0];
         $format    = $arguments[1];
@@ -914,8 +939,11 @@ class System_Daemon
         }
 
         self::_optionObjSetup();
-        $str = preg_replace_callback('/\{([^\{\}]+)\}/is',
-            array(self::$_optObj, 'replaceVars'), $str);
+        $str = preg_replace_callback(
+            '/\{([^\{\}]+)\}/is',
+            array(self::$_optObj, 'replaceVars'), 
+            $str
+        );
 
 
         $history  = 2;
@@ -952,11 +980,11 @@ class System_Daemon
      * @see logLocation
      */
     static public function log($level, $str, $file = false, $class = false, 
-        $function = false, $line = false)
-    {
+    $function = false, $line = false) {
         // If verbosity level is not matched, don't do anything        
         if (null === self::opt('logVerbosity')
-            || false === self::opt('logVerbosity')) {
+            || false === self::opt('logVerbosity')
+        ) {
             // Somebody is calling log before launching daemon..
             // fair enough, but we have to init some log options
             self::_optionsInit(true);
@@ -1032,15 +1060,20 @@ class System_Daemon
         
         // Not writable even after touch? Allowed to echo again!!
         if (!is_writable(self::opt('logLocation'))
-            && $non_debug && !$log_echoed) { 
+            && $non_debug && !$log_echoed
+        ) {
             echo $log_line . "\n";
             $log_echoed    = true;
             $log_succeeded = false;
         } 
         
         // Append to logfile
-        if (!file_put_contents(self::opt('logLocation'),
-            $log_line . "\n", FILE_APPEND)) {
+        $f = file_put_contents(
+            self::opt('logLocation'),
+            $log_line . "\n",
+            FILE_APPEND
+        );
+        if (!$f) {
             $log_succeeded = false; 
         }
         
@@ -1048,7 +1081,7 @@ class System_Daemon
         if ($level < self::LOG_ERR) {
             // An emergency logentry is reason for the deamon to 
             // die immediately 
-            if ($level == self::LOG_EMERG) {
+            if ($level === self::LOG_EMERG) {
                 self::_die();
             }
         }
@@ -1078,8 +1111,9 @@ class System_Daemon
         // Get daemon properties
         $options = self::getOptions();
 
-        // Try to write init.d 
-        if (false === ($res = self::$_osObj->writeAutoRun($options, $overwrite))) {
+        // Try to write init.d
+        $res = self::$_osObj->writeAutoRun($options, $overwrite);
+        if (false === $res) {
             if (is_array(self::$_osObj->errors)) {
                 foreach (self::$_osObj->errors as $error) {
                     self::notice($error);
@@ -1183,8 +1217,10 @@ class System_Daemon
         if (!posix_kill(intval($pid), 0)) {
             // Not responding so unlink pidfile
             @unlink(self::opt('appPidLocation'));
-            return self::warning('Orphaned pidfile found and removed: ' .
-                '{appPidLocation}. Previous process crashed?');
+            return self::warning(
+                'Orphaned pidfile found and removed: ' .
+                '{appPidLocation}. Previous process crashed?'
+            );
         }
 
         return true;
@@ -1218,26 +1254,27 @@ class System_Daemon
 
         // Additional PID succeeded check
         if (!is_numeric(self::$_processId) || self::$_processId < 1) {
-            return self::emerg('Did not have a valid pid: %s', self::$_processId);
+            return self::emerg('No valid pid: %s', self::$_processId);
         }
 
         // Change umask
         @umask(0);
 
         // Write pidfile
-        if (false === self::_writePid(self::opt('appPidLocation'),
-                self::$_processId)) {
+        $p = self::_writePid(self::opt('appPidLocation'), self::$_processId);
+        if (false === $p) {
             return self::emerg('Unable to write pid file {appPidLocation}');
         }
 
         // Change identity. maybe
-        if (false === self::_changeIdentity(self::opt('appRunAsGID'),
-                self::opt('appRunAsUID'))) {
-
+        $c = self::_changeIdentity(
+            self::opt('appRunAsGID'),
+            self::opt('appRunAsUID')
+        );
+        if (false === $c) {
+            self::crit('Unable to change identity');
             if (self::opt('appDieOnIdentityCrisis')) {
-                self::emerg('Unable to change identity');
-            } else {
-                self::crit('Unable to change identity');
+                self::emerg('Cannot continue after this');
             }
         }
 
@@ -1250,8 +1287,10 @@ class System_Daemon
         // setSigHandler()
         foreach (self::$_sigHandlers as $signal=>$handler) {
             if (!pcntl_signal($signal, $handler)) {
-                return self::emerg('Unable to reroute signal handler: %s',
-                        $signal);
+                return self::emerg(
+                    'Unable to reroute signal handler: %s',
+                    $signal
+                );
             }
         }
 
@@ -1272,16 +1311,19 @@ class System_Daemon
     static protected function _isValidPidLocation($pidFilePath, $log = true)
     {
         if (empty($pidFilePath)) {
-            return self::err('{appName} daemon encountered an empty appPidLocation');
+            return self::err(
+                '{appName} daemon encountered an empty appPidLocation'
+            );
         }
 
         $pidDirPath = dirname($pidFilePath);
-
-        $parts = explode('/', $pidDirPath);
+        $parts      = explode('/', $pidDirPath);
         if (count($parts) <= 3 || end($parts) != self::opt('appName')) {
             // like: /var/run/x.pid
-            return self::err('Since version 0.6.3, the pidfile needs to be ' .
-                'in it\'s own subdirectory like: %s/{appName}/{appName}.pid');
+            return self::err(
+                'Since version 0.6.3, the pidfile needs to be ' .
+                'in it\'s own subdirectory like: %s/{appName}/{appName}.pid'
+            );
         }
         
         return true;
@@ -1363,15 +1405,21 @@ class System_Daemon
             // Change File GID
             $doGid = (fileowner($filePath) != $gid ? $gid : false);
             if (false !== $doGid && !@chgrp($filePath, $gid)) {
-                return self::err('Unable to change group of file %s to %s',
-                    $filePath, $gid);
+                return self::err(
+                    'Unable to change group of file %s to %s',
+                    $filePath, 
+                    $gid
+                );
             }
 
             // Change File UID
             $doUid = (fileowner($filePath) != $uid ? $uid : false);
             if (false !== $doUid && !@chown($filePath, $uid)) {
-                return self::err('Unable to change user of file %s to %s',
-                        $filePath, $uid);
+                return self::err(
+                    'Unable to change user of file %s to %s',
+                    $filePath,
+                    $uid
+                );
             }
         }
         
@@ -1399,7 +1447,7 @@ class System_Daemon
     {
         self::debug('forking {appName} daemon');
         $pid = pcntl_fork();
-        if ($pid == -1) {
+        if ($pid === -1) {
             // Error
             return self::warning('Process could not be forked');
         } else if ($pid) {
@@ -1423,7 +1471,7 @@ class System_Daemon
      */
     static protected function _whatIAm()
     {
-        return (self::isInBackground()?'child':'parent');
+        return (self::isInBackground() ? 'child' : 'parent');
     }
 
     /**
@@ -1446,16 +1494,17 @@ class System_Daemon
         // privileges
         // || !file_exists(self::opt('appPidLocation'))
         if (!self::isInBackground()) {
-            self::info('Process was not daemonized yet, ' .
-                'just halting current process');
+            self::info(
+                'Process was not daemonized yet, ' .
+                'just halting current process'
+            );
             die();
         }
 
         $pid = file_get_contents(
-            System_Daemon::getOption('appPidLocation') );
+            System_Daemon::getOption('appPidLocation')
+        );
         @unlink(self::opt('appPidLocation'));
-
-
 
         if ($restart) {
             // So instead we should:

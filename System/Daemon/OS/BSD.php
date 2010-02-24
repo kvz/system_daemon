@@ -42,8 +42,8 @@ class System_Daemon_OS_BSD extends System_Daemon_OS
      */
     public function isInstalled() 
     {
-        if (!stristr(PHP_OS, "Darwin") && 
-            !stristr(PHP_OS, "BSD")) {
+        if (!stristr(PHP_OS, "Darwin")
+            && !stristr(PHP_OS, "BSD")) {
             return false;
         }
         
