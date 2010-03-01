@@ -1235,7 +1235,13 @@ class System_Daemon
      */
     static protected function _summon()
     {
-        self::notice('Starting {appName} daemon, output in: {logLocation}');
+        if (self::opt('usePEARLogInstance')) {
+            $logLoc = '(PEAR Log)';
+        } else {
+            $logLoc = self::opt('logLocation');
+        }
+
+        self::notice('Starting {appName} daemon, output in: %s', $logLoc);
         
         // Allowed?
         if (self::isRunning()) {
