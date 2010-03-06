@@ -454,10 +454,10 @@ class System_Daemon
 
         if (is_file(dirname(__FILE__).'/'.$path) === true) {
             // Check standard file locations based on class name.
-            include dirname(__FILE__).'/'.$path;
+            include(dirname(__FILE__).'/'.$path);
         } else {
             // Everything else.
-            include $path;
+            @include($path);
         }
     }
     
