@@ -1410,7 +1410,7 @@ class System_Daemon
         foreach ($chownFiles as $filePath) {
             // Change File GID
             $doGid = (fileowner($filePath) != $gid ? $gid : false);
-            if (false !== $doGid && !@chgrp($filePath, $gid)) {
+            if (false !== $doGid && !@chgrp($filePath, intval($gid))) {
                 return self::err(
                     'Unable to change group of file %s to %s',
                     $filePath, 
@@ -1420,7 +1420,7 @@ class System_Daemon
 
             // Change File UID
             $doUid = (fileowner($filePath) != $uid ? $uid : false);
-            if (false !== $doUid && !@chown($filePath, $uid)) {
+            if (false !== $doUid && !@chown($filePath, intval($uid))) {
                 return self::err(
                     'Unable to change user of file %s to %s',
                     $filePath,
