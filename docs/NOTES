@@ -1,11 +1,5 @@
-System_Daemon 0.10.0-beta 2009-02-24 Kevin van Zonneveld <kevin@vanzonneveld.net>
- * No longer throws Exceptions for log events
- * Reduced code verbosity
- * Smarter logging methods like: System_Daemon::err('Error %s caused by %s', $msg, $offender);
- * Set defaults for all options, even if they are not required
- * More consistent logging messages by System_Daemon itself
- * Implemented all POSIX SIGNALS
- * Improved PHP originated error handling
- * Fixed a number of bugs
- * More robust _die handling
- * Better feedback on identity change
+System_Daemon 0.10.2-beta 2919-03-15 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Improvements to signal handling & additional example of how to use them. Thanks to Austin Bis & Gareth McCumskey. Fixes #17224
+ * Be even more gentile while addressing signals.
+ * Use intval around uids & gids. Fixes #17216
+ * Fixed bug that results in warnings as autoload is used before another autload

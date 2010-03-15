@@ -1,3 +1,11 @@
+ * Be even more gentile while addressing signals. Could fix #17225
+ * Fixes to signal handling & additional example of how to use them. Thanks to Austin Bis & Gareth McCumskey. Fixes #17224
+ * Updated submodule vendors/eggshell
+ * Use intval around uids & gids. Fixes #17216
+ * Fixed bug that results in warnings as autoload is used before another autload
+ * Communicate when PEAR Log object is used. Fixes #17168
+ * Releasing v0.10.1-beta
+ * Preparing to release v0.10.1-beta
  * Fixed bug in package releaser. Versions couldn't be ordered correctly resulting in an old NOTES doc
  * Releasing v0.10.0-beta
  * Preparing to release v0.10.0-beta
