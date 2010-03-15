@@ -488,12 +488,14 @@ class System_Daemon
         }
         // Same goes for POSIX signals. Not all Constants are available on
         // all platforms.
-        foreach (self::$_sigHandlers as $phpConstant => $sdLevel) {
-            if (!is_numeric($phpConstant)) {
-                if (defined($phpConstant)) {
-                    self::$_sigHandlers[constant($phpConstant)] = $sdLevel;
+        foreach (self::$_sigHandlers as $signal => $handler) {
+            if (!$signal) {
+                unset(self::$_sigHandlers[$signal]);
+            } else if (is_string($signal)) {
+                if (defined($signal)) {
+                    self::$_sigHandlers[constant($signal)] = $handler;
                 }
-                unset(self::$_sigHandlers[$phpConstant]);
+                unset(self::$_sigHandlers[$signal]);
             }
         }
 
