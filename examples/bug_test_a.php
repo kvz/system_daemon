@@ -10,8 +10,7 @@
  * @author    Kevin <kevin@vanzonneveld.net>
  * @copyright 2009 Kevin van Zonneveld
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
- * @version   SVN: Release: $Id$
- * @link      http://trac.plutonia.nl/projects/system_daemon
+ * @link      http://github.com/kvz/system_daemon
  */
 
 /**
