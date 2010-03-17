@@ -10,8 +10,7 @@
  * @author    Kevin <kevin@vanzonneveld.net>
  * @copyright 2008 Kevin van Zonneveld
  * @license   http://www.opensource.org/licenses/bsd-license.php
- * @version   SVN: Release: $Id$
- * @link      http://trac.plutonia.nl/projects/system_daemon
+ * @link      http://github.com/kvz/system_daemon
  */
 
 /**
@@ -34,24 +33,24 @@
 
 // Allowed arguments & their defaults 
 $runmode = array(
-    "no-daemon" => false, 
-    "help" => false,
-    "write-initd" => false
+    'no-daemon' => false,
+    'help' => false,
+    'write-initd' => false,
 );
 
 // Scan command line attributes for allowed arguments
 foreach ($argv as $k=>$arg) {
-    if (substr($arg, 0, 2) == "--" && isset($runmode[substr($arg, 2)])) {
+    if (substr($arg, 0, 2) == '--' && isset($runmode[substr($arg, 2)])) {
         $runmode[substr($arg, 2)] = true;
     }
 }
 
 // Help mode. Shows allowed argumentents and quit directly
-if ($runmode["help"] == true) {
-    echo "Usage: ".$argv[0]." [runmode]\n";
-    echo "Available runmodes:\n"; 
+if ($runmode['help'] == true) {
+    echo 'Usage: '.$argv[0].' [runmode]\n';
+    echo 'Available runmodes:\n';
     foreach ($runmode as $runmod=>$val) {
-        echo " --".$runmod."\n";
+        echo ' --'.$runmod.'\n';
     }
     die();
 }
@@ -62,31 +61,26 @@ ini_set('include_path', ini_get('include_path').':..');
 
 // Include Class
 error_reporting(E_ALL);
-require_once "System/Daemon.php";
+require_once 'System/Daemon.php';
 
 // Setup
 $options = array(
-    "appName" => "logparser",
-    "appDir" => dirname(__FILE__),
-    "appDescription" => "Parses vsftpd logfiles and stores them in MySQL",
-    "authorName" => "Kevin van Zonneveld",
-    "authorEmail" => "kevin@vanzonneveld.net",
-    "sysMaxExecutionTime" => "0",
-    "sysMaxInputTime" => "0",
-    "sysMemoryLimit" => "1024M",
-    "appRunAsGID" => 1000,
-    "appRunAsUID" => 1000,
+    'appName' => 'logparser',
+    'appDir' => dirname(__FILE__),
+    'appDescription' => 'Parses vsftpd logfiles and stores them in MySQL',
+    'authorName' => 'Kevin van Zonneveld',
+    'authorEmail' => 'kevin@vanzonneveld.net',
+    'sysMaxExecutionTime' => '0',
+    'sysMaxInputTime' => '0',
+    'sysMemoryLimit' => '1024M',
+    'appRunAsGID' => 1000,
+    'appRunAsUID' => 1000,
 );
 
 System_Daemon::setOptions($options);
 
-// Overrule the signal handler with any function
-System_Daemon::setSigHandler(SIGCONT, array("System_Daemon",
-    "defaultSigHandler"));
-
-
 // This program can also be run in the forground with runmode --no-daemon
-if (!$runmode["no-daemon"]) {
+if (!$runmode['no-daemon']) {
     // Spawn Daemon 
     System_Daemon::start();
 }
@@ -94,16 +88,16 @@ if (!$runmode["no-daemon"]) {
 // With the runmode --write-initd, this program can automatically write a 
 // system startup file called: 'init.d'
 // This will make sure your daemon will be started on reboot 
-if (!$runmode["write-initd"]) {
-    System_Daemon::log(System_Daemon::LOG_INFO, "not writing ".
-        "an init.d script this time");
+if (!$runmode['write-initd']) {
+    System_Daemon::info('not writing an init.d script this time');
 } else {
     if (($initd_location = System_Daemon::writeAutoRun()) === false) {
-        System_Daemon::log(System_Daemon::LOG_NOTICE, "unable to write ".
-            "init.d script");
+        System_Daemon::notice('unable to write init.d script');
     } else {
-        System_Daemon::log(System_Daemon::LOG_INFO, "sucessfully written ".
-            "startup script: ".$initd_location);
+        System_Daemon::info(
+            'sucessfully written startup script: %s',
+            $initd_location
+        );
     }
 }
 
@@ -123,16 +117,17 @@ $cnt = 1;
 // - That we're not executing more than 3 runs 
 while (!System_Daemon::isDying() && $runningOkay && $cnt <=3) {
     // What mode are we in?
-    $mode = "'".(System_Daemon::isInBackground() ? "" : "non-" ).
-        "daemon' mode";
+    $mode = '"'.(System_Daemon::isInBackground() ? '' : 'non-' ).
+        'daemon" mode';
     
     // Log something using the Daemon class's logging facility
     // Depending on runmode it will either end up:
     //  - In the /var/log/logparser.log
     //  - On screen (in case we're not a daemon yet)  
-    System_Daemon::log(System_Daemon::LOG_INFO,
-        System_Daemon::getOption("appName").
-        " running in ".$mode." ".$cnt."/3");
+    System_Daemon::info('{appName} running in %s %s/3',
+        $mode,
+        $cnt
+    );
     
     // In the actuall logparser program, You could replace 'true'
     // With e.g. a  parseLog('vsftpd') function, and have it return
@@ -147,9 +142,8 @@ while (!System_Daemon::isDying() && $runningOkay && $cnt <=3) {
     // Level 4 would be fatal and shuts down the daemon immediately,
     // which in this case is handled by the while condition.
     if (!$runningOkay) {
-        System_Daemon::log(System_Daemon::LOG_ERR, "parseLog() ".
-            "produced an error, ".
-            "so this will be my last run");
+        System_Daemon::err('parseLog() produced an error, '.
+            'so this will be my last run');
     }
     
     // Relax the system by sleeping for a little bit

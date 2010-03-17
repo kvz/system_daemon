@@ -10,8 +10,7 @@
  * @author    Kevin <kevin@vanzonneveld.net>
  * @copyright 2008 Kevin van Zonneveld
  * @license   http://www.opensource.org/licenses/bsd-license.php
- * @version   SVN: Release: $Id: logparser.php 183 2009-02-17 14:02:53Z kevin $
- * @link      http://trac.plutonia.nl/projects/system_daemon
+ * @link      http://github.com/kvz/system_daemon
  */
 
 /**

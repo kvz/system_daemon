@@ -354,7 +354,7 @@ class System_Daemon
      * or else: removed from this mapping at start().
      *
      * 'kill -l' gives you a list of signals available on your UNIX.
-     * Eg. Redhat Linux:
+     * Eg. Ubuntu:
      *
      *  1) SIGHUP      2) SIGINT      3) SIGQUIT      4) SIGILL
      *  5) SIGTRAP      6) SIGABRT      7) SIGBUS      8) SIGFPE
@@ -488,12 +488,14 @@ class System_Daemon
         }
         // Same goes for POSIX signals. Not all Constants are available on
         // all platforms.
-        foreach (self::$_sigHandlers as $phpConstant => $sdLevel) {
-            if (!is_numeric($phpConstant)) {
-                if (defined($phpConstant)) {
-                    self::$_sigHandlers[constant($phpConstant)] = $sdLevel;
+        foreach (self::$_sigHandlers as $signal => $handler) {
+            if (!$signal) {
+                unset(self::$_sigHandlers[$signal]);
+            } else if (is_string($signal)) {
+                if (defined($signal)) {
+                    self::$_sigHandlers[constant($signal)] = $handler;
                 }
-                unset(self::$_sigHandlers[$phpConstant]);
+                unset(self::$_sigHandlers[$signal]);
             }
         }
 
@@ -637,7 +639,7 @@ class System_Daemon
             // The signal should be defined already
             self::notice(
                 'Can only overrule on of these signal handlers: %s',
-                join(', ', self::$_sigHandlers)
+                join(', ', array_keys(self::$_sigHandlers))
             );
             return false;
         }
@@ -1143,7 +1145,7 @@ class System_Daemon
      * @see setSigHandler()
      * @see $_sigHandlers
      */
-    static public function defaultSigHandler( $signo )
+    static public function defaultSigHandler($signo)
     {
         // Must be public or else will throw a 
         // fatal error: Call to protected method
@@ -1291,8 +1293,15 @@ class System_Daemon
         // Setup signal handlers
         // Handlers for individual signals can be overrulled with
         // setSigHandler()
-        foreach (self::$_sigHandlers as $signal=>$handler) {
-            if (!pcntl_signal($signal, $handler)) {
+        foreach (self::$_sigHandlers as $signal => $handler) {
+            if (!is_callable($handler) && $handler != SIG_IGN && $handler != SIG_DFL) {
+                return self::emerg(
+                    'You want to assign signal %s to handler %s but ' . 
+                    'it\'s not callable',
+                    $signal,
+                    $handler
+                );
+            } else if (!pcntl_signal($signal, $handler)) {
                 return self::emerg(
                     'Unable to reroute signal handler: %s',
                     $signal
@@ -1410,7 +1419,7 @@ class System_Daemon
         foreach ($chownFiles as $filePath) {
             // Change File GID
             $doGid = (fileowner($filePath) != $gid ? $gid : false);
-            if (false !== $doGid && !@chgrp($filePath, $gid)) {
+            if (false !== $doGid && !@chgrp($filePath, intval($gid))) {
                 return self::err(
                     'Unable to change group of file %s to %s',
                     $filePath, 
@@ -1420,7 +1429,7 @@ class System_Daemon
 
             // Change File UID
             $doUid = (fileowner($filePath) != $uid ? $uid : false);
-            if (false !== $doUid && !@chown($filePath, $uid)) {
+            if (false !== $doUid && !@chown($filePath, intval($uid))) {
                 return self::err(
                     'Unable to change user of file %s to %s',
                     $filePath,
