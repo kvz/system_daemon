@@ -489,11 +489,9 @@ class System_Daemon
         // Same goes for POSIX signals. Not all Constants are available on
         // all platforms.
         foreach (self::$_sigHandlers as $signal => $handler) {
-            if (!$signal) {
-                unset(self::$_sigHandlers[$signal]);
-            } else if (is_string($signal)) {
-                if (defined($signal)) {
-                    self::$_sigHandlers[constant($signal)] = $handler;
+            if (is_string($signal) || !$signal) {
+                if (defined($signal) && ($const = constant($signal))) {
+                    self::$_sigHandlers[$const] = $handler;
                 }
                 unset(self::$_sigHandlers[$signal]);
             }
