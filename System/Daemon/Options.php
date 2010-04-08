@@ -80,6 +80,11 @@ class System_Daemon_Options
      */
     public function getOption($name)
     {
+        if (!$this->isInitialized()) {
+            $this->init(true);
+        }
+
+
         if (!isset($this->_options[$name])) {
             return null;
         }
