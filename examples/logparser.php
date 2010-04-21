@@ -47,10 +47,10 @@ foreach ($argv as $k=>$arg) {
 
 // Help mode. Shows allowed argumentents and quit directly
 if ($runmode['help'] == true) {
-    echo 'Usage: '.$argv[0].' [runmode]\n';
-    echo 'Available runmodes:\n';
+    echo 'Usage: '.$argv[0].' [runmode]' . "\n";
+    echo 'Available runmodes:' . "\n";
     foreach ($runmode as $runmod=>$val) {
-        echo ' --'.$runmod.'\n';
+        echo ' --'.$runmod . "\n";
     }
     die();
 }
