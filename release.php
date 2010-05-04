@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-error_reporting(E_ALL);
+error_reporting(E_ALL ^ E_DEPRECATED);
 /**
  * print_r shortcut
  */
