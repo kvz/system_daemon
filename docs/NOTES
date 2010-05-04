@@ -1,5 +1,4 @@
-System_Daemon 0.10.2-beta 2919-03-15 Kevin van Zonneveld <kevin@vanzonneveld.net>
- * Improvements to signal handling & additional example of how to use them. Thanks to Austin Bis & Gareth McCumskey. Fixes #17224
- * Be even more gentile while addressing signals.
- * Use intval around uids & gids. Fixes #17216
- * Fixed bug that results in warnings as autoload is used before another autload
+System_Daemon 0.10.3-beta 2010-05-04 Kevin van Zonneveld <kevin@vanzonneveld.net>
+ * Increased PHP5.3 Compatibility
+ * Initialize options when needed. Fixes #17296
+ * Newlines were accidentally single quoted (thanks Chris Sternal-Johnson)

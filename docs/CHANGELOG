@@ -1,7 +1,15 @@
+ * Increased PHP5.3 Compatibility
+ * Initialize options when needed. Fixes #17296
+ * Newlines were accidentally single quoted (thanks Chris Sternal-Johnson)
+ * Be even more gentile while setting sighandlers
+ * Updated submodule vendors/eggshell
+ * Releasing v0.10.2-beta
+ * Preparing to release v0.10.2-beta
  * Be even more gentile while addressing signals. Could fix #17225
  * Fixes to signal handling & additional example of how to use them. Thanks to Austin Bis & Gareth McCumskey. Fixes #17224
  * Updated submodule vendors/eggshell
  * Use intval around uids & gids. Fixes #17216
+ * Updated submodule vendors/eggshell
  * Fixed bug that results in warnings as autoload is used before another autload
  * Communicate when PEAR Log object is used. Fixes #17168
  * Releasing v0.10.1-beta
