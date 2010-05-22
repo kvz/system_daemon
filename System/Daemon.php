@@ -775,7 +775,7 @@ class System_Daemon
      *
      * @return string
      */
-    public function abbr($str, $cutAt = 30, $suffix = '...')
+    static public function abbr($str, $cutAt = 30, $suffix = '...')
     {
         if (strlen($str) <= 30) {
             return $str;
@@ -794,7 +794,7 @@ class System_Daemon
      *
      * @return string
      */
-    public function semantify($arguments)
+    static public function semantify($arguments)
     {
         if (is_object($arguments)) {
             return get_class($arguments);
