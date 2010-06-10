@@ -1416,7 +1416,7 @@ class System_Daemon
         // This way we can modify the files even after we're not root anymore
         foreach ($chownFiles as $filePath) {
             // Change File GID
-            $doGid = (fileowner($filePath) != $gid ? $gid : false);
+            $doGid = (filegroup($filePath) != $gid ? $gid : false);
             if (false !== $doGid && !@chgrp($filePath, intval($gid))) {
                 return self::err(
                     'Unable to change group of file %s to %s',
