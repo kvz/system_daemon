@@ -1434,6 +1434,11 @@ class System_Daemon
                     $uid
                 );
             }
+
+			// Export correct homedir
+			if (($info = posix_getpwuid($uid)) && is_dir($info['dir'])) {
+				system('export HOME="' . $info['dir'] . '"');
+			}
         }
         
         // Change Process GID
