@@ -591,7 +591,7 @@ class System_Daemon
     {
         self::_optionObjSetup();
         if ($sleepSeconds !== 0) {
-            sleep($sleepSeconds);
+            usleep($sleepSeconds*1000000);
         }
 
         clearstatcache();
