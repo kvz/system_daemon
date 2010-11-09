@@ -555,6 +555,11 @@ class System_Daemon
             }
         }
 
+        // Enable Garbage Collector (PHP >= 5.3)
+        if (function_exists('gc_enable')) {
+            gc_enable();
+        }
+
         // Initialize & check variables
         if (false === self::_optionsInit(false)) {
             if (is_object(self::$_optObj) && is_array(self::$_optObj->errors)) {
@@ -595,6 +600,12 @@ class System_Daemon
         }
 
         clearstatcache();
+
+        // Garbage Collection (PHP >= 5.3)
+        if (function_exists('gc_collect_cycles')) {
+            gc_collect_cycles();
+        }
+
         return true;
     }
 
