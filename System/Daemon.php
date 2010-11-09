@@ -952,7 +952,6 @@ class System_Daemon
         $function = (string)@$dbg_bt[($history-1)]['function'];
         $file     = (string)@$dbg_bt[$history]['file'];
         $line     = (string)@$dbg_bt[$history]['line'];
-
         return self::log($level, $str, $file, $class, $function, $line);
     }
 
@@ -989,7 +988,6 @@ class System_Daemon
             // fair enough, but we have to init some log options
             self::_optionsInit(true);
         }
-
         if (!self::opt('appName')) {
             // Not logging for anything without a name
             return false;
@@ -1203,12 +1201,14 @@ class System_Daemon
      */
     static public function isRunning()
     {
-        if (!file_exists(self::opt('appPidLocation'))) {
+        $appPidLocation = self::opt('appPidLocation');
+
+        if (!file_exists($appPidLocation)) {
+            unset($appPidLocation);
             return false;
         }
 
-        $pid = @file_get_contents(self::opt('appPidLocation'));
-
+        $pid = self::fileread($appPidLocation);
         if (!$pid) {
             return false;
         }
@@ -1216,7 +1216,7 @@ class System_Daemon
         // Ping app
         if (!posix_kill(intval($pid), 0)) {
             // Not responding so unlink pidfile
-            @unlink(self::opt('appPidLocation'));
+            @unlink($appPidLocation);
             return self::warning(
                 'Orphaned pidfile found and removed: ' .
                 '{appPidLocation}. Previous process crashed?'
@@ -1375,6 +1375,23 @@ class System_Daemon
         }
 
         return true;
+    }
+
+    /**
+     * Read a file. file_get_contents() leaks memory! (#18031 for more info)
+     *
+     * @param string $filepath
+     *
+     * @return string
+     */
+    static public function fileread ($filepath) {
+        $f = fopen($filepath, 'r');
+        if (!$f) {
+            return false;
+        }
+        $data = fread($f, filesize($filepath));
+        fclose($f);
+        return $data;
     }
 
     /**
