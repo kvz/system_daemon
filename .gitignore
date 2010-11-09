@@ -4,3 +4,4 @@ gitup.dat
 catalog.xml
 package.xml
 .gitup.dat
+*.sw[a-z]
