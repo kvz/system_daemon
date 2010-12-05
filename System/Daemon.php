@@ -137,20 +137,20 @@ class System_Daemon
      * @var array
      */
     static protected $_logPhpMapping = array(
-        E_ERROR => self::LOG_ERR,
-        E_WARNING => self::LOG_WARNING,
-        E_PARSE => self::LOG_EMERG,
-        E_NOTICE => self::LOG_DEBUG,
-        E_CORE_ERROR => self::LOG_EMERG,
-        E_CORE_WARNING => self::LOG_WARNING,
-        E_COMPILE_ERROR => self::LOG_EMERG,
-        E_COMPILE_WARNING => self::LOG_WARNING,
-        E_USER_ERROR => self::LOG_ERR,
-        E_USER_WARNING => self::LOG_WARNING,
-        E_USER_NOTICE => self::LOG_DEBUG,
-        'E_RECOVERABLE_ERROR' => self::LOG_WARNING,
-        'E_DEPRECATED' => self::LOG_NOTICE,
-        'E_USER_DEPRECATED' => self::LOG_NOTICE,
+        E_ERROR => array(self::LOG_ERR, 'Error'),
+        E_WARNING => array(self::LOG_WARNING, 'Warning'),
+        E_PARSE => array(self::LOG_EMERG, 'Parse'),
+        E_NOTICE => array(self::LOG_DEBUG, 'Notice'),
+        E_CORE_ERROR => array(self::LOG_EMERG, 'Core Error'),
+        E_CORE_WARNING => array(self::LOG_WARNING, 'Core Warning'),
+        E_COMPILE_ERROR => array(self::LOG_EMERG, 'Compile Error'),
+        E_COMPILE_WARNING => array(self::LOG_WARNING, 'Compile Warning'),
+        E_USER_ERROR => array(self::LOG_ERR, 'User Error'),
+        E_USER_WARNING => array(self::LOG_WARNING, 'User Warning'),
+        E_USER_NOTICE => array(self::LOG_DEBUG, 'User Notice'),
+        'E_RECOVERABLE_ERROR' => array(self::LOG_WARNING, 'Recoverable Error'),
+        'E_DEPRECATED' => array(self::LOG_NOTICE, 'Deprecated'),
+        'E_USER_DEPRECATED' => array(self::LOG_NOTICE, 'User Deprecated'),
     );
 
     /**
@@ -478,10 +478,10 @@ class System_Daemon
         // all PHP versions.
         // They will be in string representation and have to be
         // converted & unset
-        foreach (self::$_logPhpMapping as $phpConstant => $sdLevel) {
+        foreach (self::$_logPhpMapping as $phpConstant => $props) {
             if (!is_numeric($phpConstant)) {
                 if (defined($phpConstant)) {
-                    self::$_logPhpMapping[constant($phpConstant)] = $sdLevel;
+                    self::$_logPhpMapping[constant($phpConstant)] = $props;
                 }
                 unset(self::$_logPhpMapping[$phpConstant]);
             }
@@ -752,25 +752,25 @@ class System_Daemon
      *
      * @return boolean
      */
-    static public function phpErrors($errno, $errstr, $errfile, $errline)
+    static public function phpErrors ($errno, $errstr, $errfile, $errline)
     {
-        // Ignore suppressed errors
+        // Ignore suppressed errors (prefixed by '@')
         if (error_reporting() == 0) {
             return;
         }
 
         // Map PHP error level to System_Daemon log level
-        if (empty(self::$_logPhpMapping[$errno])) {
+        if (!isset(self::$_logPhpMapping[$errno][0])) {
             self::warning('Unknown PHP errorno: %s', $errno);
-            $lvl = self::LOG_ERR;
+            $phpLvl = self::LOG_ERR;
         } else {
-            $lvl = self::$_logPhpMapping[$errno];
+            list($logLvl, $phpLvl) = self::$_logPhpMapping[$errno];
         }
 
         // Log it
         // No shortcuts this time!
         self::log(
-            $lvl, '[PHP Error] '.$errstr, $errfile, __CLASS__,
+            $logLvl, '[PHP ' . $phpLvl . '] '.$errstr, $errfile, __CLASS__,
             __FUNCTION__, $errline
         );
 
@@ -989,7 +989,7 @@ class System_Daemon
      * @see _logLevels
      * @see logLocation
      */
-    static public function log($level, $str, $file = false, $class = false,
+    static public function log ($level, $str, $file = false, $class = false,
     $function = false, $line = false) {
         // If verbosity level is not matched, don't do anything
         if (null === self::opt('logVerbosity')
@@ -1027,8 +1027,8 @@ class System_Daemon
 
         // Determine what process the log is originating from and forge a logline
         //$str_ident = '@'.substr(self::_whatIAm(), 0, 1).'-'.posix_getpid();
-        $str_date  = '['.date('M d H:i:s').']';
-        $str_level = str_pad(self::$_logLevels[$level].'', 8, ' ', STR_PAD_LEFT);
+        $str_date  = '[' . date('M d H:i:s') . ']';
+        $str_level = str_pad(self::$_logLevels[$level] . '', 8, ' ', STR_PAD_LEFT);
         $log_line  = $str_date.' '.$str_level.': '.$str; // $str_ident
         if ($level < self::LOG_NOTICE) {
             if (self::opt('logFilePosition')) {

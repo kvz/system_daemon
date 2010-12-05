@@ -5,3 +5,4 @@ catalog.xml
 package.xml
 .gitup.dat
 *.sw[a-z]
+.DS_Store
