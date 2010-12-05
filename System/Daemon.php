@@ -1008,9 +1008,24 @@ class System_Daemon
             return true;
         }
 
+        // Make the tail of log massage.
+        $log_tail = '';
+        if ($level < self::LOG_NOTICE) {
+            if (self::opt('logFilePosition')) {
+                if (self::opt('logTrimAppDir')) {
+                    $file = substr($file, strlen(self::opt('appDir')));
+                }
+
+                $log_tail .= ' [f:'.$file.']';
+            }
+            if (self::opt('logLinePosition')) {
+                $log_tail .= ' [l:'.$line.']';
+            }
+        }
+
         // Make use of a PEAR_Log() instance
         if (self::opt('usePEARLogInstance') !== false) {
-            self::opt('usePEARLogInstance')->log($str, $level);
+            self::opt('usePEARLogInstance')->log($str . $log_tail, $level);
             return true;
         }
 
@@ -1029,23 +1044,11 @@ class System_Daemon
         //$str_ident = '@'.substr(self::_whatIAm(), 0, 1).'-'.posix_getpid();
         $str_date  = '[' . date('M d H:i:s') . ']';
         $str_level = str_pad(self::$_logLevels[$level] . '', 8, ' ', STR_PAD_LEFT);
-        $log_line  = $str_date.' '.$str_level.': '.$str; // $str_ident
-        if ($level < self::LOG_NOTICE) {
-            if (self::opt('logFilePosition')) {
-                if (self::opt('logTrimAppDir')) {
-                    $file = substr($file, strlen(self::opt('appDir')));
-                }
+        $log_line  = $str_date . ' ' . $str_level . ': ' . $str . $log_tail; // $str_ident
 
-                $log_line .= ' [f:'.$file.']';
-            }
-            if (self::opt('logLinePosition')) {
-                $log_line .= ' [l:'.$line.']';
-            }
-        }
-
-        $non_debug     = ($level < self::LOG_DEBUG);
+        $non_debug      = ($level < self::LOG_DEBUG);
         $log_succeeded = true;
-        $log_echoed    = false;
+        $log_echoed     = false;
 
         if (!self::isInBackground() && $non_debug && !$log_echoed) {
             // It's okay to echo if you're running as a foreground process.
