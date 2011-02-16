@@ -3,7 +3,7 @@
 
 /**
  * System_Daemon turns PHP-CLI scripts into daemons.
- * 
+ *
  * PHP version 5
  *
  * @category  System
@@ -19,7 +19,7 @@
 spl_autoload_register(array('System_Daemon', 'autoload'));
 
 /**
- * System_Daemon. Create daemons with practicle functions 
+ * System_Daemon. Create daemons with practicle functions
  * like System_Daemon::start()
  *
  * Requires PHP build with --enable-cli --with-pcntl.
@@ -34,55 +34,55 @@ spl_autoload_register(array('System_Daemon', 'autoload'));
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
  * @version   SVN: Release: $Id$
  * @link      http://trac.plutonia.nl/projects/system_daemon
- * 
+ *
  */
 class System_Daemon
 {
     // Make these corresponding with PEAR
     // Ensures compatibility while maintaining independency
-    
+
     /**
      * System is unusable (will throw a System_Daemon_Exception as well)
      */
     const LOG_EMERG = 0;
-    
+
     /**
      * Immediate action required (will throw a System_Daemon_Exception as well)
-     */ 
+     */
     const LOG_ALERT = 1;
-    
+
     /**
      * Critical conditions (will throw a System_Daemon_Exception as well)
      */
     const LOG_CRIT = 2;
-    
+
     /**
      * Error conditions
      */
     const LOG_ERR = 3;
-    
+
     /**
      * Warning conditions
      */
     const LOG_WARNING = 4;
-    
+
     /**
      * Normal but significant
      */
     const LOG_NOTICE = 5;
-    
+
     /**
      * Informational
      */
     const LOG_INFO = 6;
-    
+
     /**
      * Debug-level messages
      */
     const LOG_DEBUG = 7;
-    
-    
-    
+
+
+
     /**
      * The current process identifier
      *
@@ -96,14 +96,14 @@ class System_Daemon
      * @var boolean
      */
     static protected $_isDying = false;
-    
+
     /**
      * Whether the current process is a forked child
      *
      * @var boolean
      */
     static protected $_processIsChild = false;
-    
+
     /**
      * Whether SAFE_MODE is on or off. This is important for ini_set
      * behavior
@@ -111,7 +111,7 @@ class System_Daemon
      * @var boolean
      */
     static protected $_safeMode = false;
-    
+
     /**
      * Available log levels
      *
@@ -137,36 +137,36 @@ class System_Daemon
      * @var array
      */
     static protected $_logPhpMapping = array(
-        E_ERROR => self::LOG_ERR,
-        E_WARNING => self::LOG_WARNING,
-        E_PARSE => self::LOG_EMERG,
-        E_NOTICE => self::LOG_DEBUG,
-        E_CORE_ERROR => self::LOG_EMERG,
-        E_CORE_WARNING => self::LOG_WARNING,
-        E_COMPILE_ERROR => self::LOG_EMERG,
-        E_COMPILE_WARNING => self::LOG_WARNING,
-        E_USER_ERROR => self::LOG_ERR,
-        E_USER_WARNING => self::LOG_WARNING,
-        E_USER_NOTICE => self::LOG_DEBUG,
-        'E_RECOVERABLE_ERROR' => self::LOG_WARNING,
-        'E_DEPRECATED' => self::LOG_NOTICE,
-        'E_USER_DEPRECATED' => self::LOG_NOTICE,
+        E_ERROR => array(self::LOG_ERR, 'Error'),
+        E_WARNING => array(self::LOG_WARNING, 'Warning'),
+        E_PARSE => array(self::LOG_EMERG, 'Parse'),
+        E_NOTICE => array(self::LOG_DEBUG, 'Notice'),
+        E_CORE_ERROR => array(self::LOG_EMERG, 'Core Error'),
+        E_CORE_WARNING => array(self::LOG_WARNING, 'Core Warning'),
+        E_COMPILE_ERROR => array(self::LOG_EMERG, 'Compile Error'),
+        E_COMPILE_WARNING => array(self::LOG_WARNING, 'Compile Warning'),
+        E_USER_ERROR => array(self::LOG_ERR, 'User Error'),
+        E_USER_WARNING => array(self::LOG_WARNING, 'User Warning'),
+        E_USER_NOTICE => array(self::LOG_DEBUG, 'User Notice'),
+        'E_RECOVERABLE_ERROR' => array(self::LOG_WARNING, 'Recoverable Error'),
+        'E_DEPRECATED' => array(self::LOG_NOTICE, 'Deprecated'),
+        'E_USER_DEPRECATED' => array(self::LOG_NOTICE, 'User Deprecated'),
     );
 
     /**
      * Holds Option Object
-     * 
+     *
      * @var mixed object or boolean
      */
     static protected $_optObj = false;
-    
+
     /**
      * Holds OS Object
-     * 
+     *
      * @var mixed object or boolean
      */
     static protected $_osObj = false;
-    
+
     /**
      * Definitions for all Options
      *
@@ -189,7 +189,7 @@ class System_Daemon
             'detail' => 'This will replace System_Daemon\'s own logging facility',
             'required' => true,
         ),
-        
+
         'authorName' => array(
             'type' => 'string/0-50',
             'punch' => 'Author name',
@@ -231,7 +231,7 @@ class System_Daemon
             'detail' => 'Recommended to set this yourself; Required for init.d',
             'required' => true
         ),
-        
+
         'logVerbosity' => array(
             'type' => 'number/0-7',
             'default' => self::LOG_INFO,
@@ -305,7 +305,7 @@ class System_Daemon
              'default' => '- 99 0',
              'punch' => 'chkconfig parameters for init.d',
              'detail' => 'runlevel startpriority stoppriority',
-         ),        
+         ),
         'appDieOnIdentityCrisis' => array(
             'type' => 'boolean',
             'default' => true,
@@ -374,7 +374,7 @@ class System_Daemon
      * 63) SIGRTMAX-1  64) SIGRTMAX
      *
      * SIG_IGN, SIG_DFL, SIG_ERR are no real signals
-     * 
+     *
      * @var array
      * @see setSigHandler()
      */
@@ -417,23 +417,23 @@ class System_Daemon
         'SIG_SETMASK' => array('System_Daemon', 'defaultSigHandler'),
     );
 
-    
+
     /**
      * Making the class non-abstract with a protected constructor does a better
      * job of preventing instantiation than just marking the class as abstract.
-     * 
+     *
      * @see start()
      */
     protected function __construct()
     {
-        
-    }    
-    
-    
-    
+
+    }
+
+
+
     /**
      * Autoload static method for loading classes and interfaces.
-     * Code from the PHP_CodeSniffer package by Greg Sherwood and 
+     * Code from the PHP_CodeSniffer package by Greg Sherwood and
      * Marc McIntyre
      *
      * @param string $className The name of the class or interface.
@@ -460,11 +460,11 @@ class System_Daemon
             @include($path);
         }
     }
-    
-    
+
+
     /**
      * Spawn daemon process.
-     * 
+     *
      * @return boolean
      * @see iterate()
      * @see stop()
@@ -478,10 +478,10 @@ class System_Daemon
         // all PHP versions.
         // They will be in string representation and have to be
         // converted & unset
-        foreach (self::$_logPhpMapping as $phpConstant => $sdLevel) {
+        foreach (self::$_logPhpMapping as $phpConstant => $props) {
             if (!is_numeric($phpConstant)) {
                 if (defined($phpConstant)) {
-                    self::$_logPhpMapping[constant($phpConstant)] = $sdLevel;
+                    self::$_logPhpMapping[constant($phpConstant)] = $props;
                 }
                 unset(self::$_logPhpMapping[$phpConstant]);
             }
@@ -497,7 +497,7 @@ class System_Daemon
             }
         }
 
-        // Quickly initialize some defaults like usePEAR 
+        // Quickly initialize some defaults like usePEAR
         // by adding the $premature flag
         self::_optionsInit(true);
 
@@ -511,20 +511,20 @@ class System_Daemon
             if (false === class_exists('PEAR', true)) {
                 $msg = 'PEAR not found. Install PEAR or run with option: '.
                     'usePEAR = false';
-                trigger_error($msg, E_USER_ERROR);                
+                trigger_error($msg, E_USER_ERROR);
             }
-            
+
             if (false === class_exists('PEAR_Exception', true)) {
                 $msg = 'PEAR_Exception not found?!';
-                trigger_error($msg, E_USER_ERROR);                
+                trigger_error($msg, E_USER_ERROR);
             }
-                        
+
             if (false === class_exists('System_Daemon_Exception', true)) {
                 // PEAR_Exception is OK. PEAR was found already.
                 throw new PEAR_Exception('Class System_Daemon_Exception not found');
-            }            
+            }
         }
-        
+
         // Check the PHP configuration
         if (!defined('SIGHUP')) {
             $msg = 'PHP is compiled without --enable-pcntl directive';
@@ -533,7 +533,7 @@ class System_Daemon
             } else {
                 trigger_error($msg, E_USER_ERROR);
             }
-        }        
+        }
 
         // Check for CLI
         if ((php_sapi_name() !== 'cli')) {
@@ -544,7 +544,7 @@ class System_Daemon
                 trigger_error($msg, E_USER_ERROR);
             }
         }
-        
+
         // Check for POSIX
         if (!function_exists('posix_getpid')) {
             $msg = 'PHP is compiled without --enable-posix directive';
@@ -554,7 +554,12 @@ class System_Daemon
                 trigger_error($msg, E_USER_ERROR);
             }
         }
-        
+
+        // Enable Garbage Collector (PHP >= 5.3)
+        if (function_exists('gc_enable')) {
+            gc_enable();
+        }
+
         // Initialize & check variables
         if (false === self::_optionsInit(false)) {
             if (is_object(self::$_optObj) && is_array(self::$_optObj->errors)) {
@@ -562,13 +567,13 @@ class System_Daemon
                     self::notice($error);
                 }
             }
-            
+
             $msg = 'Crucial options are not set. Review log:';
             if (self::opt('usePEAR')) {
                 throw new System_Daemon_Exception($msg);
             } else {
                 trigger_error($msg, E_USER_ERROR);
-            } 
+            }
         }
         // Become daemon
         self::_summon();
@@ -591,10 +596,16 @@ class System_Daemon
     {
         self::_optionObjSetup();
         if ($sleepSeconds !== 0) {
-            sleep($sleepSeconds);
+            usleep($sleepSeconds*1000000);
         }
 
         clearstatcache();
+
+        // Garbage Collection (PHP >= 5.3)
+        if (function_exists('gc_collect_cycles')) {
+            gc_collect_cycles();
+        }
+
         return true;
     }
 
@@ -621,13 +632,13 @@ class System_Daemon
         self::info('Restarting {appName}');
         self::_die(true);
     }
-    
+
     /**
      * Overrule or add signal handlers.
      *
      * @param string $signal  Signal constant (e.g. SIGHUP)
      * @param mixed  $handler Which handler to call on signal
-     * 
+     *
      * @return boolean
      * @see $_sigHandlers
      */
@@ -641,7 +652,7 @@ class System_Daemon
             );
             return false;
         }
-        
+
         // Overwrite on existance
         self::$_sigHandlers[$signal] = $handler;
         return true;
@@ -650,7 +661,7 @@ class System_Daemon
     /**
      * Sets any option found in $_optionDefinitions
      * Public interface to talk with with protected option methods
-     * 
+     *
      * @param string $name  Name of the Option
      * @param mixed  $value Value of the Option
      *
@@ -661,14 +672,14 @@ class System_Daemon
         if (!self::_optionObjSetup()) {
             return false;
         }
-                
+
         return self::$_optObj->setOption($name, $value);
     }
-    
+
     /**
      * Sets an array of options found in $_optionDefinitions
      * Public interface to talk with with protected option methods
-     * 
+     *
      * @param array $use_options Array with Options
      *
      * @return boolean
@@ -678,13 +689,13 @@ class System_Daemon
         if (!self::_optionObjSetup()) {
             return false;
         }
-        
+
         return self::$_optObj->setOptions($use_options);
     }
 
     /**
      * Shortcut for getOption & setOption
-     * 
+     *
      * @param string $name Option to set or get
      *
      * @return mixed
@@ -703,7 +714,7 @@ class System_Daemon
     /**
      * Gets any option found in $_optionDefinitions
      * Public interface to talk with with protected option methods
-     * 
+     *
      * @param string $name Name of the Option
      *
      * @return mixed
@@ -713,13 +724,13 @@ class System_Daemon
         if (!self::_optionObjSetup()) {
             return false;
         }
-                
+
         return self::$_optObj->getOption($name);
     }
 
     /**
      * Gets an array of options found
-     * 
+     *
      * @return array
      */
     static public function getOptions()
@@ -727,10 +738,10 @@ class System_Daemon
         if (!self::_optionObjSetup()) {
             return false;
         }
-        
+
         return self::$_optObj->getOptions();
     }
-    
+
     /**
      * Catches PHP Errors and forwards them to log function
      *
@@ -741,25 +752,25 @@ class System_Daemon
      *
      * @return boolean
      */
-    static public function phpErrors($errno, $errstr, $errfile, $errline)
+    static public function phpErrors ($errno, $errstr, $errfile, $errline)
     {
-        // Ignore suppressed errors
+        // Ignore suppressed errors (prefixed by '@')
         if (error_reporting() == 0) {
             return;
         }
 
         // Map PHP error level to System_Daemon log level
-        if (empty(self::$_logPhpMapping[$errno])) {
+        if (!isset(self::$_logPhpMapping[$errno][0])) {
             self::warning('Unknown PHP errorno: %s', $errno);
-            $lvl = self::LOG_ERR;
+            $phpLvl = self::LOG_ERR;
         } else {
-            $lvl = self::$_logPhpMapping[$errno];
+            list($logLvl, $phpLvl) = self::$_logPhpMapping[$errno];
         }
 
         // Log it
         // No shortcuts this time!
         self::log(
-            $lvl, '[PHP Error] '.$errstr, $errfile, __CLASS__,
+            $logLvl, '[PHP ' . $phpLvl . '] '.$errstr, $errfile, __CLASS__,
             __FUNCTION__, $errline
         );
 
@@ -918,7 +929,7 @@ class System_Daemon
         $arguments = func_get_args();
         $level     = $arguments[0];
         $format    = $arguments[1];
-        
+
         if (is_string($level)) {
             if (false === ($l = array_search($level, self::$_logLevels))) {
                 self::log(LOG_EMERG, 'No such loglevel: '. $level);
@@ -926,7 +937,7 @@ class System_Daemon
                 $level = $l;
             }
         }
-        
+
         unset($arguments[0]);
         unset($arguments[1]);
 
@@ -941,7 +952,7 @@ class System_Daemon
         self::_optionObjSetup();
         $str = preg_replace_callback(
             '/\{([^\{\}]+)\}/is',
-            array(self::$_optObj, 'replaceVars'), 
+            array(self::$_optObj, 'replaceVars'),
             $str
         );
 
@@ -952,19 +963,18 @@ class System_Daemon
         $function = (string)@$dbg_bt[($history-1)]['function'];
         $file     = (string)@$dbg_bt[$history]['file'];
         $line     = (string)@$dbg_bt[$history]['line'];
-
         return self::log($level, $str, $file, $class, $function, $line);
     }
 
     /**
      * Almost every deamon requires a log file, this function can
-     * facilitate that. Also handles class-generated errors, chooses 
+     * facilitate that. Also handles class-generated errors, chooses
      * either PEAR handling or PEAR-independant handling, depending on:
      * self::opt('usePEAR').
      * Also supports PEAR_Log if you referenc to a valid instance of it
      * in self::opt('usePEARLogInstance').
-     * 
-     * It logs a string according to error levels specified in array: 
+     *
+     * It logs a string according to error levels specified in array:
      * self::$_logLevels (0 is fatal and handles daemon's death)
      *
      * @param integer $level    What function the log record is from
@@ -974,14 +984,14 @@ class System_Daemon
      * @param string  $function What function the log record is from
      * @param integer $line     What code line the log record is from
      *
-     * @throws System_Daemon_Exception  
+     * @throws System_Daemon_Exception
      * @return boolean
      * @see _logLevels
      * @see logLocation
      */
-    static public function log($level, $str, $file = false, $class = false, 
+    static public function log ($level, $str, $file = false, $class = false,
     $function = false, $line = false) {
-        // If verbosity level is not matched, don't do anything        
+        // If verbosity level is not matched, don't do anything
         if (null === self::opt('logVerbosity')
             || false === self::opt('logVerbosity')
         ) {
@@ -989,24 +999,38 @@ class System_Daemon
             // fair enough, but we have to init some log options
             self::_optionsInit(true);
         }
-        
         if (!self::opt('appName')) {
             // Not logging for anything without a name
             return false;
         }
-        
+
         if ($level > self::opt('logVerbosity')) {
             return true;
         }
-        
+
+        // Make the tail of log massage.
+        $log_tail = '';
+        if ($level < self::LOG_NOTICE) {
+            if (self::opt('logFilePosition')) {
+                if (self::opt('logTrimAppDir')) {
+                    $file = substr($file, strlen(self::opt('appDir')));
+                }
+
+                $log_tail .= ' [f:'.$file.']';
+            }
+            if (self::opt('logLinePosition')) {
+                $log_tail .= ' [l:'.$line.']';
+            }
+        }
+
         // Make use of a PEAR_Log() instance
         if (self::opt('usePEARLogInstance') !== false) {
-            self::opt('usePEARLogInstance')->log($str, $level);
+            self::opt('usePEARLogInstance')->log($str . $log_tail, $level);
             return true;
         }
-        
+
         // Save resources if arguments are passed.
-        // But by falling back to debug_backtrace() it still works 
+        // But by falling back to debug_backtrace() it still works
         // if someone forgets to pass them.
         if (function_exists('debug_backtrace') && (!$file || !$line)) {
             $dbg_bt   = @debug_backtrace();
@@ -1018,46 +1042,34 @@ class System_Daemon
 
         // Determine what process the log is originating from and forge a logline
         //$str_ident = '@'.substr(self::_whatIAm(), 0, 1).'-'.posix_getpid();
-        $str_date  = '['.date('M d H:i:s').']';
-        $str_level = str_pad(self::$_logLevels[$level].'', 8, ' ', STR_PAD_LEFT);
-        $log_line  = $str_date.' '.$str_level.': '.$str; // $str_ident
-        if ($level < self::LOG_NOTICE) {
-            if (self::opt('logFilePosition')) {
-                if (self::opt('logTrimAppDir')) {
-                    $file = substr($file, strlen(self::opt('appDir')));
-                }
+        $str_date  = '[' . date('M d H:i:s') . ']';
+        $str_level = str_pad(self::$_logLevels[$level] . '', 8, ' ', STR_PAD_LEFT);
+        $log_line  = $str_date . ' ' . $str_level . ': ' . $str . $log_tail; // $str_ident
 
-                $log_line .= ' [f:'.$file.']';
-            }
-            if (self::opt('logLinePosition')) {
-                $log_line .= ' [l:'.$line.']';
-            }
-        }
-        
-        $non_debug     = ($level < self::LOG_DEBUG);
+        $non_debug      = ($level < self::LOG_DEBUG);
         $log_succeeded = true;
-        $log_echoed    = false;
-        
+        $log_echoed     = false;
+
         if (!self::isInBackground() && $non_debug && !$log_echoed) {
             // It's okay to echo if you're running as a foreground process.
             // Maybe the command to write an init.d file was issued.
-            // In such a case it's important to echo failures to the 
+            // In such a case it's important to echo failures to the
             // STDOUT
             echo $log_line . "\n";
             $log_echoed = true;
             // but still try to also log to file for future reference
-        } 
+        }
 
         if (!self::opt('logLocation')) {
             throw new System_Daemon_Exception('Either use PEAR Log or specify '.
                 'a logLocation');
         }
 
-        // 'Touch' logfile 
+        // 'Touch' logfile
         if (!file_exists(self::opt('logLocation'))) {
             file_put_contents(self::opt('logLocation'), '');
         }
-        
+
         // Not writable even after touch? Allowed to echo again!!
         if (!is_writable(self::opt('logLocation'))
             && $non_debug && !$log_echoed
@@ -1065,8 +1077,8 @@ class System_Daemon
             echo $log_line . "\n";
             $log_echoed    = true;
             $log_succeeded = false;
-        } 
-        
+        }
+
         // Append to logfile
         $f = file_put_contents(
             self::opt('logLocation'),
@@ -1074,26 +1086,26 @@ class System_Daemon
             FILE_APPEND
         );
         if (!$f) {
-            $log_succeeded = false; 
+            $log_succeeded = false;
         }
-        
+
         // These are pretty serious errors
         if ($level < self::LOG_ERR) {
-            // An emergency logentry is reason for the deamon to 
-            // die immediately 
+            // An emergency logentry is reason for the deamon to
+            // die immediately
             if ($level === self::LOG_EMERG) {
                 self::_die();
             }
         }
-        
+
         return $log_succeeded;
     }
 
     /**
      * Uses OS class to write an: 'init.d' script on the filesystem
-     *  
+     *
      * @param boolean $overwrite May the existing init.d file be overwritten?
-     * 
+     *
      * @return boolean
      */
     static public function writeAutoRun($overwrite=false)
@@ -1102,12 +1114,12 @@ class System_Daemon
         if (false === self::_optionsInit(false)) {
             return false;
         }
-        
+
         // Init OS Object
         if (!self::_osObjSetup()) {
             return false;
         }
-        
+
         // Get daemon properties
         $options = self::getOptions();
 
@@ -1121,34 +1133,34 @@ class System_Daemon
             }
             return self::warning('Unable to create startup file');
         }
-        
+
         if ($res === true) {
             self::notice('Startup was already written');
             return true;
         } else {
             self::notice('Startup written to %s', $res);
         }
-        
+
         return $res;
     }
-    
+
     /**
      * Default signal handler.
-     * You can overrule various signals with the 
+     * You can overrule various signals with the
      * setSigHandler() method
      *
      * @param integer $signo The posix signal received.
-     * 
+     *
      * @return void
      * @see setSigHandler()
      * @see $_sigHandlers
      */
     static public function defaultSigHandler($signo)
     {
-        // Must be public or else will throw a 
+        // Must be public or else will throw a
         // fatal error: Call to protected method
         self::debug('Received signal: %s', $signo);
-            
+
         switch ($signo) {
         case SIGTERM:
             // Handle shutdown tasks
@@ -1177,7 +1189,7 @@ class System_Daemon
 
     /**
      * Whether the class is already running in the background
-     * 
+     *
      * @return boolean
      */
     static public function isInBackground()
@@ -1188,7 +1200,7 @@ class System_Daemon
     /**
      * Whether the our daemon is being killed, you might
      * want to include this in your loop
-     * 
+     *
      * @return boolean
      */
     static public function isDying()
@@ -1201,22 +1213,24 @@ class System_Daemon
      *
      * @return boolean
      */
-    static public function isRunning() 
+    static public function isRunning()
     {
-        if (!file_exists(self::opt('appPidLocation'))) {
+        $appPidLocation = self::opt('appPidLocation');
+
+        if (!file_exists($appPidLocation)) {
+            unset($appPidLocation);
             return false;
         }
 
-        $pid = @file_get_contents(self::opt('appPidLocation'));
-
+        $pid = self::fileread($appPidLocation);
         if (!$pid) {
             return false;
         }
-        
+
         // Ping app
         if (!posix_kill(intval($pid), 0)) {
             // Not responding so unlink pidfile
-            @unlink(self::opt('appPidLocation'));
+            @unlink($appPidLocation);
             return self::warning(
                 'Orphaned pidfile found and removed: ' .
                 '{appPidLocation}. Previous process crashed?'
@@ -1226,8 +1240,8 @@ class System_Daemon
         return true;
     }
 
-    
-    
+
+
     /**
      * Put the running script in background
      *
@@ -1242,17 +1256,17 @@ class System_Daemon
         }
 
         self::notice('Starting {appName} daemon, output in: %s', $logLoc);
-        
+
         // Allowed?
         if (self::isRunning()) {
             return self::emerg('{appName} daemon is still running. Exiting');
         }
-        
+
         // Reset Process Information
         self::$_safeMode       = !!@ini_get('safe_mode');
         self::$_processId      = 0;
         self::$_processIsChild = false;
-        
+
         // Fork process!
         if (!self::_fork()) {
             return self::emerg('Unable to fork');
@@ -1294,7 +1308,7 @@ class System_Daemon
         foreach (self::$_sigHandlers as $signal => $handler) {
             if (!is_callable($handler) && $handler != SIG_IGN && $handler != SIG_DFL) {
                 return self::emerg(
-                    'You want to assign signal %s to handler %s but ' . 
+                    'You want to assign signal %s to handler %s but ' .
                     'it\'s not callable',
                     $signal,
                     $handler
@@ -1309,7 +1323,7 @@ class System_Daemon
 
         // Change dir
         @chdir(self::opt('appDir'));
-        
+
         return true;
     }
 
@@ -1338,7 +1352,7 @@ class System_Daemon
                 'in it\'s own subdirectory like: %s/{appName}/{appName}.pid'
             );
         }
-        
+
         return true;
     }
 
@@ -1359,7 +1373,7 @@ class System_Daemon
         if (!self::_isValidPidLocation($pidFilePath, true)) {
             return false;
         }
-        
+
         $pidDirPath = dirname($pidFilePath);
 
         if (!self::_mkdirr($pidDirPath, 0755)) {
@@ -1375,6 +1389,23 @@ class System_Daemon
         }
 
         return true;
+    }
+
+    /**
+     * Read a file. file_get_contents() leaks memory! (#18031 for more info)
+     *
+     * @param string $filepath
+     *
+     * @return string
+     */
+    static public function fileread ($filepath) {
+        $f = fopen($filepath, 'r');
+        if (!$f) {
+            return false;
+        }
+        $data = fread($f, filesize($filepath));
+        fclose($f);
+        return $data;
     }
 
     /**
@@ -1420,7 +1451,7 @@ class System_Daemon
             if (false !== $doGid && !@chgrp($filePath, intval($gid))) {
                 return self::err(
                     'Unable to change group of file %s to %s',
-                    $filePath, 
+                    $filePath,
                     $gid
                 );
             }
@@ -1440,7 +1471,7 @@ class System_Daemon
 				system('export HOME="' . $info['dir'] . '"');
 			}
         }
-        
+
         // Change Process GID
         $doGid = (posix_getgid() !== $gid ? $gid : false);
         if (false !== $doGid && !@posix_setgid($gid)) {
@@ -1455,7 +1486,7 @@ class System_Daemon
 
         $group = posix_getgrgid($gid);
         $user  = posix_getpwuid($uid);
-        
+
         return self::info(
             'Changed identify to %s:%s',
             $group['name'],
@@ -1513,7 +1544,7 @@ class System_Daemon
         if (self::isDying()) {
             return null;
         }
-        
+
         self::$_isDying = true;
         // Following caused a bug if pid couldn't be written because of
         // privileges
@@ -1539,8 +1570,8 @@ class System_Daemon
             die();
         }
     }
-    
-    
+
+
     /**
      * Sets up OS instance
      *
@@ -1552,15 +1583,15 @@ class System_Daemon
         if (!self::$_osObj) {
             self::$_osObj = System_Daemon_OS::factory();
         }
-        
+
         // Still false? This was an error!
         if (!self::$_osObj) {
             return self::emerg('Unable to setup OS object');
-        } 
-        
+        }
+
         return true;
     }
-    
+
     /**
      * Sets up Option Object instance
      *
@@ -1572,21 +1603,21 @@ class System_Daemon
         if (!self::$_optObj) {
             self::$_optObj = new System_Daemon_Options(self::$_optionDefinitions);
         }
-        
+
         // Still false? This was an error!
         if (!self::$_optObj) {
             return self::emerg('Unable to setup Options object. ');
-        } 
-        
+        }
+
         return true;
     }
-    
+
     /**
      * Checks if all the required options are set.
      * Initializes, sanitizes & defaults unset variables
-     * 
+     *
      * @param boolean $premature Whether to do a premature option init
-     * 
+     *
      * @return mixed integer or boolean
      */
     static protected function _optionsInit($premature=false)
@@ -1594,7 +1625,7 @@ class System_Daemon
         if (!self::_optionObjSetup()) {
             return false;
         }
-        
-        return self::$_optObj->init($premature);        
+
+        return self::$_optObj->init($premature);
     }
 }
