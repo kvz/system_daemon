@@ -1,3 +1,21 @@
+ * Updated submodule vendors/eggshell
+ * Implemented #18071
+ * Implemented #18070
+ * Coding style
+ * Added garbage collection
+ * file_get_contents leaks memory! Implemented fread() replacement where it can be called a million times. Fixes #18031. Thanks for reporting krzysztof
+ * Renamed memory leak tester
+ * Added example to test for memory leaks
+ * Ignore Vim swap files
+ * Removed trailing whitespace
+ * Adding ability to iterate for intervals less than 1 second.
+ * Updated submodule vendors/eggshell
+ * Export correct homedir. Fixes #17600 thanks to Markus Noren
+ * Fileowner should be Filegroup. Thanks Tom Dexter!
+ * Updated submodule vendors/eggshell
+ * Explicitly make new functions static. Fixes #17419
+ * Releasing v0.10.3-beta
+ * Preparing to release v0.10.3-beta
  * Increased PHP5.3 Compatibility
  * Initialize options when needed. Fixes #17296
  * Newlines were accidentally single quoted (thanks Chris Sternal-Johnson)

@@ -32,7 +32,7 @@ if (!defined('DIR_EGGSHELL')) {
     $lookIn = array(
         (@$_ENV['HOME'] ? @$_ENV['HOME'] : '/home/kevin').'/workspace/eggshell/',
         '/truecode/eggshell/',
-         dirname(__FILE__).'/vendor/eggshell/',
+         dirname(__FILE__).'/vendors/eggshell/',
     );
     foreach($lookIn as $dir) {
         if (is_dir($dir) && file_exists($dir.$file)) {
@@ -51,7 +51,7 @@ if (!defined('DIR_SCM')) {
     $lookIn = array(
         (@$_ENV['HOME'] ? @$_ENV['HOME'] : '/home/kevin').'/workspace/scm/',
         '/truecode/scm/',
-         dirname(__FILE__).'/vendor/scm/',
+         dirname(__FILE__).'/vendors/scm/',
     );
     foreach($lookIn as $dir) {
         if (is_dir($dir) && file_exists($dir.$file)) {

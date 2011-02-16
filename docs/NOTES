@@ -1,4 +1,8 @@
-System_Daemon 0.10.3-beta 2010-05-04 Kevin van Zonneveld <kevin@vanzonneveld.net>
- * Increased PHP5.3 Compatibility
- * Initialize options when needed. Fixes #17296
- * Newlines were accidentally single quoted (thanks Chris Sternal-Johnson)
+ * Improved logging. Implemented #18071 & #18070
+ * Added garbage collection
+ * Plugged memory leak caused by file_get_contents! Implemented fread() replacement wherever it can be called a million times. Fixes #18031. Thanks for reporting krzysztof
+ * Added example to test for memory leaks
+ * Adding ability to iterate for intervals less than 1 second.
+ * Export correct homedir. Fixes #17600 thanks to Markus Noren
+ * Fixed permission issue. Fileowner should be Filegroup. Thanks Tom Dexter!
+ * Fixed other minor bugs
