@@ -203,9 +203,11 @@ Class Release extends EggShell {
         // Add any known dependencies such as PHP version, extensions, PEAR installer
         if ($firsttime) $this->Pack->setPhpDep('5.1.2'); // spl_autoload_register
         if ($firsttime) $this->Pack->setPearinstallerDep('1.4.0');
+        if ($firsttime) $this->addDependency('pcntl', '', 'has', 'ext', true);
+        if ($firsttime) $this->addDependency('posix', '', 'has', 'ext', true);
         $this->Pack->setOSInstallCondition('(*ix|*ux|darwin*|*BSD|SunOS*)');
         if ($firsttime) $this->Pack->addPackageDepWithChannel('optional', 'Log', 'pear.php.net', '1.0');
-        
+
 
         // Other info, like the Lead Developers. license, version details
         // and stability type
@@ -226,7 +228,7 @@ Class Release extends EggShell {
             return $this->Pack->writePackageFile();
         }
     }
-    
+
     protected function _opts($tag) {
         $summary     = $this->_histFile('docs/SUMMARY', $tag);
         $description = $this->_histFile('docs/DESCRIPTION', $tag);
@@ -295,16 +297,16 @@ Class Release extends EggShell {
         $firsttime = true;
         $tags = $this->Scm->tags();
         usort($tags, 'version_compare');
-        
+
         foreach($tags as $tag) {
             $this->updateXML($tag, $firsttime);
             $firsttime = false;
         }
-        
+
         $this->exe('cd %s && pear package && mv *.tgz ./packages/', $this->dir);
         $this->exe('cd %s && git add ./packages/*.tgz', $this->dir);
         $this->exe('cd %s && git commit -am "Releasing %s" ', $this->dir, $this->version);
-        
+
         // Overwrite full tag && push
         $this->Scm->makeTag($this->version, 'HEAD', 'Released new version', true);
     }
@@ -328,7 +330,7 @@ switch(@$argv[1]) {
         $Release->{$argv[1]}();
         break;
     default:
-        
+
         if (@$argv[2] === 'all') {
             $tags = $Release->Scm->tags();
         } else {
@@ -339,7 +341,7 @@ switch(@$argv[1]) {
             $Release->err('No tags specified?');
             exit(1);
         }
-        
+
         foreach ($tags as $tag) {
             $Release->setVersion($tag);
 
@@ -349,6 +351,6 @@ switch(@$argv[1]) {
                 $Release->{$argv[1]}();
             }
         }
-        
+
         break;
 }
