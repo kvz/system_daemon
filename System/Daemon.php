@@ -575,6 +575,16 @@ class System_Daemon
                 trigger_error($msg, E_USER_ERROR);
             }
         }
+
+        // Option validation, more advanced than can be handled by
+        // declaration processing
+        if (self::opt('appName') !== strtolower(self::opt('appName'))) {
+            return self::crit('Option: appName should be lowercase');
+        }
+        if (strlen(self::opt('appName')) > 16) {
+            return self::crit('Option: appName should be no longer than 16 characters');
+        }
+
         // Become daemon
         self::_summon();
 
