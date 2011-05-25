@@ -443,8 +443,8 @@ class System_Daemon_Options
         if ($source_use === false) {
             return "UNUSABLE_VARSOURCE_".$source;
         }
-        if (!isset($source_use[$var])) { 
-            return "NONEXISTING_VAR_".$var_key;     
+        if (!isset($source_use[$var])) {
+            return $var;
         }
         
         $var_use = $source_use[$var];
