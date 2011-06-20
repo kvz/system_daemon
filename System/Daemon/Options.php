@@ -113,9 +113,10 @@ class System_Daemon_Options
     {
         $success = true;
         // Not validated?
+        $reason = '';
         if (!$this->_validate($name, $value, $reason)) {
             // Default not used or failed as well!
-            $this->errors[] = "Option ".$name." invalid: ".$reason;
+            $this->errors[] = "Option ".$name." invalid. " . $reason;
             $success        = false;
         }
         
@@ -168,7 +169,7 @@ class System_Daemon_Options
         
         $options_met = 0;
         
-        foreach ($this->_definitions as $name=>$definition) {
+        foreach ($this->_definitions as $name => $definition) {
             // Required options remain
             if (!isset($this->_options[$name])) {
                 if (!$this->_setDefault($name)
@@ -203,7 +204,7 @@ class System_Daemon_Options
      *
      * @return boolean
      */
-    protected function _validate($name, $value, &$reason="")
+    protected function _validate($name, $value, &$reason = "")
     {
         $reason = false;
         
