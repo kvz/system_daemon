@@ -57,7 +57,7 @@ System_Daemon::setSigHandler(SIGTERM, 'myHandler');
 
 function myHandler($signal) {
     if ($signal === SIGTERM) {
-        System_Daemon::warning('I received the termination signal. ' . $sig);
+        System_Daemon::warning('I received the termination signal. ' . $signal);
         // Execute some final code
         // and be sure to:
         System_Daemon::stop();
