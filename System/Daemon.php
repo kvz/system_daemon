@@ -457,10 +457,22 @@ class System_Daemon
             include(dirname(__FILE__).'/'.$path);
         } else {
             // Everything else.
-            @include($path);
+            // Check for $path within each include_path
+            foreach (explode(PATH_SEPARATOR,ini_get('include_path')) as $prefix) {
+                $prefixed_path = $prefix.'/'.$path;
+                if (file_exists($prefixed_path)) {
+                    include $prefixed_path;
+                    return true;
+                }
+            }
+
+            // Since include_path might not contain current
+            // directory, we'll check that ourselves.
+            if (file_exists($path)) {
+                include $path;
+            }
         }
     }
-
 
     /**
      * Spawn daemon process.
