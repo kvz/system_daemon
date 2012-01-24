@@ -605,8 +605,10 @@ class System_Daemon
     static public function iterate($sleepSeconds = 0)
     {
         self::_optionObjSetup();
-        if ($sleepSeconds !== 0) {
-            usleep($sleepSeconds*1000000);
+        if ($sleepSeconds >= 1) {
+            sleep($sleepSeconds);
+        } else if (is_numeric($sleepSeconds)) {
+            usleep($sleepSeconds * 1000000);
         }
 
         clearstatcache();
