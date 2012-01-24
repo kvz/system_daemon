@@ -229,6 +229,7 @@ class System_Daemon_OS
     public function getDataDir()
     {
         $tried_dirs = array();
+        $dir        = false;
 
         if (class_exists('PEAR_Config', true)) {
             $config = PEAR_Config::singleton();
