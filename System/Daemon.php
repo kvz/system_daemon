@@ -860,6 +860,18 @@ class System_Daemon
      *
      * @return boolean
      */
+    public static function alert()
+    {
+        $arguments = func_get_args(); array_unshift($arguments, __FUNCTION__);
+        call_user_func_array(array('System_Daemon', '_ilog'), $arguments);
+        return false;
+    }
+
+    /**
+     * Logging shortcut
+     *
+     * @return boolean
+     */
     public static function crit()
     {
         $arguments = func_get_args(); array_unshift($arguments, __FUNCTION__);
