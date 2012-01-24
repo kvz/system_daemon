@@ -60,7 +60,7 @@ if ($runmode['help'] == true) {
 ini_set('include_path', ini_get('include_path').':..');
 
 // Include Class
-error_reporting(E_ALL);
+error_reporting(E_STRICT);
 require_once 'System/Daemon.php';
 
 // Setup

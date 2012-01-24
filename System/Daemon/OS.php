@@ -97,18 +97,18 @@ class System_Daemon_OS
      *
      * @return object
      */
-    public function &factory($force_os = false, $retried = false)
+    public static function factory($force_os = false, $retried = false)
     {
-        $drivers      = array();
+        $Drivers      = array();
         $driversValid = array();
         $class_prefix = "System_Daemon_OS_";
 
         // Load all drivers
         $driver_dir = realpath(dirname(__FILE__)."/OS");
-        foreach (glob($driver_dir."/*.php") as $driver_path) {
+        foreach (glob($driver_dir . "/*.php") as $driver_path) {
             // Set names
             $driver = basename($driver_path, ".php");
-            $class  = $class_prefix.$driver;
+            $class  = $class_prefix . $driver;
 
             // Only do this for real drivers
             if ($driver == "Exception" || !is_file($driver_path)) {
@@ -117,12 +117,12 @@ class System_Daemon_OS
 
             // Let SPL include & load the driver or Report errors
             if (!class_exists($class, true)) {
-                $this->errors[] = "Class ".$class." does not exist";
+                #$this->errors[] = "Class " . $class . " does not exist";
                 return false;
             }
 
             // Save in drivers array
-            $drivers[$class] = new $class;
+            $Drivers[$class] = new $class;
         }
 
         // Determine which one to use
@@ -132,33 +132,33 @@ class System_Daemon_OS
         } else {
             // What OSes are valid for this system?
             // e.g. Debian makes Linux valid as well
-            foreach ($drivers as $class=>$obj) {
+            foreach ($Drivers as $class => $Obj) {
                 // Save in Installed container
-                if (call_user_func(array($obj, "isInstalled"))) {
-                    $driversValid[$class] = $obj;
+                if (call_user_func(array($Obj, "isInstalled"))) {
+                    $driversValid[$class] = $Obj;
                 }
             }
 
             // What's the most specific OS?
             // e.g. Ubuntu > Debian > Linux
-            $use_name = System_Daemon_OS::_mostSpecific($driversValid);
+            $use_name = self::_mostSpecific($driversValid);
         }
 
         // If forced driver wasn't found, retry to autodetect it
-        if (!isset($drivers[$use_name])) {
+        if (!isset($Drivers[$use_name])) {
             // Make sure we don't build a loop
             if (!$retried) {
-                $obj           = System_Daemon_OS::factory(false, true);
-                $obj->errors[] = "Unable to use driver: ".$force_os." falling ".
+                $Obj           = self::factory(false, true);
+                $Obj->errors[] = "Unable to use driver: ".$force_os." falling ".
                     "back to autodetection.";
             } else {
-                $obj = false;
+                $Obj = false;
             }
         } else {
-            $obj = $drivers[$use_name];
+            $Obj = $Drivers[$use_name];
         }
 
-        return $obj;
+        return $Obj;
     }
 
 
@@ -540,7 +540,7 @@ class System_Daemon_OS
      *
      * @return string
      */
-    protected function _mostSpecific($classes)
+    protected static function _mostSpecific($classes)
     {
         $weights = array_map(
             array("System_Daemon_OS", "_getAncestorCount"),
