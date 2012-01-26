@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Author: @author_name@ <@author_email@>
+#
+
+. /etc/rc.conf
+. /etc/rc.d/functions
+
+DESC="@desc@"
+NAME=@bin_name@
+DAEMON=@bin_file@
+DAEMON_ARGS=""
+PIDFILE=@pid_file@
+SCRIPTNAME=/etc/rc.d/@bin_name@
+PID=$(cat $PIDFILE 2>/dev/null)
+
+case "$1" in
+  start)
+    stat_busy "Starting $NAME"
+    [ -z "$PID" ] && $DAEMON -D $DAEMON_ARGS
+    if [ $? -gt 0 ]; then
+      stat_fail
+    else
+      add_daemon ftpd
+      stat_done
+    fi
+    ;;
+  stop)
+    stat_busy "Stopping $NAME"
+    [ ! -z "$PID" ]  && kill $PID &> /dev/null
+    if [ $? -gt 0 ]; then
+      stat_fail
+    else
+      rm_daemon ftpd
+      stat_done
+    fi
+    ;;
+  restart)
+    $0 stop
+    sleep 1
+    $0 start
+    ;;
+  *)
+    echo "usage: $0 {start|stop|restart}"
+esac
+exit 0
