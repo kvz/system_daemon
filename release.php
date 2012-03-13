@@ -118,8 +118,12 @@ Class Release extends EggShell {
         if (!$this->version || false === strpos($this->version, 'v')) {
             return $this->err('Need to specify a release like: v0.9.2-beta');
         }
-        list($this->apiVersion, $this->apiStability) = explode('-', $this->version);
-        $this->apiVersion = str_replace('v', '', $this->apiVersion);
+        if (count($parts = explode('-', $this->version)) > 1) {
+            $this->apiStability = $parts[1];
+        } else {
+            $this->apiStability = 'stable';
+        }
+        $this->apiVersion = str_replace('v', '', $parts[0]);
     }
 
 
