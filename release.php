@@ -207,8 +207,8 @@ Class Release extends EggShell {
         // Add any known dependencies such as PHP version, extensions, PEAR installer
         if ($firsttime) $this->Pack->setPhpDep('5.1.2'); // spl_autoload_register
         if ($firsttime) $this->Pack->setPearinstallerDep('1.4.0');
-        if ($firsttime) $this->Pack->addDependency('pcntl', '', 'has', 'ext', true);
-        if ($firsttime) $this->Pack->addDependency('posix', '', 'has', 'ext', true);
+        //if ($firsttime) $this->Pack->addDependency('pcntl', '', 'has', 'ext', true);
+        //if ($firsttime) $this->Pack->addDependency('posix', '', 'has', 'ext', true);
         $this->Pack->setOSInstallCondition('(*ix|*ux|darwin*|*BSD|SunOS*)');
         if ($firsttime) $this->Pack->addPackageDepWithChannel('optional', 'Log', 'pear.php.net', '1.0');
 
