@@ -1,0 +1,18 @@
+ * Removing bogus bsd file as reported in #19287
+ * Support for custom log handler
+ * Check if file exists instead of suppressing errors
+ * Solve some E_STRICT warnings. Fixes #18677
+ * Better handling of non-existing replacement vars. Might help with #18561
+ * Adding log alert function as requested in #19101
+ * Use sleep vs usleep depending on input. Fixes #19121
+ * added System_Daemon_OS driver for Arch Linux and template for Arch's rc.d script
+ * Fix a possible notice in getDataDir()
+ * Added "status" to init.d Debian script
+ * Fixed warning in getDataDir - $dir not set if PEAR_Config class not exists.
+ * Variable fixed in myHandler
+ * removed "--name $NAME" due to debian Lenny can't handle names longer than 15 characters
+ * Fix a possible notice in setOption.
+ * Return original string if unable to replace var between { and }. Fixes #18561 where json was being printed
+ * Updated submodule vendors/eggshell
+ * Added warning about caps & long appNames. Those cause restarting issues
+ * Added pcntl & posix extension as dependecies

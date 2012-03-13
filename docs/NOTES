@@ -1,8 +1,11 @@
- * Improved logging. Implemented #18071 & #18070
- * Added garbage collection
- * Plugged memory leak caused by file_get_contents! Implemented fread() replacement wherever it can be called a million times. Fixes #18031. Thanks for reporting krzysztof
- * Added example to test for memory leaks
- * Adding ability to iterate for intervals less than 1 second.
- * Export correct homedir. Fixes #17600 thanks to Markus Noren
- * Fixed permission issue. Fileowner should be Filegroup. Thanks Tom Dexter!
- * Fixed other minor bugs
+ * Support for custom log handler
+ * Solve E_STRICT warnings and avoid errors thrown (but ignored) by autoloader, setOption and getDatadir. Fixes #18677
+ * Better handling of non-existing replacement vars.
+ * Adding log alert function as requested in #19101
+ * Use sleep vs usleep depending on input. Fixes #19121
+ * Added System_Daemon_OS driver for Arch Linux and template for Arch's rc.d script
+ * Removed System_Daemon_OS driver for BSD, No support in this release
+ * Added "status" argument to init.d Debian script
+ * Removed "--name $NAME" due to debian Lenny can't handle names longer than 15 characters
+ * Return original string if unable to replace var between { and }. Fixes #18561 where json was being printed
+ * Added warning about caps & long appNames. Those cause restarting issues
