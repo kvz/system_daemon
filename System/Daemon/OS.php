@@ -321,7 +321,7 @@ class System_Daemon_OS
             return self::isWritable($path.'/'.uniqid(mt_rand()).'.tmp');
         }
         // check tmp file for read/write capabilities
-        if (($rm = file_exists($path))) {
+        if (false !== ($rm = file_exists($path))) {
             $f = fopen($path, 'a');
         } else {
             $f = fopen($path, 'w');
@@ -590,7 +590,7 @@ class System_Daemon_OS
     protected function _getAncestors($class)
     {
         $classes = array();
-        while ($class = get_parent_class($class)) {
+        while (false !== ($class = get_parent_class($class))) {
             $classes[] = $class;
         }
         return $classes;
