@@ -1321,17 +1321,33 @@ class System_Daemon
         self::$_processIsChild = false;
 
         // Fork process!
-        if (!self::_fork()) {
-            return self::emerg('Unable to fork');
+        if ( self::opt('noFork') == true ) {
+            self::$_processIsChild = true;
+            self::$_isDying        = false;
+            self::$_processId      = posix_getpid();
+
+            // Change umask
+            @umask(0);
+
+            // Write pidfile
+            $p = self::_writePid(self::opt('appPidLocation'), self::$_processId);
+            if (false === $p) {
+                self::emerg('Unable to write pid file {appPidLocation}');
+            }
+        } else {
+            if (!self::_fork()) {
+                return self::emerg('Unable to fork');
+            }
+
+            // Additional PID succeeded check
+            if (!is_numeric(self::$_processId) || self::$_processId < 1) {
+                return self::emerg('No valid pid: %s', self::$_processId);
+            }
+
+            // Change umask
+            @umask(0);
         }
 
-        // Additional PID succeeded check
-        if (!is_numeric(self::$_processId) || self::$_processId < 1) {
-            return self::emerg('No valid pid: %s', self::$_processId);
-        }
-
-        // Change umask
-        @umask(0);
 
         // Change identity. maybe
         $c = self::_changeIdentity(
