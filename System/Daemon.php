@@ -1333,12 +1333,6 @@ class System_Daemon
         // Change umask
         @umask(0);
 
-        // Write pidfile
-        $p = self::_writePid(self::opt('appPidLocation'), self::$_processId);
-        if (false === $p) {
-            return self::emerg('Unable to write pid file {appPidLocation}');
-        }
-
         // Change identity. maybe
         $c = self::_changeIdentity(
             self::opt('appRunAsGID'),
@@ -1566,6 +1560,23 @@ class System_Daemon
         } else if ($pid) {
             // Parent
             self::debug('Ending {appName} parent process');
+
+            // Additional PID succeeded check
+            if (!is_numeric($pid)) {
+                self::emerg('No valid pid: %s', $pid);
+                exit(-1);
+            }
+
+            // Change umask
+            @umask(0);
+
+            // Write pidfile
+            $p = self::_writePid(self::opt('appPidLocation'), $pid);
+            if (false === $p) {
+                self::emerg('Unable to write pid file {appPidLocation}');
+                exit(-1);
+            }
+
             // Die without attracting attention
             exit();
         } else {
