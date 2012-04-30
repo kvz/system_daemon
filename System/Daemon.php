@@ -348,6 +348,13 @@ class System_Daemon
             'detail' => 'Sometimes it\'s better to stick with the OS default,
                 and use something like /etc/default/<name> for customization',
         ),
+
+        'noFork' => array(
+            'type' => 'boolean',
+            'default' => false,
+            'punch' => 'Do not fork',
+            'detail' => 'Disables forking, damon remains in one process',
+        ),
     );
 
 
