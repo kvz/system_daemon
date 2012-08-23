@@ -1292,6 +1292,38 @@ class System_Daemon
     }
 
 
+    /**
+     * Stops a previous process with same pidfile that was already running
+     *
+     * @return boolean
+     */
+    static public function stopRunning()
+    {
+        $appPidLocation = self::opt('appPidLocation');
+
+        if (!file_exists($appPidLocation)) {
+            unset($appPidLocation);
+            return false;
+        }
+
+        $pid = self::fileread($appPidLocation);
+        if (!$pid) {
+            return false;
+        }
+
+        // Ping app
+        if (!posix_kill(intval($pid), SIGTERM)) {
+            self::warning('No daemon responded to SIGTERM');
+            return false;
+        } else {
+            self::info('Stopping daemon with PID %s', $pid);
+        }
+
+        // Not responding so unlink pidfile
+        @unlink($appPidLocation);
+
+        return true;
+    }
 
     /**
      * Put the running script in background
@@ -1502,7 +1534,7 @@ class System_Daemon
             if (!file_exists($filePath)) {
                 continue;
             }
-            
+
             // Change File GID
             $doGid = (filegroup($filePath) != $gid ? $gid : false);
             if (false !== $doGid && !@chgrp($filePath, intval($gid))) {
