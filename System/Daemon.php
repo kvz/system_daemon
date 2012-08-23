@@ -419,9 +419,6 @@ class System_Daemon
         'SIGPWR' => array('System_Daemon', 'defaultSigHandler'),
         'SIGSYS' => array('System_Daemon', 'defaultSigHandler'),
         SIGBABY => array('System_Daemon', 'defaultSigHandler'),
-        'SIG_BLOCK' => array('System_Daemon', 'defaultSigHandler'),
-        'SIG_UNBLOCK' => array('System_Daemon', 'defaultSigHandler'),
-        'SIG_SETMASK' => array('System_Daemon', 'defaultSigHandler'),
     );
 
 
