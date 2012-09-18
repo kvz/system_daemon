@@ -502,16 +502,6 @@ class System_Daemon
                 unset(self::$_logPhpMapping[$phpConstant]);
             }
         }
-        // Same goes for POSIX signals. Not all Constants are available on
-        // all platforms.
-        foreach (self::$_sigHandlers as $signal => $handler) {
-            if (is_string($signal) || !$signal) {
-                if (defined($signal) && ($const = constant($signal))) {
-                    self::$_sigHandlers[$const] = $handler;
-                }
-                unset(self::$_sigHandlers[$signal]);
-            }
-        }
 
         // Quickly initialize some defaults like usePEAR
         // by adding the $premature flag
@@ -663,6 +653,8 @@ class System_Daemon
 
     /**
      * Overrule or add signal handlers.
+     * When called without parameters, will only map string signals
+     * with available defined ones and return null.
      *
      * @param string $signal  Signal constant (e.g. SIGHUP)
      * @param mixed  $handler Which handler to call on signal
@@ -670,9 +662,26 @@ class System_Daemon
      * @return boolean
      * @see $_sigHandlers
      */
-    static public function setSigHandler($signal, $handler)
+    static public function setSigHandler($signal = null, $handler = null)
     {
-        if (!isset(self::$_sigHandlers[$signal])) {
+        // Not all POSIX signal constants are available on
+        // all platforms.
+        foreach (self::$_sigHandlers as $signal => $handler) {
+            if (is_string($signal) || !$signal) {
+                if (defined($signal) && ($const = constant($signal))) {
+                    self::$_sigHandlers[$const] = $handler;
+                }
+                unset(self::$_sigHandlers[$signal]);
+            }
+        }
+
+        // Was only called by ->start() to map string signals
+        // with available defined ones
+        if ($signal === null && $handler === null) {
+            return null;
+        }
+
+        if (!array_key_exists($signal, self::$_sigHandlers)) {
             // The signal should be defined already
             self::notice(
                 'Can only overrule on of these signal handlers: %s',
@@ -1387,6 +1396,7 @@ class System_Daemon
         // Setup signal handlers
         // Handlers for individual signals can be overrulled with
         // setSigHandler()
+        $this->setSigHandler();
         foreach (self::$_sigHandlers as $signal => $handler) {
             if (!is_callable($handler) && $handler != SIG_IGN && $handler != SIG_DFL) {
                 return self::emerg(
