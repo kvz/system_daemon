@@ -796,10 +796,12 @@ class System_Daemon
             return;
         }
 
+        $logLvl = self::LOG_ERR;
+        $phpLvl = 'Error';
+
         // Map PHP error level to System_Daemon log level
         if (!isset(self::$_logPhpMapping[$errno][0])) {
             self::warning('Unknown PHP errorno: %s', $errno);
-            $phpLvl = self::LOG_ERR;
         } else {
             list($logLvl, $phpLvl) = self::$_logPhpMapping[$errno];
         }
@@ -1093,8 +1095,8 @@ class System_Daemon
             $dbg_bt   = @debug_backtrace();
             $class    = (isset($dbg_bt[1]['class'])?$dbg_bt[1]['class']:'');
             $function = (isset($dbg_bt[1]['function'])?$dbg_bt[1]['function']:'');
-            $file     = $dbg_bt[0]['file'];
-            $line     = $dbg_bt[0]['line'];
+            $file     = @$dbg_bt[0]['file'];
+            $line     = @$dbg_bt[0]['line'];
         }
 
         // Determine what process the log is originating from and forge a logline
