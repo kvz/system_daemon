@@ -1336,7 +1336,7 @@ class System_Daemon
     /**
      * Put the running script in background
      *
-     * @return void
+     * @return boolean
      */
     static protected function _summon()
     {
@@ -1398,7 +1398,7 @@ class System_Daemon
         // Setup signal handlers
         // Handlers for individual signals can be overrulled with
         // setSigHandler()
-        $this->setSigHandler();
+        self::setSigHandler();
         foreach (self::$_sigHandlers as $signal => $handler) {
             if (!is_callable($handler) && $handler != SIG_IGN && $handler != SIG_DFL) {
                 return self::emerg(
