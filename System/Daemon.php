@@ -1336,7 +1336,7 @@ class System_Daemon
     /**
      * Put the running script in background
      *
-     * @return void
+     * @return boolean
      */
     static protected function _summon()
     {
