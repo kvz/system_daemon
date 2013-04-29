@@ -592,10 +592,7 @@ class System_Daemon
         }
 
         // Become daemon
-        self::_summon();
-
-        return true;
-
+        return self::_summon();
     }
 
     /**
