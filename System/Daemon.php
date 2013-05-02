@@ -148,7 +148,7 @@ class System_Daemon
         E_USER_ERROR => array(self::LOG_ERR, 'User Error'),
         E_USER_WARNING => array(self::LOG_WARNING, 'User Warning'),
         E_USER_NOTICE => array(self::LOG_DEBUG, 'User Notice'),
-	E_STRICT => array(self::LOG_DEBUG, 'Strict'),
+        E_STRICT => array(self::LOG_DEBUG, 'Strict'),
         'E_RECOVERABLE_ERROR' => array(self::LOG_WARNING, 'Recoverable Error'),
         'E_DEPRECATED' => array(self::LOG_NOTICE, 'Deprecated'),
         'E_USER_DEPRECATED' => array(self::LOG_NOTICE, 'User Deprecated'),
