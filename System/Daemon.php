@@ -349,6 +349,13 @@ class System_Daemon
             'detail' => 'Sometimes it\'s better to stick with the OS default,
                 and use something like /etc/default/<name> for customization',
         ),
+
+        'noFork' => array(
+            'type' => 'boolean',
+            'default' => false,
+            'punch' => 'Do not fork',
+            'detail' => 'Disables forking, damon remains in one process',
+        ),
     );
 
 
@@ -1359,23 +1366,33 @@ class System_Daemon
         self::$_processIsChild = false;
 
         // Fork process!
-        if (!self::_fork()) {
-            return self::emerg('Unable to fork');
+        if ( self::opt('noFork') == true ) {
+            self::$_processIsChild = true;
+            self::$_isDying        = false;
+            self::$_processId      = posix_getpid();
+
+            // Change umask
+            @umask(0);
+
+            // Write pidfile
+            $p = self::_writePid(self::opt('appPidLocation'), self::$_processId);
+            if (false === $p) {
+                self::emerg('Unable to write pid file {appPidLocation}');
+            }
+        } else {
+            if (!self::_fork()) {
+                return self::emerg('Unable to fork');
+            }
+
+            // Additional PID succeeded check
+            if (!is_numeric(self::$_processId) || self::$_processId < 1) {
+                return self::emerg('No valid pid: %s', self::$_processId);
+            }
+
+            // Change umask
+            @umask(0);
         }
 
-        // Additional PID succeeded check
-        if (!is_numeric(self::$_processId) || self::$_processId < 1) {
-            return self::emerg('No valid pid: %s', self::$_processId);
-        }
-
-        // Change umask
-        @umask(0);
-
-        // Write pidfile
-        $p = self::_writePid(self::opt('appPidLocation'), self::$_processId);
-        if (false === $p) {
-            return self::emerg('Unable to write pid file {appPidLocation}');
-        }
 
         // Change identity. maybe
         $c = self::_changeIdentity(
@@ -1605,6 +1622,23 @@ class System_Daemon
         } else if ($pid) {
             // Parent
             self::debug('Ending {appName} parent process');
+
+            // Additional PID succeeded check
+            if (!is_numeric($pid)) {
+                self::emerg('No valid pid: %s', $pid);
+                exit(-1);
+            }
+
+            // Change umask
+            @umask(0);
+
+            // Write pidfile
+            $p = self::_writePid(self::opt('appPidLocation'), $pid);
+            if (false === $p) {
+                self::emerg('Unable to write pid file {appPidLocation}');
+                exit(-1);
+            }
+
             // Die without attracting attention
             exit();
         } else {
