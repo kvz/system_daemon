@@ -825,7 +825,7 @@ class System_Daemon
      */
     static public function abbr($str, $cutAt = 30, $suffix = '...')
     {
-        if (strlen($str) <= 30) {
+        if (strlen($str) <= $cutAt) {
             return $str;
         }
 
