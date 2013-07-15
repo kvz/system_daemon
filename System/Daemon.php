@@ -348,15 +348,15 @@ class System_Daemon
             'example' => '/etc/init.d/skeleton',
             'detail' => 'Sometimes it\'s better to stick with the OS default,
                 and use something like /etc/default/<name> for customization',
-	),
-	'doTicks' => array(
-		'type' => 'boolean',
-		'default' => true,
-		'punch' => 'Use ticks for daemon signalling (PHP >= 5.3)',
-		'detail' => 'If you don\'t set this option, signals will not work unless
-			you use the iterate method, or call pcntl_signal_dispatch()
-			manually in your daemon\'s main loop'
-	)
+        ),
+        'doTicks' => array(
+            'type' => 'boolean',
+            'default' => true,
+            'punch' => 'Use ticks for daemon signalling (PHP >= 5.3)',
+            'detail' => 'If you don\'t set this option, signals will not work unless
+                you use the iterate method, or call pcntl_signal_dispatch()
+                manually in your daemon\'s main loop',
+        ),
     );
 
 
@@ -1403,7 +1403,9 @@ class System_Daemon
         }
 
         // Important for daemons
-	// See http://www.php.net/manual/en/function.pcntl-signal.php
+        // tick use required as of PHP 4.3.0
+        // deprecated as of 5.3
+        // See http://www.php.net/manual/en/function.pcntl-signal.php
         if (self::opt('doTicks') === true) {
             declare(ticks = 1);
         }
