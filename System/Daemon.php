@@ -349,11 +349,11 @@ class System_Daemon
             'detail' => 'Sometimes it\'s better to stick with the OS default,
                 and use something like /etc/default/<name> for customization',
 	),
-	'noTicks' => array(
+	'doTicks' => array(
 		'type' => 'boolean',
 		'default' => true,
-		'punch' => 'Do not use ticks for daemon signalling (PHP >= 5.3)',
-		'detail' => 'If you set this option, signals will not work unless
+		'punch' => 'Use ticks for daemon signalling (PHP >= 5.3)',
+		'detail' => 'If you don\'t set this option, signals will not work unless
 			you use the iterate method, or call pcntl_signal_dispatch()
 			manually in your daemon\'s main loop'
 	)
@@ -626,14 +626,14 @@ class System_Daemon
         clearstatcache();
 
         // Garbage Collection (PHP >= 5.3)
-	if (function_exists('gc_collect_cycles')) {
-        	gc_collect_cycles();
-	}
+        if (function_exists('gc_collect_cycles')) {
+            gc_collect_cycles();
+        }
 
-	// PHP >= 5.3
-	if (self::opt('noTicks') == false && function_exists('pcntl_signal_dispatch')) {
-		pcntl_signal_dispatch();
-	}
+        // PHP >= 5.3
+        if (self::opt('doTicks') === false && function_exists('pcntl_signal_dispatch')) {
+            pcntl_signal_dispatch();
+        }
 
         return true;
     }
@@ -1404,9 +1404,9 @@ class System_Daemon
 
         // Important for daemons
 	// See http://www.php.net/manual/en/function.pcntl-signal.php
-	if (self::opt('noTicks') == false) {
-		declare(ticks = 1);
-	}
+        if (self::opt('doTicks') === true) {
+            declare(ticks = 1);
+        }
 
         // Setup signal handlers
         // Handlers for individual signals can be overrulled with
