@@ -548,7 +548,8 @@ class System_Daemon_OS
             $classes
         );
         arsort($weights);
-        $fattest = reset(array_keys($weights));
+        $weights = array_keys($weights);
+        $fattest = reset($weights);
         return $fattest;
     }
 
