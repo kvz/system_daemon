@@ -1452,9 +1452,7 @@ class System_Daemon
             );
         }
 
-        $pidDirPath = dirname($pidFilePath);
-        $parts      = explode('/', $pidDirPath);
-        if (count($parts) <= 3 || end($parts) != self::opt('appName')) {
+        if(basename(dirname($pidFilePath)) !== self::opt('appName')) {
             // like: /var/run/x.pid
             return self::err(
                 'Since version 0.6.3, the pidfile needs to be ' .
