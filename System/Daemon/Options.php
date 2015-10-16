@@ -120,6 +120,22 @@ class System_Daemon_Options
             $success        = false;
         }
         
+        if (!is_bool($value)) {
+            // Replace variables
+            $value = preg_replace_callback(
+                '/\{([^\{\}]+)\}/is',
+                array($this, "replaceVars"), 
+                $value
+            );
+            
+            // Replace functions
+            $value = preg_replace_callback(
+                '/\@([\w_]+)\(([^\)]+)\)/is',
+                array($this, "replaceFuncs"), 
+                $value
+            );
+        }
+        
         $this->_options[$name] = $value;
         return $success;
     }
