@@ -9,7 +9,19 @@
 
 System_Daemon is a PHP class that allows developers to create their own daemon 
 applications on Linux systems. The class is focussed entirely on creating & 
-spawning standalone daemons
+spawning standalone daemons.
+
+To install with composer, add this to your composer.json file:
+
+        "repositories": [
+                {
+                        "type": "vcs",
+                        "url": "https://github.com/kvz/system_daemon"
+                }
+        ],
+        "require": {
+                "kvz/system_daemon": "dev-master"
+        }
 
 More info at:
 
